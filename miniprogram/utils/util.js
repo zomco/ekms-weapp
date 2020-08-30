@@ -14,7 +14,7 @@ const formatNumber = n => {
   return n[1] ? n : '0' + n
 };
 
-let rgb2hsl = function(r, g, b) {
+const rgb2hsl = function(r, g, b) {
   r /= 255, g /= 255, b /= 255;
   var max = Math.max(r, g, b),
     min = Math.min(r, g, b);
@@ -41,7 +41,7 @@ let rgb2hsl = function(r, g, b) {
   return [h, s, l];
 };
 
-let hslToRgb = function(h, s, l) {
+const hslToRgb = function(h, s, l) {
   var r, g, b;
   if (s == 0) {
     r = g = b = l; // achromatic
@@ -63,7 +63,7 @@ let hslToRgb = function(h, s, l) {
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 };
 
-let drawRing = function(ctx, width, height) {
+const drawRing = function(ctx, width, height) {
   // 画圆环
   var radius = width / 2;
   var toRad = (2 * Math.PI) / 360;
@@ -87,7 +87,7 @@ let drawRing = function(ctx, width, height) {
   ctx.draw();
 };
 
-let drawSlider = function(ctx, width, height, angle) {
+const drawSlider = function(ctx, width, height, angle) {
   var radius = width / 2;
 
   ctx.save();
@@ -114,6 +114,39 @@ let drawSlider = function(ctx, width, height, angle) {
   ctx.restore();
 };
 
+const buf2hex = function (buffer) {
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+};
+
+const buf2str = function (buffer) {
+  var arr = Array.prototype.map.call(new Uint8Array(buffer), x => x);
+  var str = '';
+  for (var i = 0; i < arr.length; i++) {
+    str += String.fromCharCode(arr[i]);
+  }
+  return str;
+};
+
+const btError = (code) => {
+  switch (code) {
+    case 0: return '正常';
+    case -1: return '已连接';
+    case 10000: return '未初始化蓝牙适配器';
+    case 10001: return '当前蓝牙适配器不可用';
+    case 10002: return '没有找到指定设备';
+    case 10003: return '连接失败';
+    case 10004: return '没有找到指定服务';
+    case 10005: return '没有找到指定特征值';
+    case 10006: return '当前连接已断开';
+    case 10007: return '当前特征值不支持此操作';
+    case 10008: return '其余所有系统上报的异常';
+    case 10009: return '系统版本低于 4.3 不支持 BLE';
+    case 10012: return '连接超时';
+    case 10013: return '连接 deviceId 为空或者是格式不正确';
+    default: return '未知错误';
+  }
+};
+
 module.exports = {
   formatTime: formatTime,
   formatNumber: formatNumber,
@@ -121,4 +154,7 @@ module.exports = {
   hslToRgb: hslToRgb,
   drawRing: drawRing,
   drawSlider: drawSlider,
+  buf2hex: buf2hex,
+  buf2str: buf2str,
+  btError: btError,
 }
