@@ -10,46 +10,24 @@ Page({
   handleSearch: function() {
     const that = this;
     if (!that.data.isSearching) {
-      wx.openBluetoothAdapter({
+      wx.startBluetoothDevicesDiscovery({
         success: function(res) {
-          wx.startBluetoothDevicesDiscovery({
-            success: function(res) {
-              that.setData({
-                isSearching: true,
-                devices: [],
-              })
-            },
-            fail: function(err) {
-
-            },
-          });
+          that.setData({
+            isSearching: true,
+            devices: [],
+          })
         },
-        fail: function(res) {
-          wx.showModal({
-            title: '提示',
-            content: '请检查手机蓝牙是否打开',
-            showCancel: false,
-            success: function(res) {
-              that.setData({ isSearching: false });
-            },
-          });
+        fail: function(err) {
+          console.log(err);
         },
       });
     } else {
       wx.stopBluetoothDevicesDiscovery({
         success: function(res) {
           that.setData({ isSearching: false });
-          wx.closeBluetoothAdapter({
-            success: function(res) {
-              that.setData({ isAvailable: false });
-            },
-            fail: function(err) {
-
-            },
-          });
         },
         fail: function(err) {
-
+          console.log(err);
         },
       });
     }
@@ -58,21 +36,13 @@ Page({
     var that = this;
     const deviceId = e.currentTarget.id;
     const device = that.data.devices.find(n => n.deviceId === deviceId);
-    if (isSearching) {
+    if (that.data.isSearching) {
       wx.stopBluetoothDevicesDiscovery({
         success: function(res) {
           that.setData({ isSearching: false });
-          wx.closeBluetoothAdapter({
-            success: function(res) {
-              that.setData({ isAvailable: false });
-            },
-            fail: function(err) {
-
-            },
-          });
         },
-        fail: function(res) {
-
+        fail: function(err) {
+          console.log(err);
         },
       });
     }
@@ -92,7 +62,8 @@ Page({
           url: '../device/device?connectedDeviceId=' + deviceId + '&name=' + device.name
         })
       },
-      fail: function(res) {
+      fail: function(err) {
+        console.log(err)
         wx.hideLoading();
         wx.showModal({
           title: '提示',
@@ -116,26 +87,46 @@ Page({
       const devices = that.data.devices.concat(newDevices).sort((a, b) => a.RSSI - b.RSSI);
       that.setData({ devices });
     });
+    wx.openBluetoothAdapter({
+      success: function(res) {
+        console.log(res);
+      },
+      fail: function(err) {
+        console.log(err);
+        wx.showModal({
+          title: '提示',
+          content: '请检查手机蓝牙是否打开',
+          showCancel: false,
+          success: function(res) {
+            that.setData({ isSearching: false });
+          },
+        });
+      },
+    });
+  },
+  onUnload: function() {
+    wx.closeBluetoothAdapter({
+      success: function(res) {
+        that.setData({ isAvailable: false });
+      },
+      fail: function(err) {
+        console.log(err);
+      },
+    });
+  },
+  onShow: function() {
+    // 页面出现在前台时执行
   },
   onHide: function() {
     var that = this;
     that.setData({ devices: [] });
-    
     if (this.data.isSearching) {
       wx.stopBluetoothDevicesDiscovery({
         success: function(res) {
           that.setData({ isSearching: false });
-          wx.closeBluetoothAdapter({
-            success: function(res) {
-              that.setData({ isAvailable: false });
-            },
-            fail: function(err) {
-
-            },
-          });
         },
         fail: function(err) {
-
+          console.log(err);
         },
       });
     }

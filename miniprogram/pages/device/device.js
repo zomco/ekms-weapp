@@ -1,21 +1,21 @@
-const app = getApp()
+const app = getApp();
+const util = require('../../utils/util.js');
+
 Page({
   data: {
-    inputText: 'Hello World!',
-    receiveText: '',
-    receiveArry: [],
     name: '',
     connectedDeviceId: '',
     serviceId: 0,
     characteristics: {},
     connected: true,
+
+    pickColor: null,
+    raduis: 550, //这里最大为750rpx铺满屏幕
+    valueWidthOrHerght: 0,
+    client: null,
+    reconnectCounts: 0, //记录重连的次数
   },
-  bindInput: function(e) {
-    this.setData({
-      inputText: e.detail.value
-    })
-    console.log(e.detail.value)
-  },
+
   SendTap: function() {
     var that = this
     if (that.data.connected) {
@@ -46,13 +46,40 @@ Page({
       })
     }
   },
+
   onLoad: function(options) {
     var that = this
-    console.log(options)
     that.setData({
       name: options.name,
-      connectedDeviceId: options.connectedDeviceId
-    })
+      connectedDeviceId: options.connectedDeviceId,
+    });
+    colorPickerCtx = wx.createCanvasContext('colorPicker');
+    colorPickerCtx.fillStyle = 'rgb(255, 255, 255)';
+    sliderCtx = wx.createCanvasContext('colorPickerSlider');
+
+    // 绘制色环
+    let isInit = true;
+    wx.createSelectorQuery().select('#colorPicker').boundingClientRect(function(rect) {
+      that.setData({
+        valueWidthOrHerght: rect.width,
+      })
+      if(isInit){
+        colorPickerCtx.fillRect(0, 0, rect.width, rect.height);
+        util.drawRing(colorPickerCtx, rect.width, rect.height);
+        // 设置默认位置
+        util.drawSlider(sliderCtx, rect.width, rect.height, 1.0);
+        isInit = false;
+      }
+      that.setData({
+        pickColor: JSON.stringify({
+          red: 255,
+          green: 0,
+          blue: 0,
+        })
+      });
+    }).exec();
+
+    // 获取外围设备服务列表
     wx.getBLEDeviceServices({
       deviceId: that.data.connectedDeviceId,
       success: function(res) {
@@ -103,65 +130,32 @@ Page({
             })
           }
         })
+      },
+      fail: function(err) {
+        console.log(err);
       }
-    })
+    });
+    // 监听蓝牙事件
     wx.onBLEConnectionStateChange(function(res) {
-      console.log(res.connected)
+      const { connected, deviceId } = res;
       that.setData({
-        connected: res.connected
-      })
-    })
+        isConnected: connected,
+      });
+    });
     wx.onBLECharacteristicValueChange(function(res) {
       console.log('接收到数据：' + app.buf2string(res.value))
       var time = that.getNowTime()
       that.setData({
         receiveText: that.data.receiveText + time + (app.buf2string(res.value))
-      })
+      });
     })
   },
+
   onUnload: function() {
     wx.closeBLEConnection({
       deviceId: this.data.connectedDeviceId,
       success: function(res) {},
     })
   },
-   SendCleanTap: function() {
-    this.setData({
-      inputText: ''
-    })
-  },
 
-  RecvCleanTap: function () {
-    this.setData({
-      receiveText: ''
-    })
-  },
-   SendValue:function(e){
-    this.setData({
-      inputText:e.detail.value
-    })
-  },
-  getNowTime: function() {
-    // 加0
-    function add_10(num) {
-      if (num < 10) {
-        num = '0' + num
-      }
-      return num;
-    }
-    var myDate = new Date();
-    myDate.getYear(); //获取当前年份(2位)
-    myDate.getFullYear(); //获取完整的年份(4位,1970-????)
-    myDate.getMonth(); //获取当前月份(0-11,0代表1月)
-    myDate.getDate(); //获取当前日(1-31)
-    myDate.getDay(); //获取当前星期X(0-6,0代表星期天)
-    myDate.getTime(); //获取当前时间(从1970.1.1开始的毫秒数)
-    myDate.getHours(); //获取当前小时数(0-23)
-    myDate.getMinutes(); //获取当前分钟数(0-59)
-    myDate.getSeconds(); //获取当前秒数(0-59)
-    myDate.getMilliseconds(); //获取当前毫秒数(0-999)
-    myDate.toLocaleDateString(); //获取当前日期
-    var nowTime = add_10(myDate.getHours()) + '时' + add_10(myDate.getMinutes()) + '分' + add_10(myDate.getSeconds()) + '秒 收到：';
-    return nowTime;
-  }
 })
