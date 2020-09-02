@@ -34,7 +34,7 @@
 		"packNpmRelationList": []
 	},
 	"appid": "wxcd5848a354672184",
-	"projectname": "ekms-led",
+	"projectname": "ekms-weapp",
 	"libVersion": "2.8.1",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
