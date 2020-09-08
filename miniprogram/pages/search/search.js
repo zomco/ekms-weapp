@@ -59,7 +59,7 @@ Page({
           duration: 1000,
         })
         wx.navigateTo({
-          url: '../device/device?connectedDeviceId=' + deviceId + '&name=' + device.name
+          url: '../device/device?deviceId=' + deviceId + '&name=' + device.name
         })
       },
       fail: function(err) {

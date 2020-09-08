@@ -1,6 +1,17 @@
 const app = getApp();
 const util = require('../../utils/util.js');
 
+const SERVICE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C10";
+const CHARACTERISTIC_CYCLE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C20";
+const CHARACTERISTIC_INCREMENT_UUID = "00010203-0405-0607-0809-0A0B0C0D2C21";
+const CHARACTERISTIC_START_UUID = "00010203-0405-0607-0809-0A0B0C0D2C22";
+const CHARACTERISTIC_END_UUID = "00010203-0405-0607-0809-0A0B0C0D2C23";
+const CHARACTERISTIC_WAIT_UUID = "00010203-0405-0607-0809-0A0B0C0D2C24";
+const CHARACTERISTIC_RED_UUID = "00010203-0405-0607-0809-0A0B0C0D2C25";
+const CHARACTERISTIC_GREEN_UUID = "00010203-0405-0607-0809-0A0B0C0D2C26";
+const CHARACTERISTIC_BLUE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C27";
+let colorPickerCtx = {};
+let sliderCtx = {};
 Page({
   data: {
     name: '',
@@ -121,7 +132,8 @@ Page({
     wx.getBLEDeviceServices({
       deviceId: that.data.deviceId,
       success: function(res) {
-        const lightService = res.services.find(n => n.uuid === '00010203-0405-0607-0809-0A0B0C0D1910');
+        console.log(res.services);
+        const lightService = res.services.find(n => n.uuid === SERVICE_UUID);
         if (!lightService) {
           wx.showModal({
             title: '提示',
@@ -132,13 +144,15 @@ Page({
                 searching: false
               })
             }
-          })
+          });
+          return;
         }
         that.setData({ serviceId: lightService.uuid });
         wx.getBLEDeviceCharacteristics({
           deviceId: options.deviceId,
           serviceId: lightService.uuid,
           success: function(res) {
+            console.log(res.characteristics);
             that.setData({ characteristics: res.characteristics });
             // 监听特点变化
             wx.notifyBLECharacteristicValueChange({
