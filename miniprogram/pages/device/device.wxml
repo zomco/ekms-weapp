@@ -16,3 +16,11 @@
 </view>
 
 <text style="font-size:29rpx">采集结果：{{pickColor}}</text>
+<text style="font-size:29rpx">cycle：{{cycle}}</text>
+<text style="font-size:29rpx">increment：{{increment}}</text>
+<text style="font-size:29rpx">start：{{start}}</text>
+<text style="font-size:29rpx">end：{{end}}</text>
+<text style="font-size:29rpx">wait：{{wait}}</text>
+<text style="font-size:29rpx">red：{{red}}</text>
+<text style="font-size:29rpx">green：{{green}}</text>
+<text style="font-size:29rpx">blue：{{blue}}</text>

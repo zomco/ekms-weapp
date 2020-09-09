@@ -16,13 +16,20 @@ Page({
   data: {
     name: '',
     deviceId: '',
-    serviceId: 0,
-    charactiseristics: {},
     isConnected: true,
 
     pickColor: null,
     raduis: 550,        //这里最大为750rpx铺满屏幕
     valueWidthOrHerght: 0,
+
+    cycle: 0,
+    increment: 0,
+    start: 0,
+    end: 0,
+    wait: 0,
+    red: 0,
+    green: 0,
+    blue: 0,
   },
 
   SendTap: function() {
@@ -99,11 +106,13 @@ Page({
   },
 
   onLoad: function(options) {
-    var that = this
+    var that = this;
+    const deviceId = options.deviceId;
     that.setData({
       name: options.name,
-      deviceId: options.deviceId,
+      deviceId,
     });
+
     colorPickerCtx = wx.createCanvasContext('colorPicker');
     colorPickerCtx.fillStyle = 'rgb(255, 255, 255)';
     sliderCtx = wx.createCanvasContext('colorPickerSlider');
@@ -130,43 +139,42 @@ Page({
 
     // 获取外围设备服务列表
     wx.getBLEDeviceServices({
-      deviceId: that.data.deviceId,
+      deviceId,
       success: function(res) {
         console.log(res.services);
-        const lightService = res.services.find(n => n.uuid === SERVICE_UUID);
-        if (!lightService) {
-          wx.showModal({
-            title: '提示',
-            content: '非我方出售的设备',
-            showCancel: false,
-            success: function(res) {
-              that.setData({
-                searching: false
-              })
-            }
-          });
-          return;
-        }
-        that.setData({ serviceId: lightService.uuid });
+        const service = res.services.find(n => n.uuid === SERVICE_UUID);
+        if (!service) return;
+        const serviceId = service.uuid;
         wx.getBLEDeviceCharacteristics({
-          deviceId: options.deviceId,
-          serviceId: lightService.uuid,
+          deviceId,
+          serviceId,
           success: function(res) {
-            console.log(res.characteristics);
-            that.setData({ characteristics: res.characteristics });
+            const cycle = res.characteristics.find(n => n.uuid === CHARACTERISTIC_CYCLE_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            const increment = res.characteristics.find(n => n.uuid === CHARACTERISTIC_INCREMENT_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            const start = res.characteristics.find(n => n.uuid === CHARACTERISTIC_START_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            const end = res.characteristics.find(n => n.uuid === CHARACTERISTIC_END_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            const wait = res.characteristics.find(n => n.uuid === CHARACTERISTIC_WAIT_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            const red = res.characteristics.find(n => n.uuid === CHARACTERISTIC_RED_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            const green = res.characteristics.find(n => n.uuid === CHARACTERISTIC_GREEN_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            const blue = res.characteristics.find(n => n.uuid === CHARACTERISTIC_BLUE_UUID && n.properties.read && n.properties.write && n.properties.notify);
+            if (!cycle || !increment || !start || !end || !wait || !red || !green || !blue) return;
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: cycle.uuid });
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: increment.uuid });
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: start.uuid });
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: end.uuid });
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: wait.uuid });
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: red.uuid });
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: green.uuid });
+            wx.readBLECharacteristicValue({ deviceId, serviceId, characteristicId: blue.uuid });
             // 监听特点变化
-            wx.notifyBLECharacteristicValueChange({
-              state: true,
-              deviceId: options.deviceId,
-              serviceId: that.data.serviceId,
-              characteristicId: that.data.characteristics[0].uuid,
-              success: function(res) {
-                console.log('启用notify成功')
-              },
-              fail(res) {
-                console.log(res)
-              },
-            });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: cycle.uuid });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: increment.uuid });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: start.uuid });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: end.uuid });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: wait.uuid });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: red.uuid });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: green.uuid });
+            wx.notifyBLECharacteristicValueChange({ state: true, deviceId, serviceId, characteristicId: blue.uuid });
           }
         })
       },
@@ -180,11 +188,37 @@ Page({
       that.setData({ isConnected: connected });
     });
     wx.onBLECharacteristicValueChange(function(res) {
-      console.log('接收到数据：' + app.buf2string(res.value))
-      var time = that.getNowTime()
-      that.setData({
-        receiveText: that.data.receiveText + time + (app.buf2string(res.value))
-      });
+      if (res.deviceId !== that.data.deviceId || res.serviceId !== SERVICE_UUID) return;
+      const value = parseInt(util.buf2hex(res.value), 16);
+      console.log(value);
+      switch (res.characteristicId) {
+        case CHARACTERISTIC_CYCLE_UUID:
+          that.setData({ cycle: value });
+          break;
+        case CHARACTERISTIC_INCREMENT_UUID:
+          that.setData({ increment: value });
+          break;
+        case CHARACTERISTIC_START_UUID:
+          that.setData({ start: value });
+          break;
+        case CHARACTERISTIC_END_UUID:
+          that.setData({ end: value });
+          break;
+        case CHARACTERISTIC_WAIT_UUID:
+          that.setData({ wait: value });
+          break;
+        case CHARACTERISTIC_RED_UUID:
+          that.setData({ red: value });
+          break;
+        case CHARACTERISTIC_GREEN_UUID:
+          that.setData({ green: value });
+          break;
+        case CHARACTERISTIC_BLUE_UUID:
+          that.setData({ blue: value });
+          break;
+        default:
+          break;
+      }
     })
   },
 
