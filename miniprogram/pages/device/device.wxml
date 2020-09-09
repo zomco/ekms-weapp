@@ -1,18 +1,17 @@
 <view class="color-picker-view">
   <canvas 
-    id="colorPicker" 
-    style="width: {{raduis}}rpx;height: {{raduis}}rpx;" 
-    canvas-id="colorPicker" 
+    id="colorPicker"
+    canvas-id="colorPicker"  
+    style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;" 
     class="color-picker" 
   />
-  <canvas 
+  <canvas
+    id="colorPickerSlider"  
     canvas-id="colorPickerSlider" 
     class="color-picker-slider" 
-    style="width: {{raduis}}rpx;height: {{raduis}}rpx;z-index:1;background:rgba(255,255,255,0);" 
-    bindtouchstart="handleSlide" 
-    bindtouchmove="handleSlide" 
+    style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;z-index:1;background:rgba(255,255,255,0);" 
     bindtouchend="handleSlide"
   />
 </view>
 
-<text style="font-size:29rpx">采集结果：{{pickColor}}</text>
+<text style="font-size:29rpx">采集结果：{{ pickColor }}</text>

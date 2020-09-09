@@ -1,4 +1,3 @@
-const app = getApp();
 const util = require('../../utils/util.js');
 
 const SERVICE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C10";
@@ -11,7 +10,7 @@ const CHARACTERISTIC_RED_UUID = "00010203-0405-0607-0809-0A0B0C0D2C25";
 const CHARACTERISTIC_GREEN_UUID = "00010203-0405-0607-0809-0A0B0C0D2C26";
 const CHARACTERISTIC_BLUE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C27";
 let colorPickerCtx = {};
-let sliderCtx = {};
+let colorPickerSliderCtx = {};
 Page({
   data: {
     name: '',
@@ -32,122 +31,70 @@ Page({
     blue: 0,
   },
 
-  SendTap: function() {
-    var that = this
-    if (that.data.isConnected) {
-      var buffer = new ArrayBuffer(that.data.inputText.length)
-      var dataView = new Uint8Array(buffer)
-      for (var i = 0; i < that.data.inputText.length; i++) {
-        dataView[i] = that.data.inputText.charCodeAt(i)
-      }
-      wx.writeBLECharacteristicValue({
-        deviceId: that.data.deviceId,
-        serviceId: that.data.serviceId,
-        characteristicId: that.data.characteristics[0].uuid,
-        value: buffer,
-        success: function(res) {
-          console.log('发送成功')
-        }
-      })
-    } else {
-      wx.showModal({
-        title: '提示',
-        content: '蓝牙已断开',
-        showCancel: false,
-        success: function(res) {
-          that.setData({
-            searching: false
-          })
-        }
-      })
-    }
-  },
-
   handleSlide: function(e) {
     let that = this;
-    if (e.touches && ( e.type === 'touchend')) {
-      let x = e.changedTouches[0].x;
-      let y = e.changedTouches[0].y;
-      if (e.type !== 'touchend') {
-        x = e.touches[0].x;
-        y = e.touches[0].y;
+    let x = e.changedTouches[0].x;
+    let y = e.changedTouches[0].y;
+    //复制画布上指定矩形的像素数据
+    wx.canvasGetImageData({
+      canvasId: "colorPicker",
+      x: x,
+      y: y,
+      width: 1,
+      height: 1,
+      success(res) {
+        // 转换成hsl格式，获取旋转角度
+        let h = util.rgb2hsl(res.data[0], res.data[1], res.data[2]);
+        const redBuf = new ArrayBuffer(1);
+        const redDataView = new Uint8Array(redBuf);
+        redDataView[0] = res.data[0];
+        const greenBuf = new ArrayBuffer(1);
+        const greenDataView = new Uint8Array(greenBuf);
+        greenDataView[0] = res.data[1];
+        const blueBuf = new ArrayBuffer(1);
+        const blueDataView = new Uint8Array(blueBuf);
+        blueDataView[0] = res.data[2];
+        // wx.writeBLECharacteristicValue({
+        //   deviceId: that.data.deviceId,
+        //   serviceId: SERVICE_UUID,
+        //   characteristicId: CHARACTERISTIC_RED_UUID,
+        //   value: redBuf,
+        //   success: function(res) {
+        //     console.log(res);
+        //   },
+        //   fail: function(err) {
+        //     console.error(err);
+        //   }
+        // });
+        // wx.writeBLECharacteristicValue({
+        //   deviceId: that.data.deviceId,
+        //   serviceId: SERVICE_UUID,
+        //   characteristicId: CHARACTERISTIC_GREEN_UUID,
+        //   value: greenBuf,
+        //   success: function(res) {
+        //     console.log(res);
+        //   },
+        //   fail: function(err) {
+        //     console.error(err);
+        //   }
+        // });
+        // wx.writeBLECharacteristicValue({
+        //   deviceId: that.data.deviceId,
+        //   serviceId: SERVICE_UUID,
+        //   characteristicId: CHARACTERISTIC_BLUE_UUID,
+        //   value: blueBuf,
+        //   success: function(res) {
+        //     console.log(res);
+        //   },
+        //   fail: function(err) {
+        //     console.error(err);
+        //   }
+        // });
+        // 判断是否在圈内
+        if (h[1] !== 1.0) return;
+        util.drawSlider(colorPickerSliderCtx, that.data.valueWidthOrHerght, that.data.valueWidthOrHerght, h[0]);
       }
-      //复制画布上指定矩形的像素数据
-      wx.canvasGetImageData({
-        canvasId: "colorPicker",
-        x: x,
-        y: y,
-        width: 1,
-        height: 1,
-        success(res) {
-          // 转换成hsl格式，获取旋转角度
-          let h = util.rgb2hsl(res.data[0], res.data[1], res.data[2]);
-          that.setData({
-            pickColor: JSON.stringify({
-              red: res.data[0],
-              green: res.data[1],
-              blue: res.data[2]
-            })
-          });
-          const redBuf = new ArrayBuffer(1);
-          const redDataView = new Uint8Array(redBuf);
-          redDataView[0] = res.data[0];
-          const greenBuf = new ArrayBuffer(1);
-          const greenDataView = new Uint8Array(greenBuf);
-          greenDataView[0] = res.data[1];
-          const blueBuf = new ArrayBuffer(1);
-          const blueDataView = new Uint8Array(blueBuf);
-          blueDataView[0] = res.data[2];
-          wx.writeBLECharacteristicValue({
-            deviceId: that.data.deviceId,
-            serviceId: that.data.serviceId,
-            characteristicId: CHARACTERISTIC_RED_UUID,
-            value: redBuf,
-            success: function(res) {
-              console.log(res);
-            },
-            fail: function(err) {
-              console.error(err);
-            }
-          });
-          wx.writeBLECharacteristicValue({
-            deviceId: that.data.deviceId,
-            serviceId: that.data.serviceId,
-            characteristicId: CHARACTERISTIC_GREEN_UUID,
-            value: greenBuf,
-            success: function(res) {
-              console.log(res);
-            },
-            fail: function(err) {
-              console.error(err);
-            }
-          });
-          wx.writeBLECharacteristicValue({
-            deviceId: that.data.deviceId,
-            serviceId: that.data.serviceId,
-            characteristicId: CHARACTERISTIC_BLUE_UUID,
-            value: blueBuf,
-            success: function(res) {
-              console.log(res);
-            },
-            fail: function(err) {
-              console.error(err);
-            }
-          });
-          // 判断是否在圈内
-          if (h[1] !== 1.0) {
-            return;
-          }
-
-          util.drawSlider(sliderCtx, that.data.valueWidthOrHerght, that.data.valueWidthOrHerght, h[0]);
-          // 设置设备
-          if (e.type !== 'touchEnd') {
-            // 触摸结束才设置设备属性
-            return;
-          }
-        }
-      });
-    }
+    });
   },
 
   onLoad: function(options) {
@@ -160,7 +107,7 @@ Page({
 
     colorPickerCtx = wx.createCanvasContext('colorPicker');
     colorPickerCtx.fillStyle = 'rgb(255, 255, 255)';
-    sliderCtx = wx.createCanvasContext('colorPickerSlider');
+    colorPickerSliderCtx = wx.createCanvasContext('colorPickerSlider');
 
     // 绘制色环
     let isInit = true;
@@ -170,7 +117,7 @@ Page({
         colorPickerCtx.fillRect(0, 0, rect.width, rect.height);
         util.drawRing(colorPickerCtx, rect.width, rect.height);
         // 设置默认位置
-        util.drawSlider(sliderCtx, rect.width, rect.height, 1.0);
+        util.drawSlider(colorPickerSliderCtx, rect.width, rect.height, 1.0);
         isInit = false;
       }
       that.setData({
@@ -186,7 +133,6 @@ Page({
     wx.getBLEDeviceServices({
       deviceId,
       success: function(res) {
-        console.log(res.services);
         const service = res.services.find(n => n.uuid === SERVICE_UUID);
         if (!service) return;
         const serviceId = service.uuid;
@@ -235,7 +181,6 @@ Page({
     wx.onBLECharacteristicValueChange(function(res) {
       if (res.deviceId !== that.data.deviceId || res.serviceId !== SERVICE_UUID) return;
       const value = parseInt(util.buf2hex(res.value), 16);
-      console.log(value);
       switch (res.characteristicId) {
         case CHARACTERISTIC_CYCLE_UUID:
           that.setData({ cycle: value });
