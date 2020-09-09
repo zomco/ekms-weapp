@@ -1,13 +1,12 @@
 {
   "pages": [
     "pages/search/search",
-    "pages/device/device",
-    "pages/index/index"
+    "pages/device/device"
   ],
   "window": {
-    "backgroundColor": "#F6F6F6",
+    "backgroundColor": "#FFFFFF",
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#F6F6F6",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTitleText": "led",
     "navigationBarTextStyle": "black"
   },

@@ -2,7 +2,7 @@
 	"miniprogramRoot": "miniprogram/",
 	"cloudfunctionRoot": "cloudfunctions/",
 	"setting": {
-		"urlCheck": true,
+		"urlCheck": false,
 		"es6": true,
 		"enhance": true,
 		"postcss": true,
@@ -10,7 +10,7 @@
 		"minified": true,
 		"newFeature": true,
 		"coverView": true,
-		"nodeModules": false,
+		"nodeModules": true,
 		"autoAudits": false,
 		"showShadowRootInWxmlPanel": true,
 		"scopeDataCheck": false,
@@ -35,7 +35,7 @@
 	},
 	"appid": "wxcd5848a354672184",
 	"projectname": "ekms-weapp",
-	"libVersion": "2.8.1",
+	"libVersion": "2.13.0",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"condition": {

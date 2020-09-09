@@ -88,7 +88,52 @@ Page({
               green: res.data[1],
               blue: res.data[2]
             })
-          })
+          });
+          const redBuf = new ArrayBuffer(1);
+          const redDataView = new Uint8Array(redBuf);
+          redDataView[0] = res.data[0];
+          const greenBuf = new ArrayBuffer(1);
+          const greenDataView = new Uint8Array(greenBuf);
+          greenDataView[0] = res.data[1];
+          const blueBuf = new ArrayBuffer(1);
+          const blueDataView = new Uint8Array(blueBuf);
+          blueDataView[0] = res.data[2];
+          wx.writeBLECharacteristicValue({
+            deviceId: that.data.deviceId,
+            serviceId: that.data.serviceId,
+            characteristicId: CHARACTERISTIC_RED_UUID,
+            value: redBuf,
+            success: function(res) {
+              console.log(res);
+            },
+            fail: function(err) {
+              console.error(err);
+            }
+          });
+          wx.writeBLECharacteristicValue({
+            deviceId: that.data.deviceId,
+            serviceId: that.data.serviceId,
+            characteristicId: CHARACTERISTIC_GREEN_UUID,
+            value: greenBuf,
+            success: function(res) {
+              console.log(res);
+            },
+            fail: function(err) {
+              console.error(err);
+            }
+          });
+          wx.writeBLECharacteristicValue({
+            deviceId: that.data.deviceId,
+            serviceId: that.data.serviceId,
+            characteristicId: CHARACTERISTIC_BLUE_UUID,
+            value: blueBuf,
+            success: function(res) {
+              console.log(res);
+            },
+            fail: function(err) {
+              console.error(err);
+            }
+          });
           // 判断是否在圈内
           if (h[1] !== 1.0) {
             return;
@@ -208,13 +253,34 @@ Page({
           that.setData({ wait: value });
           break;
         case CHARACTERISTIC_RED_UUID:
-          that.setData({ red: value });
+          that.setData({ 
+            red: value,
+            pickColor: JSON.stringify({
+              red: value,
+              green: that.data.green,
+              blue: that.data.blue,
+            }),
+          });
           break;
         case CHARACTERISTIC_GREEN_UUID:
-          that.setData({ green: value });
+          that.setData({ 
+            green: value,
+            pickColor: JSON.stringify({
+              red: that.data.red,
+              green: value,
+              blue: that.data.blue,
+            }),
+          });
           break;
         case CHARACTERISTIC_BLUE_UUID:
-          that.setData({ blue: value });
+          that.setData({ 
+            blue: value,
+            pickColor: JSON.stringify({
+              red: that.data.red,
+              green: that.data.green,
+              blue: value,
+            }),
+          });
           break;
         default:
           break;
