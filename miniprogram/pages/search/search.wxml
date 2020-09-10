@@ -1,4 +1,4 @@
-<view wx:if="{{ !isAvailable }}">
+<view wx:if="{{ isAvailable }}">
   <scroll-view scroll-y style="width:690rpx;height:{{list_height}}rpx">
     <van-cell-group
       wx:for="{{ devices }}" 

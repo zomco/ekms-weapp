@@ -13,13 +13,10 @@ Page({
     if (!that.data.isSearching) {
       wx.startBluetoothDevicesDiscovery({
         success: function(res) {
-          that.setData({
-            isSearching: true,
-            devices: [],
-          })
+          that.setData({ isSearching: true, devices: [] });
         },
         fail: function(err) {
-          console.log(err);
+          console.error(err);
         },
       });
     } else {
@@ -28,7 +25,7 @@ Page({
           that.setData({ isSearching: false });
         },
         fail: function(err) {
-          console.log(err);
+          console.error(err);
         },
       });
     }
@@ -58,7 +55,7 @@ Page({
           icon: 'success',
           duration: 1000,
         });
-        wx.navigateTo({ url: '../device/device' });
+        // wx.navigateTo({ url: '../device/device' });
       },
       fail: function(err) {
         console.log(err)
@@ -100,7 +97,7 @@ Page({
   },
 
   onUnload: function() {
-    // 关闭适配器
+    const that = this;
     wx.closeBluetoothAdapter({
       success: function(res) {
         that.setData({ isAvailable: false });
@@ -109,33 +106,35 @@ Page({
         console.log(err);
       },
     });
+    wx.offBluetoothDeviceFound();
+    wx.offBluetoothAdapterStateChange();
   },
 
   onShow: function() {
-    var that = this;
-    wx.startBluetoothDevicesDiscovery({
-      success: function(res) {
-        that.setData({ isSearching: true });
-      },
-      fail: function(err) {
-        console.log(err);
-      },
-    });
+    // const that = this;
+    // wx.startBluetoothDevicesDiscovery({
+    //   success: function(res) {
+    //     that.setData({ isSearching: true });
+    //   },
+    //   fail: function(err) {
+    //     console.log(err);
+    //   },
+    // });
   },
 
   onHide: function() {
-    var that = this;
-    that.setData({ devices: [] });
-    if (this.data.isSearching) {
-      wx.stopBluetoothDevicesDiscovery({
-        success: function(res) {
-          that.setData({ isSearching: false });
-        },
-        fail: function(err) {
-          console.log(err);
-        },
-      });
-    }
+    // const that = this;
+    // that.setData({ devices: [] });
+    // if (this.data.isSearching) {
+    //   wx.stopBluetoothDevicesDiscovery({
+    //     success: function(res) {
+    //       that.setData({ isSearching: false });
+    //     },
+    //     fail: function(err) {
+    //       console.log(err);
+    //     },
+    //   });
+    // }
   },
 
   onReady: function() {
