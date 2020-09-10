@@ -1,11 +1,18 @@
 .color-picker-view {
     background-color: #fff;
-   display: flex;
-   justify-content: center;
-  }
-  
-  
-  .color-picker-slider {  
-   position: absolute;
-   background-color: #fff;
-  }
+    display: flex;
+    justify-content: center;
+}
+
+.color-picker-slider {  
+    position: absolute;
+    background-color: #fff;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top:60rpx;
+    margin-bottom:40rpx;
+    padding: 16px;
+}

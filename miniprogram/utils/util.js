@@ -84,7 +84,6 @@ const drawRing = function(ctx, width, height) {
   ctx.arc(radius, radius, radius * 0.65, 0, Math.PI * 2, true);
   ctx.closePath();
   ctx.fill();
-  ctx.draw();
 };
 
 const drawSlider = function(ctx, width, height, angle) {
@@ -103,14 +102,13 @@ const drawSlider = function(ctx, width, height, angle) {
   ctx.fill();
   ctx.rotate((angle * 360) * Math.PI / 180);
 
-  ctx.beginPath()
-  ctx.setLineWidth(height * 0.015);
+  ctx.beginPath();
+  ctx.lineWidth = height * 0.015;
   //圆心的 x 坐标  , 圆心的 Y 坐标 , 圆的半径
-  ctx.arc(height * 0.41, 0, 17, 0, 2 * Math.PI)
+  ctx.arc(height * 0.41, 0, 17, 0, 2 * Math.PI);
   ctx.strokeStyle = 'rgb(255, 255, 255)';
-  ctx.stroke()
+  ctx.stroke();
 
-  ctx.draw();
   ctx.restore();
 };
 

@@ -1,17 +1,55 @@
 <view class="color-picker-view">
-  <canvas 
+  <canvas
     id="colorPicker"
-    canvas-id="colorPicker"  
+    canvas-id="colorPicker" 
+    type="2d"  
     style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;" 
     class="color-picker" 
   />
   <canvas
-    id="colorPickerSlider"  
-    canvas-id="colorPickerSlider" 
+    id="colorPickerSlider"
+    canvas-id="colorPickerSlider"
+    type="2d" 
     class="color-picker-slider" 
     style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;z-index:1;background:rgba(255,255,255,0);" 
     bindtouchend="handleSlide"
+    bindtouchmove="handleSlide"
   />
 </view>
-
-<text style="font-size:29rpx">采集结果：{{ pickColor }}</text>
+<view class="buttons">
+  <van-button 
+    custom-style="width:62px;margin-right:10px;" 
+    icon="replay" 
+    type="primary" 
+    size="small"
+  >
+    同步
+  </van-button>
+  <van-button 
+    custom-style="width:62px;" 
+    icon="plus" 
+    type="primary" 
+    size="small"
+    bind:click="handleAdd"
+  >
+    添加
+  </van-button>
+</view>
+<van-swipe-cell right-width="{{ 65 }}" left-width="{{ 65 }}">
+  <view slot="left">选择</view>
+  <van-cell-group
+    wx:for="{{ devices }}" 
+    wx:for-index="deviceIndex" 
+    wx:for-item="device"
+    wx:key="id"
+    border="{{ false }}"
+  >
+    <van-cell 
+      title="{{ device.name }}" 
+      value="{{ device.id }}" 
+      label="{{ device.isConnected ? '已连' : '断开' }}" 
+      border="{{ false }}" 
+    />
+  </van-cell-group>
+  <view slot="right">删除</view>
+</van-swipe-cell>

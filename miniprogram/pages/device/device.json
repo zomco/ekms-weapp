@@ -1,1 +1,9 @@
-{}
+{
+  "usingComponents": {
+    "van-cell": "/vant/cell/index",
+    "van-cell-group": "/vant/cell-group/index",
+    "van-button": "/vant/button/index",
+    "van-icon": "/vant/icon/index",
+    "van-swipe-cell": "/vant/swipe-cell/index"
+  }
+}
