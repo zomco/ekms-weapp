@@ -7,6 +7,7 @@ Page({
     isSearching: false,
     isAvailable: false,
   },
+
   handleSearch: function() {
     const that = this;
     if (!that.data.isSearching) {
@@ -32,6 +33,7 @@ Page({
       });
     }
   },
+
   handleConnect: function(e) {
     var that = this;
     const deviceId = e.currentTarget.id;
@@ -46,9 +48,7 @@ Page({
         },
       });
     }
-    wx.showLoading({
-      title: '连接蓝牙设备中...',
-    })
+    wx.showLoading({ title: '连接蓝牙设备中...' });
     wx.createBLEConnection({
       deviceId,
       success: function(res) {
@@ -57,10 +57,8 @@ Page({
           title: '连接成功',
           icon: 'success',
           duration: 1000,
-        })
-        wx.navigateTo({
-          url: '../device/device?deviceId=' + deviceId + '&name=' + device.name
-        })
+        });
+        wx.navigateTo({ url: '../device/device' });
       },
       fail: function(err) {
         console.log(err)
@@ -73,38 +71,36 @@ Page({
       }
     })
   },
+
   onLoad: function(options) {
     const that = this;
     const { windowHeight, windowWidth } = app.globalData.SystemInfo;
     var listHeight = ((windowHeight - 50) * (750 / windowWidth)) - 60;
     that.setData({ listHeight: listHeight });
+    // 监听适配器状态
     wx.onBluetoothAdapterStateChange(function(res) {
       const { discovering, available } = res;
       that.setData({ isSearching: available && discovering, isAvailable: available });
     })
+    // 监听设备发现
     wx.onBluetoothDeviceFound(function(res) {
       const newDevices = res.devices.filter(n => !that.data.devices.some(m => m.deviceId === n.deviceId));
       const devices = that.data.devices.concat(newDevices).sort((a, b) => a.RSSI - b.RSSI);
       that.setData({ devices });
     });
+    // 打开适配器
     wx.openBluetoothAdapter({
       success: function(res) {
         console.log(res);
       },
       fail: function(err) {
         console.log(err);
-        wx.showModal({
-          title: '提示',
-          content: '请检查手机蓝牙是否打开',
-          showCancel: false,
-          success: function(res) {
-            that.setData({ isSearching: false });
-          },
-        });
       },
     });
   },
+
   onUnload: function() {
+    // 关闭适配器
     wx.closeBluetoothAdapter({
       success: function(res) {
         that.setData({ isAvailable: false });
@@ -114,9 +110,19 @@ Page({
       },
     });
   },
+
   onShow: function() {
-    // 页面出现在前台时执行
+    var that = this;
+    wx.startBluetoothDevicesDiscovery({
+      success: function(res) {
+        that.setData({ isSearching: true });
+      },
+      fail: function(err) {
+        console.log(err);
+      },
+    });
   },
+
   onHide: function() {
     var that = this;
     that.setData({ devices: [] });
@@ -130,5 +136,30 @@ Page({
         },
       });
     }
-  }
+  },
+
+  onReady: function() {
+    // 页面首次渲染完毕时执行
+  },
+
+  onPullDownRefresh: function() {
+    // 触发下拉刷新时执行
+  },
+
+  onReachBottom: function() {
+    // 页面触底时执行
+  },
+
+  onShareAppMessage: function () {
+    // 页面被用户分享时执行
+  },
+
+  onPageScroll: function() {
+    // 页面滚动时执行
+  },
+
+  onResize: function() {
+    // 页面尺寸变化时执行
+  },
+
 })

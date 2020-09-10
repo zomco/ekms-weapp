@@ -16,40 +16,53 @@
     bindtouchmove="handleSlide"
   />
 </view>
-<view class="buttons">
-  <van-button 
-    custom-style="width:62px;margin-right:10px;" 
-    icon="replay" 
-    type="primary" 
-    size="small"
-  >
-    同步
-  </van-button>
-  <van-button 
-    custom-style="width:62px;" 
-    icon="plus" 
-    type="primary" 
-    size="small"
-    bind:click="handleAdd"
-  >
-    添加
-  </van-button>
+<view wx:if="{{ !!devices.length }}">
+  <view class="buttons">
+    <van-button 
+      custom-style="width:62px;margin-right:10px;" 
+      icon="replay" 
+      type="primary" 
+      size="small"
+    >
+      同步
+    </van-button>
+    <van-button 
+      custom-style="width:62px;" 
+      icon="plus" 
+      type="primary" 
+      size="small"
+      bind:click="handleAdd"
+    >
+      添加
+    </van-button>
+  </view>
+  <van-swipe-cell right-width="{{ 65 }}" left-width="{{ 65 }}">
+    <view slot="left">选择</view>
+    <van-cell-group
+      wx:for="{{ devices }}" 
+      wx:for-index="deviceIndex" 
+      wx:for-item="device"
+      wx:key="id"
+      border="{{ false }}"
+    >
+      <van-cell 
+        title="{{ '设备名称: ' + device.name }}" 
+        value="{{ '设备ID: ' + device.id }}" 
+        label="{{ device.isConnected ? '已连' : '断开' }}" 
+        border="{{ false }}" 
+      />
+    </van-cell-group>
+    <view slot="right">删除</view>
+  </van-swipe-cell>
 </view>
-<van-swipe-cell right-width="{{ 65 }}" left-width="{{ 65 }}">
-  <view slot="left">选择</view>
-  <van-cell-group
-    wx:for="{{ devices }}" 
-    wx:for-index="deviceIndex" 
-    wx:for-item="device"
-    wx:key="id"
-    border="{{ false }}"
-  >
-    <van-cell 
-      title="{{ device.name }}" 
-      value="{{ device.id }}" 
-      label="{{ device.isConnected ? '已连' : '断开' }}" 
-      border="{{ false }}" 
-    />
-  </van-cell-group>
-  <view slot="right">删除</view>
-</van-swipe-cell>
+<view wx:else>
+  <view class="error">
+    <van-button 
+      custom-style="width:110px;" 
+      type="primary" 
+      bind:click="handleAdd"
+    >
+      添加设备
+    </van-button>
+  </view>
+</view>

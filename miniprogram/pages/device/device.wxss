@@ -16,3 +16,10 @@
     margin-bottom:40rpx;
     padding: 16px;
 }
+
+.error {
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
