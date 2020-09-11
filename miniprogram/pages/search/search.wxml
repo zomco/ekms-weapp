@@ -2,12 +2,12 @@
   <scroll-view scroll-y style="width:690rpx;height:{{list_height}}rpx">
     <van-cell-group
       wx:for="{{ devices }}" 
-      wx:key="deviceId"
+      wx:key="id"
       border="{{ false }}"
     >
       <van-cell
         id="{{ item.id }}" 
-        title="{{ '设备名称: ' + item.name + ' ' + item.rssi }}" 
+        title="{{ item.name + ' ' + item.rssi }}" 
         label="{{ item.id }}" 
         border="{{ false }}" 
         bind:click="handleConnect"

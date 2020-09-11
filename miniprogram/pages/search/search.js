@@ -1,7 +1,6 @@
 const util = require("../../utils/util");
 
 const app = getApp();
-const SERVICE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C10";
 
 Page({
   data: {

@@ -23,6 +23,7 @@
       icon="replay" 
       type="primary" 
       size="small"
+      bind:click="handleSync"
     >
       同步
     </van-button>
@@ -46,11 +47,14 @@
       border="{{ false }}"
     >
       <van-cell 
-        title="{{ '设备名称: ' + device.name }}" 
-        value="{{ '设备ID: ' + device.id }}" 
-        label="{{ device.isConnected ? '已连' : '断开' }}" 
+        title="{{ device.name }}" 
+        label="{{ device.id }}" 
         border="{{ false }}" 
-      />
+      >
+        <van-loading wx:if="{{ device.isConnecting }}" slot="right-icon" />
+        <van-icon wx:elif="{{ !device.isConnecting && !device.connectError }}" slot="right-icon" name="success" />
+        <van-icon wx:elif="{{ !device.isConnecting && !!device.connectError }}" slot="right-icon" name="cross" />
+      </van-cell>
     </van-cell-group>
     <view slot="right">删除</view>
   </van-swipe-cell>

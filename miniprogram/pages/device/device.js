@@ -12,94 +12,164 @@ const CHARACTERISTIC_BLUE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C27";
 let colorPickerCtx = {};
 let colorPickerSliderCtx = {};
 
+const writeCharacteristic = (deviceId, serviceId, characteristicId, buffer) => new Promise((resolve, reject) => {
+  console.log(buffer);
+  wx.writeBLECharacteristicValue({
+    deviceId,
+    serviceId,
+    characteristicId,
+    value: buffer,
+    success: (res) => {
+      resolve(0);
+    },
+    fail: (err) => {
+      reject(err);
+    },
+  });
+});
+
+const readCharacteristic = (deviceId, serviceId, characteristicId) => new Promise((resolve, reject) => {
+  wx.readBLECharacteristicValue({ 
+    deviceId, 
+    serviceId, 
+    characteristicId,
+    success: (res) => {
+      wx.notifyBLECharacteristicValueChange({ 
+        state: true, 
+        deviceId, 
+        serviceId, 
+        characteristicId,
+        success: (res) => {
+          resolve(0);
+        },
+        fail: (err) => {
+          reject(err);
+        } 
+      });
+    },
+    fail: (err) => {
+      reject(err);
+    }, 
+  });
+});
+
 const connectDevice = (device, deviceIndex, page) => new Promise((resolve, reject) => {
     // 连接设备
+    page.data.devices[deviceIndex].isConnecting = true;
+    page.data.devices[deviceIndex].connectError = null;
+    page.setData({ devices: page.data.devices });
     wx.createBLEConnection({
       deviceId: device.id,
       success: (res) => {
-
-      },
-      fail: (err) => {
-        console.error(err);
-      }
-    });
-    // 获取外围设备服务列表
-    wx.getBLEDeviceServices({
-      deviceId: device.id,
-      success: function(res) {
-        const service = res.services.find(n => n.uuid === SERVICE_UUID);
-        if (!service) reject(new Error('service not exists'));
-        // 获取外围设备服务特征
-        wx.getBLEDeviceCharacteristics({
+        // 获取外围设备服务列表
+        wx.getBLEDeviceServices({
           deviceId: device.id,
-          serviceId: service.id,
           success: function(res) {
-            let cycle;
-            let increment;
-            let start;
-            let end;
-            let wait;
-            let red;
-            let green;
-            let blue;
-            res.characteristics.forEach(n => {
-              if (!n.properties.read || !n.properties.write || !n.properties.notify) return;
-              switch (n.uuid) {
-                case CHARACTERISTIC_CYCLE_UUID:
-                  cycle = n;
-                  break;
-                case CHARACTERISTIC_INCREMENT_UUID:
-                  increment = n;
-                  break;
-                case CHARACTERISTIC_START_UUID:
-                  start = n;
-                  break;
-                case CHARACTERISTIC_END_UUID:
-                  end = n;
-                  break;
-                case CHARACTERISTIC_WAIT_UUID:
-                  wait = n;
-                  break;
-                case CHARACTERISTIC_RED_UUID:
-                  red = n;
-                  break;
-                case CHARACTERISTIC_GREEN_UUID:
-                  green = n;
-                  break;
-                case CHARACTERISTIC_BLUE_UUID:
-                  blue = n;
-                  break;
-                default:
-                  break;
+            const service = res.services.find(n => n.uuid === SERVICE_UUID);
+            if (!service) {
+              const err = new Error('service not exists');
+              // 更新状态
+              page.data.devices[deviceIndex].isConnecting = false;
+              page.data.devices[deviceIndex].connectError = err;
+              page.setData({ devices: page.data.devices });
+              return reject(err);
+            }
+            // 获取外围设备服务特征
+            wx.getBLEDeviceCharacteristics({
+              deviceId: device.id,
+              serviceId: service.uuid,
+              success: async (res) => {
+                let cycle;
+                let increment;
+                let start;
+                let end;
+                let wait;
+                let red;
+                let green;
+                let blue;
+                res.characteristics.forEach(n => {
+                  if (!n.properties.read || !n.properties.write || !n.properties.notify) return;
+                  switch (n.uuid) {
+                    case CHARACTERISTIC_CYCLE_UUID:
+                      cycle = n;
+                      break;
+                    case CHARACTERISTIC_INCREMENT_UUID:
+                      increment = n;
+                      break;
+                    case CHARACTERISTIC_START_UUID:
+                      start = n;
+                      break;
+                    case CHARACTERISTIC_END_UUID:
+                      end = n;
+                      break;
+                    case CHARACTERISTIC_WAIT_UUID:
+                      wait = n;
+                      break;
+                    case CHARACTERISTIC_RED_UUID:
+                      red = n;
+                      break;
+                    case CHARACTERISTIC_GREEN_UUID:
+                      green = n;
+                      break;
+                    case CHARACTERISTIC_BLUE_UUID:
+                      blue = n;
+                      break;
+                    default:
+                      break;
+                  }
+                });
+                if (!cycle || !increment || !start || !end || !wait || !red || !green || !blue) {
+                  const err = new Error(`characteristics missing`);
+                  page.data.devices[deviceIndex].isConnecting = false;
+                  page.data.devices[deviceIndex].connectError = err;
+                  page.setData({ devices: page.data.devices });
+                  return reject(err);
+                }
+                try {
+                  await readCharacteristic(device.id, service.uuid, cycle.uuid);
+                  await readCharacteristic(device.id, service.uuid, increment.uuid);
+                  await readCharacteristic(device.id, service.uuid, start.uuid);
+                  await readCharacteristic(device.id, service.uuid, end.uuid);
+                  await readCharacteristic(device.id, service.uuid, wait.uuid);
+                  await readCharacteristic(device.id, service.uuid, red.uuid);
+                  await readCharacteristic(device.id, service.uuid, green.uuid);
+                  await readCharacteristic(device.id, service.uuid, blue.uuid);
+                  // 更新状态
+                  page.data.devices[deviceIndex].isConnecting = false;
+                  page.data.devices[deviceIndex].connectError = null;
+                  page.setData({ devices: page.data.devices });
+                  resolve(0);
+                } catch (err) {
+                  page.data.devices[deviceIndex].isConnecting = false;
+                  page.data.devices[deviceIndex].connectError = err;
+                  page.setData({ devices: page.data.devices });
+                  reject(err);
+                }
+              },
+              fail: (err) => {
+                page.data.devices[deviceIndex].isConnecting = false;
+                page.data.devices[deviceIndex].connectError = err;
+                page.setData({ devices: page.data.devices });
+                reject(err);
               }
-            });
-            if (!cycle || !increment || !start || !end || !wait || !red || !green || !blue) reject(new Error(`characteristics missing`));
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: cycle.uuid, fail: function(err) { reject(err) } });
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: increment.uuid, fail: function(err) { reject(err) } });
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: start.uuid, fail: function(err) { reject(err) } });
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: end.uuid, fail: function(err) { reject(err) } });
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: wait.uuid, fail: function(err) { reject(err) } });
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: red.uuid, fail: function(err) { reject(err) } });
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: green.uuid, fail: function(err) { reject(err) } });
-            wx.readBLECharacteristicValue({ deviceId: device.id, serviceId: service.id, characteristicId: blue.uuid, fail: function(err) { reject(err) } });
-            // 监听特点变化
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: cycle.uuid, fail: function(err) { reject(err) } });
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: increment.uuid, fail: function(err) { reject(err) } });
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: start.uuid, fail: function(err) { reject(err) } });
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: end.uuid, fail: function(err) { reject(err) } });
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: wait.uuid, fail: function(err) { reject(err) } });
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: red.uuid, fail: function(err) { reject(err) } });
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: green.uuid, fail: function(err) { reject(err) } });
-            wx.notifyBLECharacteristicValueChange({ state: true, deviceId: device.id, serviceId: service.id, characteristicId: blue.uuid, fail: function(err) { reject(err) } });
+            })
           },
-          fail: function(err) {
+          fail: (err) => {
+            // 更新状态
+            page.data.devices[deviceIndex].isConnecting = false;
+            page.data.devices[deviceIndex].connectError = err;
+            page.setData({ devices: page.data.devices });
             reject(err);
           }
-        })
+        });
       },
-      fail: function(err) {
+      fail: (err) => {
+        // 更新状态
+        page.data.devices[deviceIndex].isConnecting = false;
+        page.data.devices[deviceIndex].connectError = err;
+        page.setData({ devices: page.data.devices });
         reject(err);
-      }
+      },
     });
 });
 
@@ -107,11 +177,17 @@ Page({
   data: {
     raduis: 550,        //这里最大为750rpx铺满屏幕
     valueWidthOrHerght: 0,
+    isAvailable: false,
+    red: -1,
+    green: -1,
+    blue: -1,
+
     devices: [
       // {
       //   name: '',
       //   id: '',
-      //   isConnected: true,
+      //   isConnecting: false,
+      //   connectError: null,
       //   cycle: 0,
       //   increment: 0,
       //   start: 0,
@@ -128,51 +204,31 @@ Page({
     wx.navigateTo({ url: '/pages/search/search' });
   },
 
-  handelSync: function(e) {
+  handleSync: function(e) {
+    const that = this;
+    const { red, green, blue } = that.data;
     const redBuf = new ArrayBuffer(1);
     const redDataView = new Uint8Array(redBuf);
-    redDataView[0] = res.data[0];
+    redDataView[0] = red;
     const greenBuf = new ArrayBuffer(1);
     const greenDataView = new Uint8Array(greenBuf);
-    greenDataView[0] = res.data[1];
+    greenDataView[0] = green;
     const blueBuf = new ArrayBuffer(1);
     const blueDataView = new Uint8Array(blueBuf);
-    blueDataView[0] = res.data[2];
-    wx.writeBLECharacteristicValue({
-      deviceId: that.data.deviceId,
-      serviceId: SERVICE_UUID,
-      characteristicId: CHARACTERISTIC_RED_UUID,
-      value: redBuf,
-      success: function(res) {
-        console.log(res);
-      },
-      fail: function(err) {
-        console.error(err);
+    blueDataView[0] = blue;
+    Promise.all(that.data.devices.map((n, i) => new Promise(async (resolve, reject) => {
+      try {
+        await writeCharacteristic(n.id, SERVICE_UUID, CHARACTERISTIC_RED_UUID, redBuf);
+        await writeCharacteristic(n.id, SERVICE_UUID, CHARACTERISTIC_GREEN_UUID, greenBuf);
+        await writeCharacteristic(n.id, SERVICE_UUID, CHARACTERISTIC_BLUE_UUID, blueBuf);
+        resolve(0);
+      } catch (err) {
+        reject(err);
       }
-    });
-    wx.writeBLECharacteristicValue({
-      deviceId: that.data.deviceId,
-      serviceId: SERVICE_UUID,
-      characteristicId: CHARACTERISTIC_GREEN_UUID,
-      value: greenBuf,
-      success: function(res) {
-        console.log(res);
-      },
-      fail: function(err) {
-        console.error(err);
-      }
-    });
-    wx.writeBLECharacteristicValue({
-      deviceId: that.data.deviceId,
-      serviceId: SERVICE_UUID,
-      characteristicId: CHARACTERISTIC_BLUE_UUID,
-      value: blueBuf,
-      success: function(res) {
-        console.log(res);
-      },
-      fail: function(err) {
-        console.error(err);
-      }
+    }))).then((rets) => {
+      console.log('写入成功')
+    }).catch((err) => {
+      console.error(err);
     });
   },
 
@@ -186,6 +242,7 @@ Page({
     let h = util.rgb2hsl(imageData.data[0], imageData.data[1], imageData.data[2]);
     // 判断是否在圈内
     if (h[1] !== 1.0) return;
+    that.setData({ red: imageData.data[0], green: imageData.data[1], blue: imageData.data[2] });
     util.drawSlider(colorPickerSliderCtx, that.data.valueWidthOrHerght, that.data.valueWidthOrHerght, h[0]);
   },
 
@@ -222,7 +279,23 @@ Page({
       canvas.width = res[0].width * dpr;
       canvas.height = res[0].height * dpr;
       colorPickerSliderCtx.scale(dpr, dpr);
-      util.drawSlider(colorPickerSliderCtx, that.data.valueWidthOrHerght, that.data.valueWidthOrHerght, 1);
+      // util.drawSlider(colorPickerSliderCtx, that.data.valueWidthOrHerght, that.data.valueWidthOrHerght, 1);
+    });
+
+    // 监听适配器状态
+    wx.onBluetoothAdapterStateChange(function(res) {
+      const { available } = res;
+      that.setData({ isAvailable: available });
+    });
+
+    // 打开适配器
+    wx.openBluetoothAdapter({
+      success: function(res) {
+        that.setData({ isAvailable: true });
+      },
+      fail: function(err) {
+        console.error(err);
+      },
     });
 
     // 监听连接状态
@@ -231,8 +304,9 @@ Page({
       const deviceIndex = devices.findIndex(n => n.id === res.deviceId);
       if (deviceIndex === -1) return;
       
-      devices[deviceIndex].isConnected = res.connected;
-      page.setData({ devices });
+      devices[deviceIndex].isConnecting = false;
+      devices[deviceIndex].connectDevice = null;
+      that.setData({ devices });
     });
 
     // 监听特性状态
@@ -280,12 +354,11 @@ Page({
     });
 
     // 缓存获取连接设备信息
-    const cacheDevices = wx.getStorageSync('devices');
+    const cacheDevices = wx.getStorageSync('devices') || [];
     that.setData({ 
         devices: cacheDevices.map(n => ({
           name: n.name,
           id: n.id,
-          isConnected: false,
           cycle: 0,
           increment: 0,
           start: 0,
@@ -298,15 +371,18 @@ Page({
     });
 
     // 连接设备
-    //     Promise.all(devices.map((n, i) => readDevice(n, i, that)))
-    //     .then(() => { console.log('所有设备连接成功') })
-    //     .catch((err) => { console.error(err) });
+    Promise.all(cacheDevices.map((n, i) => connectDevice(n, i, that)))
+      .then(() => { console.log('所有设备连接成功') })
+      .catch((err) => { console.error(err) });
   },
 
   onUnload: function() {
     const that = this;
+    that.data.devices.forEach((n) => wx.closeBLEConnection({ deviceId: n.id }));
     wx.offBLECharacteristicValueChange();
     wx.offBLEConnectionStateChange();
+    wx.closeBluetoothAdapter();
+    wx.offBluetoothAdapterStateChange();
   },
 
   onReady: function() {
