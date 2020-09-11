@@ -16,17 +16,9 @@
     bindtouchmove="handleSlide"
   />
 </view>
-<view wx:if="{{ !!devices.length }}">
+<!-- <view wx:if="{{ !!devices.length }}"> -->
+<view>
   <view class="buttons">
-    <van-button 
-      custom-style="width:62px;margin-right:10px;" 
-      icon="replay" 
-      type="primary" 
-      size="small"
-      bind:click="handleSync"
-    >
-      同步
-    </van-button>
     <van-button 
       custom-style="width:62px;" 
       icon="plus" 
@@ -38,8 +30,8 @@
     </van-button>
   </view>
   <van-swipe-cell right-width="{{ 65 }}" left-width="{{ 65 }}">
-    <view slot="left">选择</view>
-    <van-cell-group
+    <view slot="left" class="van-swipe-cell__left">选择</view>
+    <!-- <van-cell-group
       wx:for="{{ devices }}" 
       wx:for-index="deviceIndex" 
       wx:for-item="device"
@@ -53,13 +45,23 @@
       >
         <van-loading wx:if="{{ device.isConnecting }}" slot="right-icon" />
         <van-icon wx:elif="{{ !device.isConnecting && !device.connectError }}" slot="right-icon" name="success" />
-        <van-icon wx:elif="{{ !device.isConnecting && !!device.connectError }}" slot="right-icon" name="cross" />
+        <van-icon wx:elif="{{ !device.isConnecting && !!device.connectError }}" slot="right-icon" name="fail" />
+      </van-cell>
+    </van-cell-group> -->
+    <van-cell-group
+      border="{{ false }}"
+    >
+      <van-cell 
+        title="测试设备" 
+        label="测试设备地址" 
+        border="{{ false }}" 
+      >
       </van-cell>
     </van-cell-group>
-    <view slot="right">删除</view>
+    <view slot="right" class="van-swipe-cell__right">删除</view>
   </van-swipe-cell>
 </view>
-<view wx:else>
+<!-- <view wx:else>
   <view class="error">
     <van-button 
       custom-style="width:110px;" 
@@ -69,4 +71,4 @@
       添加设备
     </van-button>
   </view>
-</view>
+</view> -->

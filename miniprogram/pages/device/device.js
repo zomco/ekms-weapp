@@ -12,8 +12,30 @@ const CHARACTERISTIC_BLUE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C27";
 let colorPickerCtx = {};
 let colorPickerSliderCtx = {};
 
+const disconnectDevices = () => new Promise((resolve, reject) => {
+  wx.getConnectedBluetoothDevices({
+    services: [],
+    success: (res) => {
+      Promise.all(res.devices.map(n => new Promise((resolve1, reject1) => {
+        wx.closeBLEConnection({
+          deviceId: n.deviceId,
+          success: (res) => resolve1(0),
+          fail: (err) => reject1(err)
+        });
+      }))).then((rets) => {
+        console.log('所有连接已关闭');
+        resolve(0);
+      }).catch((err) => {
+        reject(err);
+      });
+    },
+    fail: (err) => {
+      reject(err);
+    },
+  });
+});
+
 const writeCharacteristic = (deviceId, serviceId, characteristicId, buffer) => new Promise((resolve, reject) => {
-  console.log(buffer);
   wx.writeBLECharacteristicValue({
     deviceId,
     serviceId,
@@ -26,6 +48,40 @@ const writeCharacteristic = (deviceId, serviceId, characteristicId, buffer) => n
       reject(err);
     },
   });
+});
+
+const syncDevice = (device, deviceIndex, page) => new Promise(async (resolve, reject) => {
+  try {
+    page.data.devices[deviceIndex].isSyncing = true;
+    page.data.devices[deviceIndex].syncError = null;
+    page.setData({ devices: page.data.devices });
+
+    const { red, green, blue } = page.data;
+    const redBuf = new ArrayBuffer(1);
+    const redDataView = new Uint8Array(redBuf);
+    redDataView[0] = red;
+
+    const greenBuf = new ArrayBuffer(1);
+    const greenDataView = new Uint8Array(greenBuf);
+    greenDataView[0] = green;
+
+    const blueBuf = new ArrayBuffer(1);
+    const blueDataView = new Uint8Array(blueBuf);
+    blueDataView[0] = blue;
+
+    await writeCharacteristic(device.id, SERVICE_UUID, CHARACTERISTIC_RED_UUID, redBuf);
+    await writeCharacteristic(device.id, SERVICE_UUID, CHARACTERISTIC_GREEN_UUID, greenBuf);
+    await writeCharacteristic(device.id, SERVICE_UUID, CHARACTERISTIC_BLUE_UUID, blueBuf);
+    page.data.devices[deviceIndex].isSyncing = false;
+    page.data.devices[deviceIndex].syncError = null;
+    page.setData({ devices: page.data.devices });
+    resolve(0);
+  } catch (err) {
+    page.data.devices[deviceIndex].isSyncing = false;
+    page.data.devices[deviceIndex].syncError = err;
+    page.setData({ devices: page.data.devices });
+    reject(err);
+  }
 });
 
 const readCharacteristic = (deviceId, serviceId, characteristicId) => new Promise((resolve, reject) => {
@@ -188,6 +244,8 @@ Page({
       //   id: '',
       //   isConnecting: false,
       //   connectError: null,
+      //   isSyncing: false,
+      //   syncError: null,
       //   cycle: 0,
       //   increment: 0,
       //   start: 0,
@@ -206,27 +264,9 @@ Page({
 
   handleSync: function(e) {
     const that = this;
-    const { red, green, blue } = that.data;
-    const redBuf = new ArrayBuffer(1);
-    const redDataView = new Uint8Array(redBuf);
-    redDataView[0] = red;
-    const greenBuf = new ArrayBuffer(1);
-    const greenDataView = new Uint8Array(greenBuf);
-    greenDataView[0] = green;
-    const blueBuf = new ArrayBuffer(1);
-    const blueDataView = new Uint8Array(blueBuf);
-    blueDataView[0] = blue;
-    Promise.all(that.data.devices.map((n, i) => new Promise(async (resolve, reject) => {
-      try {
-        await writeCharacteristic(n.id, SERVICE_UUID, CHARACTERISTIC_RED_UUID, redBuf);
-        await writeCharacteristic(n.id, SERVICE_UUID, CHARACTERISTIC_GREEN_UUID, greenBuf);
-        await writeCharacteristic(n.id, SERVICE_UUID, CHARACTERISTIC_BLUE_UUID, blueBuf);
-        resolve(0);
-      } catch (err) {
-        reject(err);
-      }
-    }))).then((rets) => {
-      console.log('写入成功')
+    Promise.all(that.data.devices.map((n, i) => syncDevice(n, i, that)))
+    .then((rets) => {
+      console.log('所有设备写入成功');
     }).catch((err) => {
       console.error(err);
     });
@@ -244,6 +284,39 @@ Page({
     if (h[1] !== 1.0) return;
     that.setData({ red: imageData.data[0], green: imageData.data[1], blue: imageData.data[2] });
     util.drawSlider(colorPickerSliderCtx, that.data.valueWidthOrHerght, that.data.valueWidthOrHerght, h[0]);
+    that.handleSync();
+  },
+
+  reconnect: async function() {
+    const that = this;
+    await disconnectDevices();
+    // 缓存获取连接设备信息
+    const cacheDevices = wx.getStorageSync('devices') || [];
+    that.setData({ 
+      devices: cacheDevices.map(n => ({
+        name: n.name,
+        id: n.id,
+        cycle: 0,
+        increment: 0,
+        start: 0,
+        end: 0,
+        wait: 0,
+        red: 0,
+        green: 0,
+        blue: 0,
+      })),
+    });
+
+    // 连接设备
+    Promise.all(cacheDevices.map((n, i) => connectDevice(n, i, that)))
+      .then(() => { 
+        console.log('所有设备连接成功');
+        wx.stopPullDownRefresh();
+      })
+      .catch((err) => { 
+        console.error(err);
+        wx.stopPullDownRefresh();
+      });
   },
 
   onLoad: function(options) {
@@ -352,33 +425,10 @@ Page({
           break;
       }
     });
-
-    // 缓存获取连接设备信息
-    const cacheDevices = wx.getStorageSync('devices') || [];
-    that.setData({ 
-        devices: cacheDevices.map(n => ({
-          name: n.name,
-          id: n.id,
-          cycle: 0,
-          increment: 0,
-          start: 0,
-          end: 0,
-          wait: 0,
-          red: 0,
-          green: 0,
-          blue: 0,
-        })),
-    });
-
-    // 连接设备
-    Promise.all(cacheDevices.map((n, i) => connectDevice(n, i, that)))
-      .then(() => { console.log('所有设备连接成功') })
-      .catch((err) => { console.error(err) });
   },
 
   onUnload: function() {
     const that = this;
-    that.data.devices.forEach((n) => wx.closeBLEConnection({ deviceId: n.id }));
     wx.offBLECharacteristicValueChange();
     wx.offBLEConnectionStateChange();
     wx.closeBluetoothAdapter();
@@ -390,15 +440,18 @@ Page({
   },
 
   onShow: function() {
-
+    const that = this;
+    that.reconnect();
   },
 
-  onHide: function() {
-
+  onHide: async function() {
+    const that = this;
+    await disconnectDevices();
   },
 
   onPullDownRefresh: function() {
-    // 触发下拉刷新时执行
+    const that = this;
+    that.reconnect();
   },
 
   onReachBottom: function() {
