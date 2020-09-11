@@ -287,6 +287,26 @@ Page({
     that.handleSync();
   },
 
+  handleRemove: function(e) {
+    let that = this;
+    const { index } = e.currentTarget.dataset;
+    const device = that.data.devices[index];
+    // 关闭连接
+    if (!device.isConnecting && !device.connectError) {
+      wx.closeBLEConnection({ deviceId: device.id });
+    }
+    // 删除信息
+    const newDevices = that.data.devices.splice(index, 1);
+    that.setData({ devices: newDevices });
+    // 重写缓存
+    const cacheDevices = wx.getStorageSync('devices') || [];
+    const cacheDeviceIndex = cacheDevices.findIndex(n => n.id === device.id);
+    if (cacheDeviceIndex !== -1) {
+      const newCacheDevices = cacheDevices.splice(cacheDeviceIndex, 1);
+      wx.setStorageSync('devices', newCacheDevices);
+    }
+  },
+
   reconnect: async function() {
     const that = this;
     await disconnectDevices();

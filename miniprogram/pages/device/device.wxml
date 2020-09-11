@@ -29,15 +29,15 @@
       添加
     </van-button>
   </view>
-  <van-swipe-cell right-width="{{ 65 }}" left-width="{{ 65 }}">
-    <view slot="left" class="van-swipe-cell__left">选择</view>
-    <!-- <van-cell-group
-      wx:for="{{ devices }}" 
-      wx:for-index="deviceIndex" 
-      wx:for-item="device"
-      wx:key="id"
-      border="{{ false }}"
-    >
+
+  <van-cell-group
+    wx:for="{{ devices }}"
+    wx:for-index="deviceIndex" 
+    wx:for-item="device"
+    wx:key="id"
+    border="{{ false }}"
+  >
+    <van-swipe-cell right-width="{{ 65 }}">
       <van-cell 
         title="{{ device.name }}" 
         label="{{ device.id }}" 
@@ -47,19 +47,16 @@
         <van-icon wx:elif="{{ !device.isConnecting && !device.connectError }}" slot="right-icon" name="success" />
         <van-icon wx:elif="{{ !device.isConnecting && !!device.connectError }}" slot="right-icon" name="fail" />
       </van-cell>
-    </van-cell-group> -->
-    <van-cell-group
-      border="{{ false }}"
-    >
-      <van-cell 
-        title="测试设备" 
-        label="测试设备地址" 
-        border="{{ false }}" 
+      <view 
+        slot="right" 
+        class="right-cell" 
+        bindtap="handleRemove"
+        data-index="{{ deviceIndex }}"
       >
-      </van-cell>
-    </van-cell-group>
-    <view slot="right" class="van-swipe-cell__right">删除</view>
-  </van-swipe-cell>
+        删除
+      </view>
+    </van-swipe-cell>
+  </van-cell-group>
 </view>
 <!-- <view wx:else>
   <view class="error">
