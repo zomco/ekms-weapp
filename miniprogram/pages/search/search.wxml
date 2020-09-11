@@ -5,20 +5,24 @@
       wx:key="deviceId"
       border="{{ false }}"
     >
-      <van-cell 
-        title="{{ '设备名称: ' + item.name }}" 
-        value="{{ '设备ID: ' + item.deviceId }}" 
-        label="{{ '信号强度RSSI: ' + item.RSSI }}" 
+      <van-cell
+        id="{{ item.id }}" 
+        title="{{ '设备名称: ' + item.name + ' ' + item.rssi }}" 
+        label="{{ item.id }}" 
         border="{{ false }}" 
-      />
+        bind:click="handleConnect"
+      >
+        <van-icon wx:if="{{ item.isConnected }}" slot="right-icon" name="success" />
+      </van-cell>
     </van-cell-group>
   </scroll-view>
   <van-button 
     type="primary" 
-    custom-style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);" 
+    custom-style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);"
+    disabled="{{ false }}"
     loading="{{ isSearching }}" 
     loading-text="搜索中..."
-    bind:click="handleSearch"
+    bindtap="handleSearch"
   >
     搜索蓝牙设备
   </van-button>

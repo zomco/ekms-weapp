@@ -1,8 +1,22 @@
+const util = require("../../utils/util");
+
 const app = getApp();
+const SERVICE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C10";
 
 Page({
   data: {
-    devices: [],
+    devices: [
+      // {
+      //   name: n.name,
+      //   id: n.deviceId,
+      //   rssi: n.RSSI,
+      //   advertisData: util.buf2hex(n.advertisData),
+      //   advertisServiceUUIDs: n.advertisServiceUUIDs,
+      //   serviceData: n.serviceData,
+      //   localName: n.localName,
+      //   isConnected: false,
+      // }
+    ],
     listHeight: 0,
     isSearching: false,
     isAvailable: false,
@@ -13,7 +27,7 @@ Page({
     if (!that.data.isSearching) {
       wx.startBluetoothDevicesDiscovery({
         success: function(res) {
-          that.setData({ isSearching: true, devices: [] });
+          that.setData({ isSearching: true });
         },
         fail: function(err) {
           console.error(err);
@@ -34,20 +48,22 @@ Page({
   handleConnect: function(e) {
     var that = this;
     const deviceId = e.currentTarget.id;
-    const device = that.data.devices.find(n => n.deviceId === deviceId);
+    const deviceIndex = that.data.devices.findIndex(n => n.id === deviceId);
+    if (deviceIndex === -1) return;
+    const device = that.data.devices[deviceIndex];
     if (that.data.isSearching) {
       wx.stopBluetoothDevicesDiscovery({
         success: function(res) {
           that.setData({ isSearching: false });
         },
         fail: function(err) {
-          console.log(err);
+          console.error(err);
         },
       });
     }
     wx.showLoading({ title: '连接蓝牙设备中...' });
     wx.createBLEConnection({
-      deviceId,
+      deviceId: device.id,
       success: function(res) {
         wx.hideLoading();
         wx.showToast({
@@ -55,10 +71,21 @@ Page({
           icon: 'success',
           duration: 1000,
         });
-        // wx.navigateTo({ url: '../device/device' });
+        // 更新设备连接状态
+        that.data.devices[deviceIndex].isConnected = true;
+        that.setData({ devices: that.data.devices });
+        // 将设备信息写入缓存
+        const cacheDevices = wx.getStorageSync('devices') || [];
+        const cacheDevicesIndex = cacheDevices.findIndex(n => n.id === device.id);
+        if (cacheDevicesIndex === -1) {
+          cacheDevices.push({ id: device.id, name: device.name });
+          wx.setStorageSync('devices', cacheDevices);
+        }
+        // 断开连接
+        wx.closeBLEConnection({ deviceId: device.id });
       },
       fail: function(err) {
-        console.log(err)
+        console.error(err);
         wx.hideLoading();
         wx.showModal({
           title: '提示',
@@ -81,29 +108,56 @@ Page({
     })
     // 监听设备发现
     wx.onBluetoothDeviceFound(function(res) {
-      const newDevices = res.devices.filter(n => !that.data.devices.some(m => m.deviceId === n.deviceId));
-      const devices = that.data.devices.concat(newDevices).sort((a, b) => a.RSSI - b.RSSI);
-      that.setData({ devices });
+      wx.getBluetoothDevices({
+        success: (res) => {
+          // 获取缓存
+          const cacheDevices = wx.getStorageSync('devices') || [];
+          const devices = res.devices.map(n => ({
+            name: n.name,
+            id: n.deviceId,
+            rssi: n.RSSI,
+            advertisData: util.buf2hex(n.advertisData),
+            advertisServiceUUIDs: n.advertisServiceUUIDs,
+            serviceData: n.serviceData,
+            localName: n.localName,
+            isConnected: cacheDevices.some(m => m.id === n.deviceId),
+          })).sort((a, b) => b.rssi - a.rssi);
+          that.setData({ devices });
+        },
+        fail: (err) => {
+          console.error(err);
+        },
+      })
     });
     // 打开适配器
     wx.openBluetoothAdapter({
       success: function(res) {
-        console.log(res);
+        that.setData({ isAvailable: true });
       },
       fail: function(err) {
-        console.log(err);
+        console.error(err);
       },
     });
   },
 
   onUnload: function() {
     const that = this;
+    if (that.data.isSearching) {
+      wx.stopBluetoothDevicesDiscovery({
+        success: function(res) {
+          that.setData({ isSearching: false });
+        },
+        fail: function(err) {
+          console.error(err);
+        },
+      });
+    }
     wx.closeBluetoothAdapter({
       success: function(res) {
         that.setData({ isAvailable: false });
       },
       fail: function(err) {
-        console.log(err);
+        console.error(err);
       },
     });
     wx.offBluetoothDeviceFound();

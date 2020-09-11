@@ -12,7 +12,17 @@ const CHARACTERISTIC_BLUE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C27";
 let colorPickerCtx = {};
 let colorPickerSliderCtx = {};
 
-const readDevice = (device, deviceIndex, page) => new Promise((resolve, reject) => {
+const connectDevice = (device, deviceIndex, page) => new Promise((resolve, reject) => {
+    // 连接设备
+    wx.createBLEConnection({
+      deviceId: device.id,
+      success: (res) => {
+
+      },
+      fail: (err) => {
+        console.error(err);
+      }
+    });
     // 获取外围设备服务列表
     wx.getBLEDeviceServices({
       deviceId: device.id,
@@ -181,31 +191,6 @@ Page({
 
   onLoad: function(options) {
     var that = this;
-    wx.getConnectedBluetoothDevices({
-      services: [SERVICE_UUID],
-      success: function(res) {
-        that.setData({ devices: res.devices.map(n => ({
-          name: n.name,
-          id: n.deviceId,
-          isConnected: true,
-          cycle: 0,
-          increment: 0,
-          start: 0,
-          end: 0,
-          wait: 0,
-          red: 0,
-          green: 0,
-          blue: 0,
-        })) });
-        // 读取设备特性
-        Promise.all(devices.map((n, i) => readDevice(n, i, that)))
-        .then(() => { console.log('所有设备连接成功') })
-        .catch((err) => { console.error(err) });
-      },
-      fail: function(err) {
-        console.error(err);
-      },
-    });
 
     // 绘制色环
     let isInit = true;
@@ -293,18 +278,35 @@ Page({
           break;
       }
     });
+
+    // 缓存获取连接设备信息
+    const cacheDevices = wx.getStorageSync('devices');
+    that.setData({ 
+        devices: cacheDevices.map(n => ({
+          name: n.name,
+          id: n.id,
+          isConnected: false,
+          cycle: 0,
+          increment: 0,
+          start: 0,
+          end: 0,
+          wait: 0,
+          red: 0,
+          green: 0,
+          blue: 0,
+        })),
+    });
+
+    // 连接设备
+    //     Promise.all(devices.map((n, i) => readDevice(n, i, that)))
+    //     .then(() => { console.log('所有设备连接成功') })
+    //     .catch((err) => { console.error(err) });
   },
 
   onUnload: function() {
-    // wx.closeBLEConnection({
-    //   deviceId: this.data.deviceId,
-    //   success: function(res) {
-    //     console.log(res);
-    //   },
-    //   fail: function(err) {
-    //     console.log(err);
-    //   },
-    // })
+    const that = this;
+    wx.offBLECharacteristicValueChange();
+    wx.offBLEConnectionStateChange();
   },
 
   onReady: function() {
