@@ -1,5 +1,6 @@
 const util = require('../../utils/util.js');
 
+const DEBUG = true;
 const SERVICE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C10";
 const CHARACTERISTIC_CYCLE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C20";
 const CHARACTERISTIC_INCREMENT_UUID = "00010203-0405-0607-0809-0A0B0C0D2C21";
@@ -341,7 +342,26 @@ Page({
 
   onLoad: function(options) {
     var that = this;
-
+    if (DEBUG) {
+      console.log('fdfsdff')
+      that.setData({
+        isAvailable: true, 
+        devices: [
+          {
+            name: '测试设备',
+            id: '12:34:56:78',
+            cycle: 0,
+            increment: 0,
+            start: 0,
+            end: 0,
+            wait: 0,
+            red: 0,
+            green: 0,
+            blue: 0,
+          },
+        ]
+      });
+    }
     // 绘制色环
     let isInit = true;
     wx.createSelectorQuery().select('#colorPicker')
@@ -449,6 +469,7 @@ Page({
 
   onUnload: function() {
     const that = this;
+    that.disconnectDevices();
     wx.offBLECharacteristicValueChange();
     wx.offBLEConnectionStateChange();
     wx.closeBluetoothAdapter();

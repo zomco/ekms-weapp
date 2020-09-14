@@ -1,71 +1,74 @@
-<view class="color-picker-view">
-  <canvas
-    id="colorPicker"
-    canvas-id="colorPicker" 
-    type="2d"  
-    style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;" 
-    class="color-picker" 
-  />
-  <canvas
-    id="colorPickerSlider"
-    canvas-id="colorPickerSlider"
-    type="2d" 
-    class="color-picker-slider" 
-    style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;z-index:1;background:rgba(255,255,255,0);" 
-    bindtouchend="handleSlide"
-    bindtouchmove="handleSlide"
-  />
-</view>
-<!-- <view wx:if="{{ !!devices.length }}"> -->
+<!-- <view wx:if="{{ isAvailable }}"> -->
 <view>
-  <view class="buttons">
-    <van-button 
-      custom-style="width:62px;" 
-      icon="plus" 
-      type="primary" 
-      size="small"
-      bind:click="handleAdd"
-    >
-      添加
-    </van-button>
+  <view class="color-picker-view">
+    <canvas
+      id="colorPicker"
+      canvas-id="colorPicker" 
+      type="2d"  
+      style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;" 
+      class="color-picker" 
+    />
+    <canvas
+      id="colorPickerSlider"
+      canvas-id="colorPickerSlider"
+      type="2d" 
+      class="color-picker-slider" 
+      style="width:{{ raduis }}rpx;height:{{ raduis }}rpx;z-index:1;background:rgba(255,255,255,0);" 
+      bindtouchend="handleSlide"
+      bindtouchmove="handleSlide"
+    />
   </view>
 
-  <van-cell-group
-    wx:for="{{ devices }}"
-    wx:for-index="deviceIndex" 
-    wx:for-item="device"
-    wx:key="id"
-    border="{{ false }}"
-  >
-    <van-swipe-cell right-width="{{ 65 }}">
-      <van-cell 
-        title="{{ device.name }}" 
-        label="{{ device.id }}" 
-        border="{{ false }}" 
+  <view wx:if="{{ !!devices.length }}">
+    <view class="buttons">
+      <van-button 
+        custom-style="width:62px;" 
+        icon="plus" 
+        type="primary" 
+        size="small"
+        bind:click="handleAdd"
       >
-        <van-loading wx:if="{{ device.isConnecting }}" slot="right-icon" />
-        <van-icon wx:elif="{{ !device.isConnecting && !device.connectError }}" slot="right-icon" name="success" />
-        <van-icon wx:elif="{{ !device.isConnecting && !!device.connectError }}" slot="right-icon" name="fail" />
-      </van-cell>
-      <view 
-        slot="right" 
-        class="right-cell" 
-        bindtap="handleRemove"
-        data-index="{{ deviceIndex }}"
-      >
-        删除
-      </view>
-    </van-swipe-cell>
-  </van-cell-group>
-</view>
-<!-- <view wx:else>
-  <view class="error">
-    <van-button 
-      custom-style="width:110px;" 
-      type="primary" 
-      bind:click="handleAdd"
+        添加
+      </van-button>
+    </view>
+
+    <van-cell-group
+      wx:for="{{ devices }}"
+      wx:for-index="deviceIndex" 
+      wx:for-item="device"
+      wx:key="id"
+      border="{{ false }}"
     >
-      添加设备
-    </van-button>
+      <van-swipe-cell right-width="{{ 65 }}">
+        <van-cell 
+          title="{{ device.name }}" 
+          label="{{ device.id }}" 
+          border="{{ false }}" 
+        >
+          <van-loading wx:if="{{ device.isConnecting }}" slot="right-icon" />
+          <van-icon wx:elif="{{ !device.isConnecting && !device.connectError }}" slot="right-icon" name="success" />
+          <van-icon wx:elif="{{ !device.isConnecting && !!device.connectError }}" slot="right-icon" name="fail" />
+        </van-cell>
+        <view 
+          slot="right" 
+          class="right-cell" 
+          bindtap="handleRemove"
+          data-index="{{ deviceIndex }}"
+        >
+          删除
+        </view>
+      </van-swipe-cell>
+    </van-cell-group>
   </view>
+  <van-button
+    wx:else
+    type="primary" 
+    custom-style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);"
+    bindtap="handleAdd"
+  >
+    添加蓝牙设备
+  </van-button>
+</view>
+<!-- <view wx:else class="error">
+  请打开蓝牙并授予权限
 </view> -->

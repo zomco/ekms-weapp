@@ -27,6 +27,6 @@
     搜索蓝牙设备
   </van-button>
 </view>
-<view wx:else>
-  请打开蓝牙
+<view wx:else class="error">
+  请打开蓝牙并授予权限
 </view>
