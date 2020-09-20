@@ -1,6 +1,6 @@
 const util = require('../../utils/util.js');
 
-const DEBUG = true;
+const DEBUG = false;
 const SERVICE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C10";
 const CHARACTERISTIC_CYCLE_UUID = "00010203-0405-0607-0809-0A0B0C0D2C20";
 const CHARACTERISTIC_INCREMENT_UUID = "00010203-0405-0607-0809-0A0B0C0D2C21";
@@ -275,6 +275,7 @@ Page({
 
   handleSlide: function(e) {
     let that = this;
+    if (that.data.devices.every(n => n.isConnecting || n.connectError)) return;
     const dpr = wx.getSystemInfoSync().pixelRatio;
     let x = e.changedTouches[0].x * dpr;
     let y = e.changedTouches[0].y * dpr;
@@ -343,13 +344,16 @@ Page({
   onLoad: function(options) {
     var that = this;
     if (DEBUG) {
-      console.log('fdfsdff')
       that.setData({
         isAvailable: true, 
         devices: [
           {
             name: '测试设备',
             id: '12:34:56:78',
+            isConnecting: false,
+            connectError: new Error('test case'),
+            isSyncing: false,
+            syncError: null,
             cycle: 0,
             increment: 0,
             start: 0,
