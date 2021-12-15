@@ -1,14 +1,18 @@
-@import 'vant/common/index.wxss';
 /**app.wxss**/
+@import '/utils/md.wxss';
+
+page {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100vh;
+}
+
 .container {
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   align-items: center;
   box-sizing: border-box;
 } 
 
-page {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
-    Segoe UI, Arial, Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft Yahei',
-    sans-serif;
-}

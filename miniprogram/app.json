@@ -1,7 +1,6 @@
 {
   "pages": [
-    "pages/device/device",
-    "pages/search/search"
+    "pages/ikea/index"
   ],
   "window": {
     "backgroundColor": "#FFFFFF",
