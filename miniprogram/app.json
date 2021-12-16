@@ -6,7 +6,7 @@
     "backgroundColor": "#FFFFFF",
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#FFFFFF",
-    "navigationBarTitleText": "led",
+    "navigationBarTitleText": "elapspot",
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json",
