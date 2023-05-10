@@ -1,8 +1,0 @@
-var datetimeFormat = function (mills) {
-  var date = getDate(mills);
-  return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-};
-
-module.exports = {
-  dtFmt: datetimeFormat,
-};

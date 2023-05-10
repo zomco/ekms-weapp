@@ -1,18 +1,10 @@
 /**app.wxss**/
-@import '/utils/md.wxss';
-
-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 100vh;
-}
-
 .container {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
   box-sizing: border-box;
 } 
-
