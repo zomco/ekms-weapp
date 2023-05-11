@@ -13,9 +13,7 @@ Page({
   },
   // 事件处理函数
   bindViewTap() {
-    wx.navigateTo({
-      url: '../logs/logs',
-    })
+    console.log('hello owkor')
   },
   onLoad() {
     // @ts-ignore

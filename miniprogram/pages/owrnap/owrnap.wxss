@@ -1,1 +1,14 @@
 /* pages/owrnap/owrnap.wxss */
+.heart-canvas {
+  width: 100%;
+  height: 100%;
+}
+.breath-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper {
+  display: flex;
+  margin-right: 64px;
+}

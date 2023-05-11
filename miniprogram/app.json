@@ -1,15 +1,13 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/logs/logs",
-    "pages/owrnap/owrnap"
+    "pages/owrnap/owrnap",
+    "pages/index/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
+    "navigationBarTitleText": "派极管",
     "navigationBarTextStyle": "black"
   },
-  "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

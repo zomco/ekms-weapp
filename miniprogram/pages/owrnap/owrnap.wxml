@@ -1,2 +1,6 @@
 <!--pages/owrnap/owrnap.wxml-->
-<text>pages/owrnap/owrnap.wxml</text>
+<view class="container">
+  <t-loading theme="circular" size="40rpx" class="wrapper" />
+  <ec-canvas id="heart-dom-line" canvas-id="heart-line" ec="{{ heartEc }}" class="heart-canvas"></ec-canvas>
+  <ec-canvas id="breath-dom-line" canvas-id="breath-line" ec="{{ breathEc }}" class="breath-canvas"></ec-canvas>
+</view>
