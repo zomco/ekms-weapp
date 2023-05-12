@@ -13,13 +13,16 @@ const mqttOpts = {
   connectTimeout: 30 * 1000, //1000毫秒，两次重新连接之间的间隔
   resubscribe: true //如果连接断开并重新连接，则会再次自动订阅已订阅的主题（默认true）
 }
+let heartChart
+const heartChartDataMax = 30
+const heartChartData = []
 const initHeartChart = function (canvas, width, height, dpr) {
-  const chart = echarts.init(canvas, null, {
+  heartChart = echarts.init(canvas, null, {
     width: width,
     height: height,
     devicePixelRatio: dpr // new
   });
-  canvas.setChart(chart);
+  canvas.setChart(heartChart);
   var option = {
     title: {
       text: '心率',
@@ -33,39 +36,37 @@ const initHeartChart = function (canvas, width, height, dpr) {
       trigger: 'axis'
     },
     xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-      // show: false
+      type: 'time',
     },
     yAxis: {
-      x: 'center',
       type: 'value',
       splitLine: {
         lineStyle: {
           type: 'dashed'
         }
       }
-      // show: false
     },
     series: [
       {
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        data: heartChartData,
         type: 'line',
         smooth: true
       }
     ]
   };
-  chart.setOption(option);
-  return chart;
+  heartChart.setOption(option);
+  return heartChart;
 }
+let breathChart
+const breathChartDataMax = 30
+const breathChartData = []
 const initBreathChart = function (canvas, width, height, dpr) {
-  const chart = echarts.init(canvas, null, {
+  breathChart = echarts.init(canvas, null, {
     width: width,
     height: height,
     devicePixelRatio: dpr // new
   });
-  canvas.setChart(chart);
+  canvas.setChart(breathChart);
   var option = {
     title: {
       text: '呼吸',
@@ -79,10 +80,7 @@ const initBreathChart = function (canvas, width, height, dpr) {
       trigger: 'axis'
     },
     xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-      // show: false
+      type: 'time',
     },
     yAxis: {
       x: 'center',
@@ -92,18 +90,17 @@ const initBreathChart = function (canvas, width, height, dpr) {
           type: 'dashed'
         }
       }
-      // show: false
     },
     series: [
       {
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        data: breathChartData,
         type: 'line',
         smooth: true
       }
     ]
   };
-  chart.setOption(option);
-  return chart;
+  breathChart.setOption(option);
+  return breathChart;
 }
 
 Page({
@@ -115,16 +112,18 @@ Page({
     isConnected: false,
     isSubscribed: false,
     initData: null,
-    preiodData: null,
     reportData: null,
-    heartEc: {
-      onInit: initHeartChart,
-    },
-    breathEc: {
-      onInit: initBreathChart,
-    },
+    rangeData: null,
+    bodyData: null,
+    heartData: null,
+    heartEc: { onInit: initHeartChart },
+    breathData: null,
+    breathEc: { onInit: initBreathChart },
   },
 
+  // echart
+
+  // mqtt
   client: null,
   id: '',
 
@@ -169,12 +168,51 @@ Page({
     })
     //服务器下发消息的回调
     client.on("message", function(topic:string, payload) {
-      console.log(" 收到 topic:" + topic + " , payload :" + payload.toString())
+      // console.log(" 收到 topic:" + topic + " , payload :" + payload.toString())
       const data = JSON.parse(payload.toString())
       if (topic.endsWith('init')) {
         that.setData({ initData: data })
       } else if (topic.endsWith('period')) {
-        that.setData({ periodData: data })
+        const {
+          range: rangeData,
+          body: bodyData,
+          heart: heartData,
+          breath: breathData,
+          timestamp,
+        } = data
+        const now = (timestamp - 1) * 1000
+
+        if (!!heartChart) {
+          // heartData.waves.forEach((n, i) => {
+          //   if (heartChartData.length === heartChartDataMax) {
+          //     heartChartData.shift()
+          //   }
+          //   const now = timebase + i * 200
+          //   heartChartData.push({ name: new Date(now), value: [now, n] })
+          // })
+          if (heartChartData.length === heartChartDataMax) {
+            heartChartData.shift()
+          }
+          heartChartData.push({ name: new Date(now), value: [now, heartData.value] })
+          console.log(heartChartData)
+          heartChart.setOption({ series: [{ data: heartChartData }] });
+        }
+        if (!!breathChart) {
+          // breathData.waves.map((n, i) => {
+          //   if (breathChartData.length === breathChartDataMax) {
+          //     breathChartData.shift()
+          //   }
+          //   const now = timebase + i * 200
+          //   breathChartData.push({ name: new Date(now), value: [now, n] })
+          // })
+          if (breathChartData.length === breathChartDataMax) {
+            breathChartData.shift()
+          }
+          breathChartData.push({ name: new Date(now), value: [now, breathData.value] })
+          console.log(breathChartData)
+          breathChart.setOption({ series: [{ data: breathChartData }] });
+        }
+        that.setData({ rangeData, bodyData, heartData, breathData })
       } else if (topic.endsWith('report')) {
         that.setData({ reportData: data })
       } else {
