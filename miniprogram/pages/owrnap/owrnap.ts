@@ -14,7 +14,7 @@ const mqttOpts = {
   resubscribe: true //如果连接断开并重新连接，则会再次自动订阅已订阅的主题（默认true）
 }
 let heartChart
-const heartChartDataMax = 30
+const heartChartDataMax = 5
 const heartChartData = []
 const initHeartChart = function (canvas, width, height, dpr) {
   heartChart = echarts.init(canvas, null, {
@@ -37,19 +37,21 @@ const initHeartChart = function (canvas, width, height, dpr) {
     },
     xAxis: {
       type: 'time',
+      splitLine: {
+        show: false
+      }
     },
     yAxis: {
       type: 'value',
       splitLine: {
-        lineStyle: {
-          type: 'dashed'
-        }
+        show: false
       }
     },
     series: [
       {
         data: heartChartData,
         type: 'line',
+        showSymbol: false,
         smooth: true
       }
     ]
@@ -58,7 +60,7 @@ const initHeartChart = function (canvas, width, height, dpr) {
   return heartChart;
 }
 let breathChart
-const breathChartDataMax = 30
+const breathChartDataMax = 5
 const breathChartData = []
 const initBreathChart = function (canvas, width, height, dpr) {
   breathChart = echarts.init(canvas, null, {
@@ -81,20 +83,22 @@ const initBreathChart = function (canvas, width, height, dpr) {
     },
     xAxis: {
       type: 'time',
+      splitLine: {
+        show: false
+      }
     },
     yAxis: {
       x: 'center',
       type: 'value',
       splitLine: {
-        lineStyle: {
-          type: 'dashed'
-        }
+        show: false
       }
     },
     series: [
       {
         data: breathChartData,
         type: 'line',
+        showSymbol: false,
         smooth: true
       }
     ]
@@ -135,6 +139,7 @@ Page({
     //开始连接
     const client = mqtt.connect(host, mqttOpts)
     that.setData({ isConnecting: true })
+    // that.setData({ isConnecting: false, isConnected: true })
     client.on('connect', function() {
       that.setData({ isConnecting: false, isConnected: true })
       client.subscribe(`/nap/pub/${id}/data/+`, function(err, granted) {
@@ -180,36 +185,20 @@ Page({
           breath: breathData,
           timestamp,
         } = data
-        const now = (timestamp - 1) * 1000
+        const now = new Date(timestamp * 1000)
 
         if (!!heartChart) {
-          // heartData.waves.forEach((n, i) => {
-          //   if (heartChartData.length === heartChartDataMax) {
-          //     heartChartData.shift()
-          //   }
-          //   const now = timebase + i * 200
-          //   heartChartData.push({ name: new Date(now), value: [now, n] })
-          // })
           if (heartChartData.length === heartChartDataMax) {
             heartChartData.shift()
           }
-          heartChartData.push({ name: new Date(now), value: [now, heartData.value] })
-          console.log(heartChartData)
+          heartChartData.push({ name: now, value: [now, heartData.value] })
           heartChart.setOption({ series: [{ data: heartChartData }] });
         }
         if (!!breathChart) {
-          // breathData.waves.map((n, i) => {
-          //   if (breathChartData.length === breathChartDataMax) {
-          //     breathChartData.shift()
-          //   }
-          //   const now = timebase + i * 200
-          //   breathChartData.push({ name: new Date(now), value: [now, n] })
-          // })
           if (breathChartData.length === breathChartDataMax) {
             breathChartData.shift()
           }
-          breathChartData.push({ name: new Date(now), value: [now, breathData.value] })
-          console.log(breathChartData)
+          breathChartData.push({ name: now, value: [now, breathData.value] })
           breathChart.setOption({ series: [{ data: breathChartData }] });
         }
         that.setData({ rangeData, bodyData, heartData, breathData })
