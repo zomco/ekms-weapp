@@ -13,20 +13,20 @@ const mqttOpts = {
   connectTimeout: 30 * 1000, //1000毫秒，两次重新连接之间的间隔
   resubscribe: true //如果连接断开并重新连接，则会再次自动订阅已订阅的主题（默认true）
 }
-
 //
-let heartRateChart
+let rateChart
 const heartRateChartData = []
-const initHeartRateChart = function (canvas, width, height, dpr) {
-  heartRateChart = echarts.init(canvas, null, {
+const breathRateChartData = []
+const initRateChart = function (canvas, width, height, dpr) {
+  rateChart = echarts.init(canvas, null, {
     width: width,
     height: height,
     devicePixelRatio: dpr // new
   });
-  canvas.setChart(heartRateChart);
+  canvas.setChart(rateChart);
   var option = {
     title: {
-      text: '心跳频率',
+      text: '频率',
       left: 'center'
     },
     grid: {
@@ -52,28 +52,38 @@ const initHeartRateChart = function (canvas, width, height, dpr) {
     series: [
       {
         data: heartRateChartData,
+        name: '心跳频率',
+        datasetId: 'heart_rate',
+        type: 'line',
+        showSymbol: false,
+        smooth: true
+      },
+      {
+        data: breathRateChartData,
+        name: '呼吸频率',
+        datasetId: 'breath_rate',
         type: 'line',
         showSymbol: false,
         smooth: true
       }
     ]
   };
-  heartRateChart.setOption(option);
-  return heartRateChart;
+  rateChart.setOption(option);
+  return rateChart;
 }
 
 // 
-let heartWaveChart
-const initHeartWaveChart = function (canvas, width, height, dpr) {
-  heartWaveChart = echarts.init(canvas, null, {
+let waveChart
+const initWaveChart = function (canvas, width, height, dpr) {
+  waveChart = echarts.init(canvas, null, {
     width: width,
     height: height,
     devicePixelRatio: dpr // new
   });
-  canvas.setChart(heartWaveChart);
+  canvas.setChart(waveChart);
   var option = {
     title: {
-      text: '心跳波形',
+      text: '波形',
       left: 'center'
     },
     grid: {
@@ -97,29 +107,42 @@ const initHeartWaveChart = function (canvas, width, height, dpr) {
     series: [
       {
         data: [],
+        name: '心跳波形',
+        datasetId: 'heart_wave',
+        type: 'line',
+        showSymbol: false,
+        smooth: true
+      },
+      {
+        data: [],
+        name: '呼吸波形',
+        datasetId: 'breath_wave',
         type: 'line',
         showSymbol: false,
         smooth: true
       }
     ]
   };
-  heartWaveChart.setOption(option);
-  return heartWaveChart;
+  waveChart.setOption(option);
+  return waveChart;
 }
 
-// 
-let breathRateChart
-const breathRateChartData = []
-const initBreathRateChart = function (canvas, width, height, dpr) {
-  breathRateChart = echarts.init(canvas, null, {
+//
+let pathChart
+const bodyXChartData = []
+const bodyYChartData = []
+const bodyZChartData = []
+const bodyDistanceChartData = []
+const initPathChart = function (canvas, width, height, dpr) {
+  pathChart = echarts.init(canvas, null, {
     width: width,
     height: height,
     devicePixelRatio: dpr // new
   });
-  canvas.setChart(breathRateChart);
+  canvas.setChart(pathChart);
   var option = {
     title: {
-      text: '呼吸频率',
+      text: '方位',
       left: 'center'
     },
     grid: {
@@ -128,7 +151,7 @@ const initBreathRateChart = function (canvas, width, height, dpr) {
     tooltip: {
       show: true,
       trigger: 'axis',
-      valueFormatter: (value) => `${value} 次/分钟`
+      valueFormatter: (value) => `${value} 厘米`
     },
     xAxis: {
       type: 'time',
@@ -137,7 +160,6 @@ const initBreathRateChart = function (canvas, width, height, dpr) {
       }
     },
     yAxis: {
-      x: 'center',
       type: 'value',
       splitLine: {
         show: false
@@ -145,61 +167,41 @@ const initBreathRateChart = function (canvas, width, height, dpr) {
     },
     series: [
       {
-        data: breathRateChartData,
+        data: bodyDistanceChartData,
+        name: '距离',
+        datasetId: 'body_distance',
         type: 'line',
         showSymbol: false,
         smooth: true
-      }
-    ]
-  };
-  breathRateChart.setOption(option);
-  return breathRateChart;
-}
-
-// 
-let breathWaveChart
-const initBreathWaveChart = function (canvas, width, height, dpr) {
-  breathWaveChart = echarts.init(canvas, null, {
-    width: width,
-    height: height,
-    devicePixelRatio: dpr // new
-  });
-  canvas.setChart(breathWaveChart);
-  var option = {
-    title: {
-      text: '呼吸波形',
-      left: 'center'
-    },
-    grid: {
-      containLabel: true
-    },
-    tooltip: {
-      show: true,
-      trigger: 'axis'
-    },
-    xAxis: {
-      splitLine: {
-        show: false
-      }
-    },
-    yAxis: {
-      x: 'center',
-      type: 'value',
-      splitLine: {
-        show: false
-      }
-    },
-    series: [
+      },
       {
-        data: [],
+        data: bodyXChartData,
+        name: 'X距离',
+        datasetId: 'body_x',
+        type: 'line',
+        showSymbol: false,
+        smooth: true
+      },
+      {
+        data: bodyYChartData,
+        name: 'Y距离',
+        datasetId: 'body_y',
+        type: 'line',
+        showSymbol: false,
+        smooth: true
+      },
+      {
+        data: bodyZChartData,
+        name: 'Z距离',
+        datasetId: 'body_z',
         type: 'line',
         showSymbol: false,
         smooth: true
       }
     ]
   };
-  breathWaveChart.setOption(option);
-  return breathWaveChart;
+  pathChart.setOption(option);
+  return pathChart;
 }
 
 Page({
@@ -215,11 +217,10 @@ Page({
     rangeData: null,
     bodyData: null,
     heartData: null,
-    heartRateEc: { onInit: initHeartRateChart },
-    heartWaveEc: { onInit: initHeartWaveChart },
     breathData: null,
-    breathRateEc: { onInit: initBreathRateChart },
-    breathWaveEc: { onInit: initBreathWaveChart },
+    rateEc: { onInit: initRateChart },
+    waveEc: { onInit: initWaveChart },
+    pathEc: { onInit: initPathChart },
   },
 
   // mqtt
@@ -282,27 +283,47 @@ Page({
         } = data
         const now = new Date(timestamp * 1000)
 
-        if (!!heartRateChart) {
+        if (!!rateChart) {
           if (heartRateChartData.length === 5) {
             heartRateChartData.shift()
           }
-          heartRateChartData.push({ name: now, value: [now, heartData.value] })
-          heartRateChart.setOption({ series: [{ data: heartRateChartData }] });
-        }
-        if (!!heartWaveChart) {
-          const heartWaveChartData = heartData.waves.map((n, i) => ({ name: i * 0.25, value: [i * 0.25, n]}))
-          heartWaveChart.setOption({ series: [{ data: heartWaveChartData }] });
-        }
-        if (!!breathRateChart) {
           if (breathRateChartData.length === 5) {
             breathRateChartData.shift()
           }
+          heartRateChartData.push({ name: now, value: [now, heartData.value] })
           breathRateChartData.push({ name: now, value: [now, breathData.value] })
-          breathRateChart.setOption({ series: [{ data: breathRateChartData }] });
+          rateChart.setOption({ series: [{ data: heartRateChartData }, { data: breathRateChartData }] })
         }
-        if (!!breathWaveChart) {
+        if (!!waveChart) {
+          const heartWaveChartData = heartData.waves.map((n, i) => ({ name: i * 0.25, value: [i * 0.25, n]}))
           const breathWaveChartData = breathData.waves.map((n, i) => ({ name: i * 0.25, value: [i * 0.25, n]}))
-          breathWaveChart.setOption({ series: [{ data: breathWaveChartData }] });
+          waveChart.setOption({ series: [{ data: heartWaveChartData }, { data: breathWaveChartData }] });
+        }
+        if (!!pathChart) {
+          if (bodyDistanceChartData.length === 5) {
+            bodyDistanceChartData.shift()
+          }
+          if (bodyXChartData.length === 5) {
+            bodyXChartData.shift()
+          }
+          if (bodyYChartData.length === 5) {
+            bodyYChartData.shift()
+          }
+          if (bodyZChartData.length === 5) {
+            bodyZChartData.shift()
+          }
+          const { location, distance } = bodyData
+          bodyDistanceChartData.push({ name: now, value: [now, distance] })
+          const zhex = location.z
+          const yhex = location.y
+          const xhex = location.x
+          const z = (zhex & 0x8000) > 0 ? -(zhex & 0x7FFF) : zhex
+          const y = (yhex & 0x8000) > 0 ? -(yhex & 0x7FFF) : yhex
+          const x = (xhex & 0x8000) > 0 ? -(xhex & 0x7FFF) : xhex
+          bodyXChartData.push({ name: now, value: [now, x] })
+          bodyYChartData.push({ name: now, value: [now, y] })
+          bodyZChartData.push({ name: now, value: [now, z] })
+          pathChart.setOption({ series: [{ data: bodyDistanceChartData }, { data: bodyXChartData }, { data: bodyYChartData }, { data: bodyZChartData }] })
         }
         that.setData({ rangeData, bodyData, heartData, breathData })
       } else if (topic.endsWith('report')) {

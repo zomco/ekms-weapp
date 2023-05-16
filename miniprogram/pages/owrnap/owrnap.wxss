@@ -11,23 +11,20 @@
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  height: 200%;
+  height: 100%;
 } 
-.heart-rate-canvas {
+.rate-canvas {
   width: 100%;
-  height: 800px;
+  height: 100%;
 }
-.breath-rate-canvas {
+.wave-canvas {
   width: 100%;
-  height: 800px;
+  height: 100%;
 }
-.heart-wave-canvas {
+
+.path-canvas {
   width: 100%;
-  height: 800px;
-}
-.breath-wave-canvas {
-  width: 100%;
-  height: 800px;
+  height: 100%;
 }
 
 .loader {

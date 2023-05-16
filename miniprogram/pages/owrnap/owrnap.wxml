@@ -4,10 +4,9 @@
     <t-loading theme="dots" size="40rpx" text="正在连接" layout="vertical" class="loader-wrapper" size="40rpx" />
   </view>
   <view wx:elif="{{!isConnecting && isConnected }}" class="canvas">
-    <ec-canvas id="heart-rate-dom-line" canvas-id="heart-rate-line" ec="{{ heartRateEc }}" class="heart-rate-canvas"></ec-canvas>
-    <ec-canvas id="breath-rate-dom-line" canvas-id="breath-rate-line" ec="{{ breathRateEc }}" class="breath-rate-canvas"></ec-canvas>
-    <ec-canvas id="heart-wave-dom-line" canvas-id="heart-wave-line" ec="{{ heartWaveEc }}" class="heart-wave-canvas"></ec-canvas>
-    <ec-canvas id="breath-wave-dom-line" canvas-id="breath-wave-line" ec="{{ breathWaveEc }}" class="breath-wave-canvas"></ec-canvas>
+    <ec-canvas id="rate-dom-line" canvas-id="rate-line" ec="{{ rateEc }}" class="rate-canvas"></ec-canvas>
+    <ec-canvas id="wave-dom-line" canvas-id="wave-line" ec="{{ waveEc }}" class="wave-canvas"></ec-canvas>
+    <ec-canvas id="path-dom-line" canvas-id="path-line" ec="{{ pathEc }}" class="path-canvas"></ec-canvas>
   </view>
   <view wx:else class="status">连接失败，请重试</view>
 </view>
