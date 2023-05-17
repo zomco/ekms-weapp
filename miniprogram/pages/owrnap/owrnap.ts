@@ -2,6 +2,8 @@
 import mqtt from '../../utils/mqtt.js';
 import * as echarts from '../../ec-canvas/echarts';
 
+const is_debuging = false
+const now_debuging = Date.now()
 const host = 'wxs://zomco.arnmi.com/mqtt'
 const mqttOpts = {
   protocolVersion: 4, //MQTT连接协议版本
@@ -15,8 +17,14 @@ const mqttOpts = {
 }
 //
 let rateChart
-const heartRateChartData = []
-const breathRateChartData = []
+const heartRateChartData = is_debuging ? Array.from({ length: 5}, (v, i) => {
+  const t = new Date(now_debuging + i * 1000)
+  return { name: t, value: [t, Math.trunc(Math.random() * 100)] }
+}) : []
+const breathRateChartData = is_debuging ? Array.from({ length: 5}, (v, i) => {
+  const t = new Date(now_debuging + i * 1000)
+  return { name: t, value: [t, Math.trunc(Math.random() * 30)] }
+}) : []
 const initRateChart = function (canvas, width, height, dpr) {
   rateChart = echarts.init(canvas, null, {
     width: width,
@@ -27,7 +35,7 @@ const initRateChart = function (canvas, width, height, dpr) {
   var option = {
     title: {
       text: '频率',
-      left: 'center'
+      // left: 'center'
     },
     grid: {
       containLabel: true
@@ -74,6 +82,14 @@ const initRateChart = function (canvas, width, height, dpr) {
 
 // 
 let waveChart
+const heartWaveChartData = is_debuging ? Array.from({ length: 25}, (v, i) => {
+  const t = new Date(now_debuging + i * 1000)
+  return { name: t, value: [t, Math.trunc(Math.random() * 256)] }
+}) : []
+const breathWaveChartData = is_debuging ? Array.from({ length: 25}, (n, i) => {
+  const t = new Date(now_debuging + i * 1000)
+  return { name: t, value: [t, Math.trunc(Math.random() * 256)] }
+}) : []
 const initWaveChart = function (canvas, width, height, dpr) {
   waveChart = echarts.init(canvas, null, {
     width: width,
@@ -84,7 +100,7 @@ const initWaveChart = function (canvas, width, height, dpr) {
   var option = {
     title: {
       text: '波形',
-      left: 'center'
+      // left: 'center'
     },
     grid: {
       containLabel: true
@@ -92,66 +108,6 @@ const initWaveChart = function (canvas, width, height, dpr) {
     tooltip: {
       show: true,
       trigger: 'axis'
-    },
-    xAxis: {
-      splitLine: {
-        show: false
-      }
-    },
-    yAxis: {
-      type: 'value',
-      splitLine: {
-        show: false
-      }
-    },
-    series: [
-      {
-        data: [],
-        name: '心跳波形',
-        datasetId: 'heart_wave',
-        type: 'line',
-        showSymbol: false,
-        smooth: true
-      },
-      {
-        data: [],
-        name: '呼吸波形',
-        datasetId: 'breath_wave',
-        type: 'line',
-        showSymbol: false,
-        smooth: true
-      }
-    ]
-  };
-  waveChart.setOption(option);
-  return waveChart;
-}
-
-//
-let pathChart
-const bodyXChartData = []
-const bodyYChartData = []
-const bodyZChartData = []
-const bodyDistanceChartData = []
-const initPathChart = function (canvas, width, height, dpr) {
-  pathChart = echarts.init(canvas, null, {
-    width: width,
-    height: height,
-    devicePixelRatio: dpr // new
-  });
-  canvas.setChart(pathChart);
-  var option = {
-    title: {
-      text: '方位',
-      left: 'center'
-    },
-    grid: {
-      containLabel: true
-    },
-    tooltip: {
-      show: true,
-      trigger: 'axis',
-      valueFormatter: (value) => `${value} 厘米`
     },
     xAxis: {
       type: 'time',
@@ -167,36 +123,75 @@ const initPathChart = function (canvas, width, height, dpr) {
     },
     series: [
       {
-        data: bodyDistanceChartData,
-        name: '距离',
-        datasetId: 'body_distance',
+        data: heartWaveChartData ,
+        name: '心跳波形',
+        datasetId: 'heart_wave',
         type: 'line',
         showSymbol: false,
         smooth: true
       },
       {
-        data: bodyXChartData,
-        name: 'X距离',
-        datasetId: 'body_x',
+        data: breathWaveChartData ,
+        name: '呼吸波形',
+        datasetId: 'breath_wave',
         type: 'line',
         showSymbol: false,
         smooth: true
-      },
+      }
+    ]
+  };
+  waveChart.setOption(option);
+  return waveChart;
+}
+
+//
+let pathChart
+const bodyXYChartData = is_debuging ? Array.from({ length: 5}, (v, i) => {
+  const x = Math.trunc(Math.random() * 200 - 100)
+  const y = Math.trunc(Math.random() * 200 - 100)
+  let a = Math.atan(y / x) / Math.PI * 180
+  if (x > 0 && y < 0) {
+    a = a + 360
+  } else if (x < 0 && y > 0) {
+    a = a + 180
+  } else if (x < 0 && y < 0) {
+    a = a + 180
+  }
+  const r = Math.sqrt((x * x) + (y * y))
+  return [r, a]
+}) : []
+const initPathChart = function (canvas, width, height, dpr) {
+  pathChart = echarts.init(canvas, null, {
+    width: width,
+    height: height,
+    devicePixelRatio: dpr // new
+  });
+  canvas.setChart(pathChart);
+  var option = {
+    title: {
+      text: '方位',
+
+    },
+    polar: {
+      center: ['50%', '50%'],
+    },
+    angleAxis: {
+      type: 'value',
+      min: 0,
+      max: 360,
+      interval: 30,
+      clockwise: false,
+      startAngle: 0
+    },
+    radiusAxis: {
+      type: 'value',
+    },
+    series: [
       {
-        data: bodyYChartData,
-        name: 'Y距离',
-        datasetId: 'body_y',
+        coordinateSystem: 'polar',
+        name: 'line',
         type: 'line',
-        showSymbol: false,
-        smooth: true
-      },
-      {
-        data: bodyZChartData,
-        name: 'Z距离',
-        datasetId: 'body_z',
-        type: 'line',
-        showSymbol: false,
-        smooth: true
+        data: bodyXYChartData
       }
     ]
   };
@@ -212,12 +207,14 @@ Page({
     isConnecting: false,
     isConnected: false,
     isSubscribed: false,
-    initData: null,
-    reportData: null,
+    productData: null,
+    statusData: null,
     rangeData: null,
     bodyData: null,
     heartData: null,
     breathData: null,
+    envData: null,
+    reportData: null,
     rateEc: { onInit: initRateChart },
     waveEc: { onInit: initWaveChart },
     pathEc: { onInit: initPathChart },
@@ -231,11 +228,15 @@ Page({
     // const { id } = options
     const id = '864269064865054'
     // 页面创建时执行
-    const that = this;
+    const that = this
+    that.id = id
+    if (is_debuging) {
+      that.setData({ isConnecting: false, isConnected: true })
+      return
+    }
     //开始连接
     const client = mqtt.connect(host, mqttOpts)
     that.setData({ isConnecting: true })
-    // that.setData({ isConnecting: false, isConnected: true })
     client.on('connect', function() {
       that.setData({ isConnecting: false, isConnected: true })
       client.subscribe(`/nap/pub/${id}/data/+`, function(err, granted) {
@@ -272,13 +273,19 @@ Page({
       // console.log(" 收到 topic:" + topic + " , payload :" + payload.toString())
       const data = JSON.parse(payload.toString())
       if (topic.endsWith('init')) {
-        that.setData({ initData: data })
+        console.log(data)
+        const {
+          product: productData,
+          status: statusData,
+        } = data
+        that.setData({ productData, statusData })
       } else if (topic.endsWith('period')) {
         const {
           range: rangeData,
           body: bodyData,
           heart: heartData,
           breath: breathData,
+          env: envData, 
           timestamp,
         } = data
         const now = new Date(timestamp * 1000)
@@ -290,50 +297,82 @@ Page({
           if (breathRateChartData.length === 5) {
             breathRateChartData.shift()
           }
-          heartRateChartData.push({ name: now, value: [now, heartData.value] })
-          breathRateChartData.push({ name: now, value: [now, breathData.value] })
+          if (heartData) {
+            heartRateChartData.push({ name: now, value: [now, heartData.value] })
+          }
+          if (breathData) {
+            breathRateChartData.push({ name: now, value: [now, breathData.value] })
+          }
           rateChart.setOption({ series: [{ data: heartRateChartData }, { data: breathRateChartData }] })
         }
         if (!!waveChart) {
-          const heartWaveChartData = heartData.waves.map((n, i) => ({ name: i * 0.25, value: [i * 0.25, n]}))
-          const breathWaveChartData = breathData.waves.map((n, i) => ({ name: i * 0.25, value: [i * 0.25, n]}))
+          if (heartWaveChartData.length === 25) {
+            heartWaveChartData.shift()
+            heartWaveChartData.shift()
+            heartWaveChartData.shift()
+            heartWaveChartData.shift()
+            heartWaveChartData.shift()
+          }
+          if (breathWaveChartData.length === 25) {
+            breathWaveChartData.shift()
+            breathWaveChartData.shift()
+            breathWaveChartData.shift()
+            breathWaveChartData.shift()
+            breathWaveChartData.shift()
+          }
+          const tmsp = timestamp * 1000
+          if (heartData && heartData.waves && heartData.waves.length > 0) {
+            heartWaveChartData.push(...heartData.waves.map((n, i) => {
+              const tmspd = new Date(tmsp + i * 250)
+              return { name: tmspd, value: [tmspd, n] }
+            }))
+          }
+          if (breathData && breathData.waves && breathData.waves.length > 0) {
+            breathWaveChartData.push(...breathData.waves.map((n, i) => {
+              const tmspd = new Date(tmsp + i * 250)
+              return { name: tmspd, value: [tmspd, n] }
+            }))
+          }
           waveChart.setOption({ series: [{ data: heartWaveChartData }, { data: breathWaveChartData }] });
         }
         if (!!pathChart) {
-          if (bodyDistanceChartData.length === 5) {
-            bodyDistanceChartData.shift()
+          if (bodyXYChartData.length === 1) {
+            bodyXYChartData.shift()
           }
-          if (bodyXChartData.length === 5) {
-            bodyXChartData.shift()
+          const { location } = bodyData
+          location.y = (location.y & 0x8000) > 0 ? -(location.y & 0x7FFF) : location.y
+          location.x = (location.x & 0x8000) > 0 ? -(location.x & 0x7FFF) : location.x
+          const y = location.y
+          const x = location.x
+          let a = Math.atan(y / x) / Math.PI * 180
+          if (x > 0 && y < 0) {
+            a = a + 360
+          } else if (x < 0 && y > 0) {
+            a = a + 180
+          } else if (x < 0 && y < 0) {
+            a = a + 180
           }
-          if (bodyYChartData.length === 5) {
-            bodyYChartData.shift()
-          }
-          if (bodyZChartData.length === 5) {
-            bodyZChartData.shift()
-          }
-          const { location, distance } = bodyData
-          bodyDistanceChartData.push({ name: now, value: [now, distance] })
-          const zhex = location.z
-          const yhex = location.y
-          const xhex = location.x
-          const z = (zhex & 0x8000) > 0 ? -(zhex & 0x7FFF) : zhex
-          const y = (yhex & 0x8000) > 0 ? -(yhex & 0x7FFF) : yhex
-          const x = (xhex & 0x8000) > 0 ? -(xhex & 0x7FFF) : xhex
-          bodyXChartData.push({ name: now, value: [now, x] })
-          bodyYChartData.push({ name: now, value: [now, y] })
-          bodyZChartData.push({ name: now, value: [now, z] })
-          pathChart.setOption({ series: [{ data: bodyDistanceChartData }, { data: bodyXChartData }, { data: bodyYChartData }, { data: bodyZChartData }] })
+          const r = Math.sqrt((x * x) + (y * y))
+          bodyXYChartData.push([r, a])
+          pathChart.setOption({ series: [{ data: bodyXYChartData }] })
         }
-        that.setData({ rangeData, bodyData, heartData, breathData })
+        if (envData) {
+          envData.light = envData.light && envData.light.toFixed(2) || 0
+          envData.humidity = envData.humidity && (envData.humidity * 100).toFixed(2) || 0
+          envData.tempreture = envData.tempreture && envData.tempreture.toFixed(2) || 0
+        }
+
+        that.setData({ rangeData, bodyData, heartData, breathData, envData })
       } else if (topic.endsWith('report')) {
         that.setData({ reportData: data })
       } else {
         console.log(`未处理的消息：${topic} ${payload.toString()}`)
       }
     })
+
+    client.publish(`/nap/sub/${id}/data/init`, "")
+    client.publish(`/nap/sub/${id}/data/period`, "")
     that.client = client
-    that.id = id
   },
 
   onShow: function() {
@@ -349,12 +388,15 @@ Page({
   },
 
   onUnload: function() {
-    // 页面销毁时执行
+    if (is_debuging) {
+      return
+    }
+    // 断开连接
     const { client, id } = this
     if (client === null || id === '') {
       return
     }
-    client.unsubscribe(`/nap/pub/${id}/data/+`)
+    client.unsubscribe(`/nap/sub/${id}/data/+`)
     client.end()
   },
 

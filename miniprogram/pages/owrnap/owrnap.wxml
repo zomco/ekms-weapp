@@ -4,9 +4,104 @@
     <t-loading theme="dots" size="40rpx" text="正在连接" layout="vertical" class="loader-wrapper" size="40rpx" />
   </view>
   <view wx:elif="{{!isConnecting && isConnected }}" class="canvas">
+    <view class="detail">
+      <view class="section">
+        <view class="section-item">
+          <view class="section-item-title">位置越界</view>
+          <view class="section-item-values">
+            <t-tag class="section-item-value" variant="{{ rangeData.bound === 0 ? 'outline' : 'light' }}">范围外</t-tag>
+            <t-tag class="section-item-value" variant="{{ rangeData.bound === 1 ? 'outline' : 'light' }}">范围内</t-tag>
+            <t-tag class="section-item-value" variant="{{ rangeData.bound !== 0 && rangeData.bound !== 1 ? 'outline' : 'light' }}">其他</t-tag>
+          </view>
+        </view>
+      </view>
+      <view class="section">
+        <view class="section-item">
+          <view class="section-item-title">人体信息</view>
+          <view class="section-item-values">
+            <t-tag class="section-item-value" variant="{{ bodyData.movement === 0 ? 'outline' : 'light' }}">无人</t-tag>
+            <t-tag class="section-item-value" variant="{{ bodyData.movement === 1 ? 'outline' : 'light' }}">有人</t-tag>
+            <t-tag class="section-item-value" variant="{{ bodyData.movement !== 0 && bodyData.movement !== 1 ? 'outline' : 'light' }}">其他</t-tag>
+          </view>
+        </view>
+        <view class="section-item">
+          <view class="section-item-title">运动信息</view>
+          <view class="section-item-values">
+            <t-tag class="section-item-value" variant="{{ bodyData.movement === 0 ? 'outline' : 'light' }}">无</t-tag>
+            <t-tag class="section-item-value" variant="{{ bodyData.movement === 1 ? 'outline' : 'light' }}">静止</t-tag>
+            <t-tag class="section-item-value" variant="{{ bodyData.movement === 2 ? 'outline' : 'light' }}">活跃</t-tag>
+            <t-tag class="section-item-value" variant="{{ bodyData.movement !== 0 && bodyData.movement !== 1 && bodyData.movement !== 2 ? 'outline' : 'light' }}">其他</t-tag>
+          </view>
+        </view>
+        <view class="section-item">
+          <view class="section-item-title">体动信息</view>
+          <view class="section-item-values">
+            <view class="section-item-value">{{ bodyData.energy || 0 }}</view>
+          </view>
+        </view>
+        <view class="section-item">
+          <view class="section-item-title">距离信息</view>
+          <view class="section-item-values">
+            <view class="section-item-value">{{ bodyData.distance || 0 }} cm</view>
+          </view>
+        </view>
+        <view class="section-item">
+          <view class="section-item-title">方位信息</view>
+          <view class="section-item-values">
+            <view class="section-item-value">X,Y: [{{ bodyData.location && bodyData.location.x || 0 }}, {{ bodyData.location && bodyData.location.y || 0 }}] cm</view>
+          </view>
+        </view>
+      </view>
+      <view class="section">
+        <view class="section-item">
+          <view class="section-item-title">呼吸信息</view>
+          <view class="section-item-values">
+            <t-tag class="section-item-value" variant="{{ breathData.info === 1 ? 'outline' : 'light' }}">正常</t-tag>
+            <t-tag class="section-item-value" variant="{{ breathData.info === 2 ? 'outline' : 'light' }}">呼吸过高</t-tag>
+            <t-tag class="section-item-value" variant="{{ breathData.info === 3 ? 'outline' : 'light' }}">呼吸过低</t-tag>
+            <t-tag class="section-item-value" variant="{{ breathData.info === 4 ? 'outline' : 'light' }}">无</t-tag>
+            <t-tag class="section-item-value" variant="{{ breathData.info !== 0 && bodyData.movement !== 1 && bodyData.movement !== 2 ? 'outline' : 'light' }}">其他</t-tag>
+          </view>
+        </view>
+        <view class="section-item">
+          <view class="section-item-title">呼吸数值</view>
+          <view class="section-item-values">
+            <view class="section-item-value">{{ breathData.value || 0 }} 次/分钟</view>
+          </view>
+        </view>
+      </view>
+      <view class="section">
+        <view class="section-item">
+          <view class="section-item-title">心跳数值</view>
+          <view class="section-item-values">
+            <view class="section-item-value">{{ heartData.value || 0 }} 次/分钟</view>
+          </view>
+        </view>
+      </view>
+      <view class="section">
+        <view class="section-item">
+          <view class="section-item-title">光照强度</view>
+          <view class="section-item-values">
+            <view class="section-item-value">{{ envData.light || 0 }} 流明</view>
+          </view>
+        </view>
+        <view class="section-item">
+          <view class="section-item-title">相对湿度</view>
+          <view class="section-item-values">
+            <view class="section-item-value">{{ envData.humidity || 0 }} %</view>
+          </view>
+        </view>
+        <view class="section-item">
+          <view class="section-item-title">温度</view>
+          <view class="section-item-values">
+            <view class="section-item-value">{{ envData.tempreture || 0 }} ℃</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <ec-canvas id="path-dom-line" canvas-id="path-line" ec="{{ pathEc }}" class="path-canvas"></ec-canvas>
     <ec-canvas id="rate-dom-line" canvas-id="rate-line" ec="{{ rateEc }}" class="rate-canvas"></ec-canvas>
     <ec-canvas id="wave-dom-line" canvas-id="wave-line" ec="{{ waveEc }}" class="wave-canvas"></ec-canvas>
-    <ec-canvas id="path-dom-line" canvas-id="path-line" ec="{{ pathEc }}" class="path-canvas"></ec-canvas>
   </view>
   <view wx:else class="status">连接失败，请重试</view>
 </view>
