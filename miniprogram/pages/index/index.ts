@@ -23,6 +23,24 @@ Page({
       })
     }
   },
+  navigateToBle: function () {
+    wx.navigateTo({ url: '/pages/bleDevices/bleDevices' });
+  },
+  navigateToNfc: function () {
+    wx.navigateTo({ url: '/pages/nfcDevice/nfcDevice' });
+  },
+  navigateToPro: function () {
+    console.log('navigate to provisioning')
+  },
+  scanRemoteCode: function () {
+    wx.scanCode({
+      onlyFromCamera: true,
+      success: function(res) {
+        console.log(res, res.result)
+        wx.navigateTo({ url: `/pages/rtuDeviceNap/rtuDeviceNap?id=${res.result}` });
+      },
+    })
+  },
   getUserProfile() {
     // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
     wx.getUserProfile({

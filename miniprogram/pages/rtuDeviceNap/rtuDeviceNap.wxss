@@ -1,8 +1,12 @@
-/* pages/owrnap/owrnap.wxss */
 .canvas {
   width: 100%;
   min-height: 100vh;
 } 
+
+.title {
+  font-size: 48rpx;
+  margin: 24rpx;
+}
 
 .detail {
   margin: 25rpx 20rpx;

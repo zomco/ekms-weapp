@@ -1,7 +1,10 @@
 {
   "pages": [
-    "pages/owrnap/owrnap",
-    "pages/index/index"
+    "pages/index/index",
+    "pages/bleDevices/bleDevices",
+    "pages/bleDeviceNode/bleDeviceNode",
+    "pages/nfcDevice/nfcDevice",
+    "pages/rtuDeviceNap/rtuDeviceNap"
   ],
   "window": {
     "backgroundTextStyle": "light",

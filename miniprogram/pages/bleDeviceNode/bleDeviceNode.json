@@ -1,6 +1,6 @@
 {
   "usingComponents": {
+    "t-toast": "../../miniprogram_npm/tdesign-miniprogram/toast/toast",
     "t-button": "../../miniprogram_npm/tdesign-miniprogram/button/button"
-  },
-  "disableScroll": true
+  }
 }

@@ -1,0 +1,43 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="card card__strech">
+    <view class="card-header">
+      <view class="card-header-title">发现设备</view>
+    </view>
+    <view class="card-main">
+      <view
+        class="device" 
+        data-device-id="{{item.deviceId}}"
+        data-name="{{item.name}}"
+        bindtap="bindViewDevice"
+        wx:key="*this"
+        wx:for="{{deviceList}}" 
+      >
+        <view class="device-icon mdi mdi-bluetooth" />
+        <view class="device-desc">
+          <text class="device-desc-name">{{item.name}}</text>
+          <text class="device-desc-mac">{{item.deviceId}}</text>
+        </view>
+        <text class="device-signal">{{item.rssi}} dBm</text>
+      </view>
+    </view>
+    <view class="card-footer">
+      <van-button 
+        custom-class="{{ isAdapterAvailable ? 'card-footer-action action__enable' : 'card-footer-action' }}" 
+        type="default"
+        size="large"
+        hairline
+        color="{{ isAdapterAvailable ? 'rgba(73, 34, 82, 1)' : 'rgba(73, 34, 82, 0.1)' }}"
+        icon="refresh"
+        class-prefix="mdi"
+        disabled="{{ !isAdapterAvailable }}"
+        loading="{{ isAdapterDiscovering }}"
+        loading-text="扫描中"
+        bind:tap="scanDevices"
+      >
+        扫描
+      </van-button>
+    </view>
+  </view>
+  <!-- <van-toast id="van-toast" /> -->
+</view>

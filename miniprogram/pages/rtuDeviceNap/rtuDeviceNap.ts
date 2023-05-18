@@ -1,4 +1,3 @@
-// pages/owrnap/owrnap.ts
 import mqtt from '../../utils/mqtt.js';
 import * as echarts from '../../ec-canvas/echarts';
 

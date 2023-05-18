@@ -1,0 +1,286 @@
+<!--index.wxml-->
+<!-- page-meta 只能是页面内的第一个节点 -->
+<page-meta page-style="{{ show ? 'overflow: hidden;' : '' }}" />
+<view class="container">
+  <view class="card card__strech">
+    <view class="card-header">
+      <view class="card-header-title">{{ name }}</view>
+      <view class="{{ 'card-header-action mdi mdi-' + (isConnecting ? 'spin mdi-loading' : (isConnected ? 'bluetooth-connect' : 'bluetooth')) }}" bindtap="reconnect" />
+    </view>
+    <view class="card-main">
+      <view 
+        class="service"
+        wx:key="uuid"
+        wx:for="{{ serviceList }}" 
+        wx:for-item="service"
+        wx:for-index="serviceIndex"
+      >
+        <view class="service-header">
+          <view class="service-header-name">{{ service.name }}</view>
+          <view 
+            class="{{ 'service-header-action mdi mdi-' + (service.isSynchronizing ? 'spin mdi-loading' : 'sync') }}" 
+            bindtap="reSynchronize"
+            data-device-id="{{ deviceId }}"
+            data-service-id="{{ service.uuid }}"
+            data-service-index="{{ serviceIndex }}"
+          />
+        </view>
+        <view class="service-main">
+          <view
+            class="characteristic"
+            wx:key="uuid"
+            wx:for="{{ service.characteristics }}"
+            wx:for-item="characteristic"
+            wx:for-index="characteristicIndex" 
+          >
+            <view class="characteristic-header">
+              <view wx:if="{{ characteristic.name === '锁舌' }}" class="{{ 'characteristic-header-icon mdi mdi-' + (!!characteristic.value ? 'lock-open' : 'lock') }}" />
+              <view wx:elif="{{ characteristic.name === '大门' }}" class="{{ 'characteristic-header-icon mdi mdi-' + (!!characteristic.value ? 'door-open' : 'door-closed') }}" />
+              <view wx:elif="{{ characteristic.name === '读卡器' }}" class="{{ 'characteristic-header-icon mdi mdi-nfc-variant' }}" />
+              <view wx:elif="{{ characteristic.name === '地址' }}" class="{{ 'characteristic-header-icon mdi mdi-cloud-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '用户' }}" class="{{ 'characteristic-header-icon mdi mdi-account' }}" />
+              <view wx:elif="{{ characteristic.name === '密码' }}" class="{{ 'characteristic-header-icon mdi mdi-form-textbox-password' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区1' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-a-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区2' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-b-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区3' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-c-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区4' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-d-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区5' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-e-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区6' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-f-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区7' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-g-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区8' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-h-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区9' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-i-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区10' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-j-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区11' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-k-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区12' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-l-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区13' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-m-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区14' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-n-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区15' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-o-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区16' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-p-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区17' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-q-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区18' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-r-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区19' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-s-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区20' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-t-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区21' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-u-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区22' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-v-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区23' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-w-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区24' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-x-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区25' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-y-circle-outline' }}" />
+              <view wx:elif="{{ characteristic.name === '权限区26' }}" class="{{ 'characteristic-header-icon mdi mdi-alpha-z-circle-outline' }}" />
+              <view wx:else class="{{ 'characteristic-header-icon mdi mdi-crosshairs' }}" />
+              <view class="characteristic-header-title">{{ characteristic.name }}</view>
+              <view class="characteristic-header-actions">
+                <view 
+                  wx:if="{{ characteristic.properties.write }}" 
+                  class="{{ 'characteristic-header-action mdi mdi-' + (characteristic.write ? 'alpha-w' : 'alpha-w characteristic-header-action-inactive' )}}"
+                  bindtap="openWrite"
+                  data-device-id="{{ deviceId }}"
+                  data-service-id="{{ service.uuid }}"
+                  data-characteristic-id="{{ characteristic.uuid }}"
+                  data-service-index="{{ serviceIndex }}"
+                  data-characteristic-index="{{ characteristicIndex }}"
+                  data-service-name="{{ service.name }}"
+                  data-characteristic-name="{{ characteristic.name }}"
+                  data-characteristic-value="{{ characteristic.value }}"
+                  data-characteristic-desc="{{ characteristic.desc }}"
+                />
+                <view 
+                  wx:if="{{ characteristic.properties.notify }}" 
+                  class="{{ 'characteristic-header-action mdi mdi-' + (characteristic.isNotifying ? 'spin mdi-loading' : (characteristic.notify ? 'alpha-n characteristic-header-action-active' : 'alpha-n' )) }}"
+                  bindtap="notifyCharacteristic"
+                  data-device-id="{{ deviceId }}"
+                  data-service-id="{{ service.uuid }}"
+                  data-characteristic-id="{{ characteristic.uuid }}"
+                  data-service-index="{{ serviceIndex }}"
+                  data-characteristic-index="{{ characteristicIndex }}"
+                  data-notify="{{ characteristic.notify }}"
+                />
+                <view 
+                  wx:if="{{ characteristic.properties.read }}" 
+                  class="{{ 'characteristic-header-action mdi mdi-' + (characteristic.isReading ? 'spin mdi-loading' : 'alpha-r' ) }}"
+                  bindtap="readCharacteristsic"
+                  data-device-id="{{ deviceId }}"
+                  data-service-id="{{ service.uuid }}"
+                  data-characteristic-id="{{ characteristic.uuid }}"
+                  data-service-index="{{ serviceIndex }}"
+                  data-characteristic-index="{{ characteristicIndex }}"
+                />
+              </view>
+            </view>
+            <view class="characteristic-main">
+              <view wx:if="{{ characteristic.name === '锁舌' }}" class="characteristic-main-attr">
+                <view class="characteristic-main-item">
+                  <view class="characteristic-main-value">{{ characteristic.value }}</view>
+                </view>
+              </view>
+              <view wx:elif="{{ characteristic.name === '大门' }}" class="characteristic-main-attr">
+                <view class="characteristic-main-item">
+                  <view class="characteristic-main-value">{{ characteristic.value }}</view>
+                </view>
+              </view>
+              <view wx:elif="{{ characteristic.name === '读卡器' }}" class="characteristic-main-attr">
+                <view class="characteristic-main-item">
+                  <view class="characteristic-main-value">{{ characteristic.value }}</view>
+                </view>
+              </view>
+              <view wx:elif="{{ characteristic.name === '地址' }}" class="characteristic-main-attr">
+                <view class="characteristic-main-item">
+                  <view class="characteristic-main-value">{{ characteristic.value }}</view>
+                </view>
+              </view>
+              <view wx:elif="{{ characteristic.name === '用户' }}" class="characteristic-main-attr">
+                <view class="characteristic-main-item">
+                  <view class="characteristic-main-value">{{ characteristic.value }}</view>
+                </view>
+              </view>
+              <view wx:elif="{{ characteristic.name === '密码' }}" class="characteristic-main-attr">
+                <view class="characteristic-main-item">
+                  <view class="characteristic-main-value">{{ characteristic.value }}</view>
+                </view>
+              </view>
+              <view wx:elif="{{ characteristic.name[0] + characteristic.name[1] + characteristic.name[2] === '权限区' }}" class="characteristic-main-attr">
+                <view class="characteristic-main-item">
+                  <view class="characteristic-main-value">{{ characteristic.value !== '未知' ? characteristic.value.length : '' }}</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <!-- <van-toast id="van-toast" />
+  <van-popup 
+    id="van-popup"
+    show="{{ isWriteShow }}" 
+    bind:close="closeWrite"
+    closeable
+    position="bottom"
+    round
+  >
+    <view class="write">
+      <view class="write-header">
+        <view class="write-header-title">{{ write.serviceName + ' - ' + write.characteristicName }}</view>
+      </view>
+      <view class="write-main">
+        <view wx:if="{{ write.characteristicName === '地址' }}" class="write-main-field">
+          <van-cell-group title="{{ write.characteristicDesc }}">
+            <van-field
+              value="{{ write.characteristicValue }}"
+              type="text"
+              label="地址"
+              input-align="right"
+              bind:blur="confirmMqtt"
+              maxlength="200"
+              error="{{ write.error }}"
+              error-message="{{ write.errorMessage }}"
+              error-message-align="right"
+              clearable
+            />
+          </van-cell-group>
+        </view>
+        <view wx:elif="{{ write.characteristicName === '用户' }}" class="write-main-field">
+          <van-cell-group title="{{ write.characteristicDesc }}">
+            <van-field
+              value="{{ write.characteristicValue }}"
+              type="text"
+              label="用户名"
+              input-align="right"
+              bind:blur="confirmMqtt"
+              maxlength="30"
+              error="{{ write.error }}"
+              error-message="{{ write.errorMessage }}"
+              error-message-align="right"
+              clearable
+            />
+          </van-cell-group>
+        </view>
+        <view wx:elif="{{ write.characteristicName === '密码' }}" class="write-main-field">
+          <van-cell-group title="{{ write.characteristicDesc }}">
+            <van-field
+              value="{{ write.characteristicValue }}"
+              type="text"
+              password
+              label="密码"
+              input-align="right"
+              bind:blur="confirmMqtt"
+              maxlength="30"
+              error="{{ write.error }}"
+              error-message="{{ write.errorMessage }}"
+              error-message-align="right"
+              clearable
+            />
+          </van-cell-group>
+        </view>
+        <view wx:elif="{{ write.characteristicName[0] + write.characteristicName[1] + write.characteristicName[2] === '权限区' }}" class="write-main-field">
+          <van-cell-group
+            class="write-auth-item"
+            wx:key="authItemIndex"
+            wx:for="{{ write.characteristicValue }}"
+            wx:for-item="authItem"
+            wx:for-index="authItemIndex"
+            title="{{ '权限 ' + (authItemIndex + 1) }}"
+          >
+            <van-field
+              value="{{ authItem.key }}"
+              type="textarea"
+              autosize
+              readonly
+              label="标识"
+              input-align="right"
+              data-index="{{ authItemIndex}}"
+              data-key="{{ authItem.key }}"
+              maxlength="64"
+              bind:click-icon="randomAuthKey"
+              bind:click-input="navigateToNfc"
+            >
+              <van-icon class-prefix="mdi" slot="right-icon" name="nfc-variant" />
+            </van-field>
+            <van-field
+              value="{{ authItem.balance }}"
+              type="number"
+              label="剩余次数"
+              input-align="right"
+              data-index="{{ authItemIndex }}"
+              maxlength="9"
+              bind:click-icon="randomAuthBalance"
+              bind:blur="confirmAuthBalance"
+            >
+              <van-icon class-prefix="mdi" slot="right-icon" name="numeric" />
+            </van-field>
+          </van-cell-group>
+          <van-button
+            custom-class="{{ 'write-footer-action' }}" 
+            type="default"
+            size="large"
+            hairline
+            color="{{ 'rgba(73, 34, 82, 1)' }}"
+            icon="upload"
+            class-prefix="mdi"
+            bind:tap="writeCharacteristic"
+            loading="{{ isWriteSubmiting }}"
+            loading-text="保存中.."
+          >
+            保存
+          </van-button>
+        </view>
+      </view>
+      <view class="write-footer">
+        <van-button
+          wx:if="{{ write.characteristicName[0] + write.characteristicName[1] + write.characteristicName[2] !== '权限区' }}" 
+          custom-class="{{ 'write-footer-action' }}" 
+          type="default"
+          size="large"
+          hairline
+          color="{{ 'rgba(73, 34, 82, 1)' }}"
+          icon="upload"
+          class-prefix="mdi"
+          bind:tap="writeCharacteristic"
+          loading="{{ isWriteSubmiting }}"
+          loading-text="保存中.."
+        >
+          保存
+        </van-button>
+      </view>
+    </view>
+  </van-popup> -->
+</view>
