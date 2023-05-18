@@ -82,7 +82,7 @@
         <view class="section-item">
           <view class="section-item-title">光照强度</view>
           <view class="section-item-values">
-            <view class="section-item-value">{{ envData.light || 0 }} 流明</view>
+            <view class="section-item-value">{{ envData.light || 0 }} Lx</view>
           </view>
         </view>
         <view class="section-item">

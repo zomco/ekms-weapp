@@ -2,7 +2,7 @@
 import mqtt from '../../utils/mqtt.js';
 import * as echarts from '../../ec-canvas/echarts';
 
-const is_debuging = false
+const is_debuging = true
 const now_debuging = Date.now()
 const host = 'wxs://zomco.arnmi.com/mqtt'
 const mqttOpts = {
