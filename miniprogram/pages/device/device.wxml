@@ -3,7 +3,7 @@
     <t-loading theme="dots" size="40rpx" text="正在连接" layout="vertical" class="loader-wrapper" size="40rpx" />
   </view>
   <view wx:elif="{{!isConnecting && isConnected }}" class="canvas">
-    <view class="title">睡眠雷达</view>
+    <view class="title">{{name}}</view>
     <view class="detail">
       <view class="section">
         <view class="section-item">

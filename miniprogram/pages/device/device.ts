@@ -203,6 +203,8 @@ Page({
    * 页面的初始数据
    */
   data: {
+    id: '',
+    name: '',
     isConnecting: false,
     isConnected: false,
     isSubscribed: false,
@@ -221,16 +223,13 @@ Page({
 
   // mqtt
   client: null,
-  id: '',
 
   onLoad: function(options) {
-    // const { id } = options
-    const id = '864269064865054'
+    const { id, name } = options
     // 页面创建时执行
     const that = this
-    that.id = id
     if (is_debuging) {
-      that.setData({ isConnecting: false, isConnected: true })
+      that.setData({ id, name, isConnecting: false, isConnected: true })
       return
     }
     //开始连接
@@ -391,7 +390,8 @@ Page({
       return
     }
     // 断开连接
-    const { client, id } = this
+    const { id } = this.data
+    const { client } = this
     if (client === null || id === '') {
       return
     }

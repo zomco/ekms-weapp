@@ -1,50 +1,24 @@
 <!--index.wxml-->
 <view class="container">
-  <view class="main">
-    <view class="title">
-      IoT Tools
+  <view class="devices">
+    <view 
+      wx:for="{{devices}}" 
+      wx:for-index="index" 
+      wx:for-item="device"
+      wx:key="index"
+      class="device"
+      data-id="{{device.id}}"
+      data-name="{{device.name}}"
+      bindtap="bindDeviceTap"
+    >
+      <t-icon prefix="mdi" name="radar" size="96rpx" style="margin-left: 150rpx;" color="rgba(0,0,0,0.3)" />
+      <view class="content">
+        <view class="name">{{device.name}}</view>
+        <view class="status">{{device.status}}</view>
+      </view>
     </view>
-    <view class="box">
-      <t-button 
-          theme="primary" 
-          size="large" 
-          variant="outline"
-          icon="rectangle"
-          bindtap="scanRemoteCode"
-          block
-        >
-          RTU 设备
-        </t-button>
-        <t-button 
-          theme="primary" 
-          size="large" 
-          variant="outline"
-          icon="circle"
-          bindtap="navigateToBle"
-          block
-        >
-           BLE 设备
-        </t-button>
-        <t-button 
-          theme="primary" 
-          size="large" 
-          variant="outline"
-          icon="star"
-          bindtap="navigateToNfc"
-          block
-        >
-           NFC 标签
-        </t-button>
-        <t-button 
-          theme="primary" 
-          size="large" 
-          variant="outline"
-          icon="control-platform"
-          bindtap="navigateToPro"
-          block
-        >
-          WiFi 配网
-        </t-button>
+    <view class="device" style="justify-content: center;">
+      <t-icon prefix="mdi" name="plus-circle-outline" size="96rpx" color="rgba(0,0,0,0.3)" />
     </view>
   </view>
 </view>

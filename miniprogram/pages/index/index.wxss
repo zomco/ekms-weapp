@@ -1,20 +1,29 @@
-.main {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 10vh;
+
+.devices {
+  margin-top: 50rpx;
+  width: 100%;
 }
 
-.title {
-  font-size: 86rpx;
-  margin: 60rpx 40rpx;
+.device {
+  background-color: #f6f6f6;
+  border-radius: 20rpx;
+  height: 200rpx;
+  display: flex;
+  align-items: center;
+  margin: 20rpx;
 }
 
-.box {
-  width: 60vw;
-  height: 40vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+.content {
+  color: #666;
+  margin: 0 40rpx;
+}
+
+.name {
+  font-weight: 500;
+  font-size: 48rpx;
+}
+
+.status {
+  font-size: 30rpx;
+  margin: 10rpx 0;
 }

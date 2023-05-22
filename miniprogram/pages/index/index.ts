@@ -4,7 +4,19 @@ const app = getApp<IAppOption>()
 
 Page({
   data: {
-    motto: 'Hello World',
+    devices: [{ 
+      id: '864269064865054',
+      name: '测试设备',
+      status: '在线'
+    }, {
+      id: '864269064883545',
+      name: '演示设备1',
+      status: '离线'
+    }, {
+      id: '864269064861137',
+      name: '演示设备2',
+      status: '离线'
+    }],
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
@@ -12,8 +24,9 @@ Page({
     canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName') // 如需尝试获取用户信息可改为false
   },
   // 事件处理函数
-  bindViewTap() {
-    console.log('hello owkor')
+  bindDeviceTap(event) {
+    const { id, name } = event.currentTarget.dataset;
+    wx.navigateTo({ url: `/pages/device/device?id=${id}&name=${name}` })
   },
   onLoad() {
     // @ts-ignore
@@ -22,15 +35,6 @@ Page({
         canIUseGetUserProfile: true
       })
     }
-  },
-  navigateToBle: function () {
-    wx.navigateTo({ url: '/pages/bleDevices/bleDevices' });
-  },
-  navigateToNfc: function () {
-    wx.navigateTo({ url: '/pages/nfcDevice/nfcDevice' });
-  },
-  navigateToPro: function () {
-    console.log('navigate to provisioning')
   },
   scanRemoteCode: function () {
     wx.scanCode({

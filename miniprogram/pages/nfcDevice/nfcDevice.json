@@ -1,7 +1,0 @@
-{
-  "usingComponents": {
-    "t-popup": "../../miniprogram_npm/tdesign-miniprogram/popup/popup",
-    "t-toast": "../../miniprogram_npm/tdesign-miniprogram/toast/toast",
-    "t-button": "../../miniprogram_npm/tdesign-miniprogram/button/button"
-  }
-}
