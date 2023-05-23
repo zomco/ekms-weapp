@@ -1,11 +1,15 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/device/device"
+    "pages/device/device",
+    "pages/heart/heart",
+    "pages/breath/breath",
+    "pages/sleep/sleep",
+    "pages/position/position"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
+    "navigationBarBackgroundColor": "#fafafa",
     "navigationBarTitleText": "派极管",
     "navigationBarTextStyle": "black"
   },

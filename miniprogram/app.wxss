@@ -1,6 +1,10 @@
 /**app.wxss**/
 @import '/mdi/materialdesignicons.wxss';
 
+page {
+  background-color: #fafafa;
+}
+
 .container {
   height: 100%;
   display: flex;

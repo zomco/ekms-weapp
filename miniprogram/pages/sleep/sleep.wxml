@@ -1,0 +1,4 @@
+<!--pages/sleep/sleep.wxml-->
+<view class="container">
+  <view class="name">{{name}}</view>
+</view>

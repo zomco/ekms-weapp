@@ -17,8 +17,9 @@
         <view class="status">{{device.status}}</view>
       </view>
     </view>
-    <view class="device" style="justify-content: center;">
-      <t-icon prefix="mdi" name="plus-circle-outline" size="96rpx" color="rgba(0,0,0,0.3)" />
+    <view class="device" style="justify-content: center;flex-direction: column;">
+      <t-icon prefix="mdi" name="plus-circle" size="96rpx" color="rgba(0,0,0,0.3)" />
+      <view class="description" style="color: rgba(0,0,0,0.3);">添加新设备</view>
     </view>
   </view>
 </view>

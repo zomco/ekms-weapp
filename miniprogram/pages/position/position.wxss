@@ -1,0 +1,30 @@
+/* pages/position/position.wxss */
+.main {
+  width: 100%;
+}
+
+.realtime {
+  padding: 40rpx;
+  margin: 20rpx;
+}
+
+.rate {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.value {
+  font-size: 48rpx;
+  font-weight: 700;
+  margin-right: 10rpx;
+}
+
+.uint {
+  font-size: 30rpx;
+}
+
+.date {
+  font-size: 24rpx;
+  color: #888;
+}

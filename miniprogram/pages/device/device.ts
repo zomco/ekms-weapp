@@ -417,5 +417,25 @@ Page({
 
   onResize: function() {
     // 页面尺寸变化时执行
-  }
+  },
+
+  bindPositionTap: function() {
+    const { id, name } = this.data
+    wx.navigateTo({ url: `/pages/position/position?id=${id}&name=${name}` })
+  },
+
+  bindHeartTap: function() {
+    const { id, name } = this.data
+    wx.navigateTo({ url: `/pages/heart/heart?id=${id}&name=${name}` })
+  },
+
+  bindBreathTap: function() {
+    const { id, name } = this.data
+    wx.navigateTo({ url: `/pages/breath/breath?id=${id}&name=${name}` })
+  },
+
+  bindSleepTap: function() {
+    const { id, name } = this.data
+    wx.navigateTo({ url: `/pages/sleep/sleep?id=${id}&name=${name}` })
+  },
 })
