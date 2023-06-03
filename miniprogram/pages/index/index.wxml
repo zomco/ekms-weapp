@@ -11,7 +11,7 @@
       data-name="{{device.name}}"
       bindtap="bindDeviceTap"
     >
-      <t-icon prefix="mdi" name="radar" size="96rpx" style="margin-left: 150rpx;" color="rgba(0,0,0,0.3)" />
+      <t-icon prefix="mdi" name="circle-multiple-outline" size="96rpx" style="margin-left: 150rpx;" color="rgba(0,0,0,0.3)" />
       <view class="content">
         <view class="name">{{device.name}}</view>
         <view class="status">{{device.status}}</view>

@@ -70,13 +70,13 @@ const chartOptions = {
       stack: '1',
       data: chartData.map(n => [n.x, n.y2]),
       itemStyle: {
-        borderColor: '#eb665f',
-        color: '#eb665f'
+        borderColor: '#f0c044',
+        color: '#f0c044'
       },
       emphasis: {
         itemStyle: {
-          borderColor: '#eb665f',
-          color: '#eb665f'
+          borderColor: '#f0c044',
+          color: '#f0c044'
         }
       },
     }

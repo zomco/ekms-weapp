@@ -12,30 +12,88 @@ const chartData = []
 let chartDataIndex = 0
 let chartDataCategory = 1
 while (chartDataIndex < 48) {
-  const span = Math.trunc(Math.random() * 6 + 1)
+  const s = Math.trunc(Math.random() * 6 + 1)
+  const x1 = begin_mills + chartDataIndex * 1800000
+  const x2 = begin_mills + (chartDataIndex + s) * 1800000
   if (chartDataCategory === 1) {
-    for (let i = 0 ; i < span && chartDataIndex < 48 ; i++) {
-      const x = begin_mills + chartDataIndex * 1800000
-      chartData.push({ x, y1: is_debug ? chartDataCategory - 1 : 0, y2: is_debug ? 1 : 0, s: span })
-      chartDataIndex += 1
-    }
+    const c = '#917aef' 
+    chartData.push({ 
+      value: [is_debug ? chartDataCategory - 1 : 0, x1, x2 , s], 
+      itemStyle: {
+        borderColor: c,
+        color: c
+      },
+      emphasis: {
+        itemStyle: {
+          borderColor: c,
+          color: c
+        }
+      },
+    })
     chartDataCategory += 1
   } else if (chartDataCategory === 3) {
-    for (let i = 0 ; i < span && chartDataIndex < 48 ; i++) {
-      const x = begin_mills + chartDataIndex * 1800000
-      chartData.push({ x, y1: is_debug ? chartDataCategory - 1 : 0, y2: is_debug ? 1 : 0, s: span })
-      chartDataIndex += 1
-    }
+    const c = '#cdc3f7' 
+    chartData.push({ 
+      value: [is_debug ? chartDataCategory - 1 : 0, x1, x2 , s], 
+      itemStyle: {
+        borderColor: c,
+        color: c
+      },
+      emphasis: {
+        itemStyle: {
+          borderColor: c,
+          color: c
+        }
+      },
+    })
     chartDataCategory -= 1
   } else {
-    for (let i = 0 ; i < span && chartDataIndex < 48 ; i++) {
-      const x = begin_mills + chartDataIndex * 1800000
-      chartData.push({ x, y1: is_debug ? chartDataCategory - 1 : 0, y2: is_debug ? 1 : 0, s: span })
-      chartDataIndex += 1
-    }
+    const c = '#ac9cf4'
+    chartData.push({ 
+      value: [is_debug ? chartDataCategory - 1 : 0, x1, x2 , s],
+      itemStyle: {
+        borderColor: c,
+        color: c
+      },
+      emphasis: {
+        itemStyle: {
+          borderColor: c,
+          color: c
+        }
+      },
+    })
     const direction = Math.random() < 0.5
     chartDataCategory += (direction ? 1 : -1)
   }
+  chartDataIndex += s
+}
+const chartRenderItem = (params, api) => {
+  var categoryIndex = api.value(0);
+  var start = api.coord([api.value(1), categoryIndex]);
+  var end = api.coord([api.value(2), categoryIndex]);
+  var height = api.size([0, 1])[1];
+  var rectShape = echarts.graphic.clipRectByRect(
+    {
+      x: start[0],
+      y: start[1] - height / 2,
+      width: end[0] - start[0],
+      height: height
+    },
+    {
+      x: params.coordSys.x,
+      y: params.coordSys.y,
+      width: params.coordSys.width,
+      height: params.coordSys.height
+    }
+  );
+  return (
+    rectShape && {
+      type: 'rect',
+      transition: ['shape'],
+      shape: rectShape,
+      style: api.style()
+    }
+  );
 }
 const chartOptions = {
   grid: {
@@ -46,17 +104,12 @@ const chartOptions = {
     bottom: 0
   },
   tooltip: {
-    show: true,
-    trigger: 'axis',
-    formatter: (params) => {
-      const [
-        { data: [x1, y1] },
-        { data: { value: [x2, y2] }},
-      ] = params
+    formatter: function (params) {
+      const { data: { value: [y, x1, x2, s] }} = params
       const s1 = new Date(x1).toTimeString().slice(0,5)
       const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
-      const c = y1 === 0 && y2 === 1 ? '深睡' : (y1 === 1 && y2 === 1 ? '浅睡' : (y1 === 2 && y2 === 1 ? '快速眼动' : '' ))
-      return `${c}\n${s1}-${s2}`
+      const t = s * 30
+      return `${t} 分钟\n${s1}-${s2}`
     }
   },
   xAxis: {
@@ -64,50 +117,22 @@ const chartOptions = {
     splitLine: { show: false, interval: 4 },
   },
   yAxis: {
-    type: 'value',
-    splitLine: { show: true },
-    position: 'right',
+    splitLine: { show: false },
     show: false,
+    data: [1, 2, 3]
   },
   series: [
     {
-      name: 'min',
-      type: 'bar',
-      stack: '1',
-      barCategoryGap: '0',
+      type: 'custom',
+      renderItem: chartRenderItem,
       itemStyle: {
-        borderColor: 'transparent',
-        color: 'transparent'
+        opacity: 0.8
       },
-      emphasis: {
-        itemStyle: {
-          borderColor: 'transparent',
-          color: 'transparent'
-        }
+      encode: {
+        x: [1, 2],
+        y: 0
       },
-      data: chartData.map(n => [n.x, n.y1])
-    },
-    {
-      name: 'max',
-      type: 'bar',
-      stack: '1',
-      barCategoryGap: '0',
-      data: chartData.map(n => { 
-        const c = n.y1 === 0 && n.y2 === 1 ? '#917aef' : (n.y1 === 1 && n.y2 === 1 ? '#ac9cf4' : (n.y1 === 2 && n.y2 === 1 ? '#cdc3f7' : '#fff' ))
-        return {
-          value: [n.x, n.y2],
-          itemStyle: {
-            borderColor: c,
-            color: c,
-          },
-          emphasis: {
-            itemStyle: {
-              borderColor: c,
-              color: c
-            }
-          },  
-        }
-      }),
+      data: chartData
     }
   ]
 };

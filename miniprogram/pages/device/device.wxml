@@ -17,7 +17,7 @@
       </view>
       <view class="row">
         <view class="block" style="margin-right: 20rpx;" bindtap="bindPositionTap">
-          <t-icon prefix="mdi" name="bed" size="64rpx" color="#f0c044" />
+          <t-icon prefix="mdi" name="human" size="64rpx" color="#f0c044" />
           <view class="title">活动</view>
           <view class="date">5 月 22 日</view>
         </view>
