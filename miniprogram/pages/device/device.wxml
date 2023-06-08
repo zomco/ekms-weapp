@@ -1,32 +1,16 @@
+<!--pages/device/device.wxml-->
 <view class="container">
-  <view class="name">{{name}}</view>
   <view class="main">
-    <view class="banner">hello</view>
-    <view class="box">
-      <view class="row">
-        <view class="block" style="margin-right: 20rpx;" bindtap="bindHeartTap">
-          <t-icon prefix="mdi" name="heart" size="64rpx" color="#eb665f" />
-          <view class="title">心率</view>
-          <view class="date">5 月 22 日</view>
-        </view>
-        <view class="block" bindtap="bindBreathTap">
-          <t-icon prefix="mdi" name="lungs" size="64rpx" color="#6ad0bb" />
-          <view class="title">呼吸</view>
-          <view class="date">5 月 22 日</view>
-        </view>
-      </view>
-      <view class="row">
-        <view class="block" style="margin-right: 20rpx;" bindtap="bindPositionTap">
-          <t-icon prefix="mdi" name="human" size="64rpx" color="#f0c044" />
-          <view class="title">活动</view>
-          <view class="date">5 月 22 日</view>
-        </view>
-        <view class="block" bindtap="bindSleepTap">
-          <t-icon prefix="mdi" name="power-sleep" size="64rpx" color="#8c74ee" />
-          <view class="title">睡眠</view>
-          <view class="date">5 月 22 日</view>
-        </view>
-      </view>
+    <view wx:if="{{ isLoading }}" class="title">正在绑定</view>
+    <view wx:elif="{{ !!loadingError }}" class="block">
+      <view class="title">绑定失败</view>
+      <view class="subtitle">雷达未处于绑定状态</view>
+      <view class="tip">请长按雷达按钮两秒后松开，确保绿色指示灯闪烁后重试</view>
+    </view>
+    <view wx:else class="block">
+      <view class="title">绑定成功</view>
+      <view class="subtitle">雷达将自动切换到正常状态</view>
+      <view class="tip">返回页面，开始使用雷达</view>
     </view>
   </view>
 </view>

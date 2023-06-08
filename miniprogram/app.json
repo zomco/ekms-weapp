@@ -1,11 +1,12 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/device/device",
     "pages/heart/heart",
     "pages/breath/breath",
     "pages/sleep/sleep",
-    "pages/position/position"
+    "pages/position/position",
+    "pages/heartRt/heartRt",
+    "pages/device/device"
   ],
   "window": {
     "backgroundTextStyle": "light",

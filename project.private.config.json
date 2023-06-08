@@ -3,7 +3,8 @@
   "projectname": "zomco-weapp",
   "setting": {
     "compileHotReLoad": true,
-    "bigPackageSizeSupport": true
+    "bigPackageSizeSupport": true,
+    "urlCheck": false
   },
-  "libVersion": "2.32.0"
+  "libVersion": "2.32.1"
 }

@@ -1,4 +1,4 @@
-// pages/heart.ts
+// pages/heartRt/heartRt.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 
@@ -100,18 +100,14 @@ Page({
    * 页面的初始数据
    */
   data: {
-    id: '',
-    name: '',
-    ec: { onInit: initChart },
+    ec: { onInit: initChart }
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {
-    const { id, name } = options
-    const that = this
-    that.setData({ id, name })
+  onLoad() {
+
   },
 
   /**
@@ -161,13 +157,5 @@ Page({
    */
   onShareAppMessage() {
 
-  },
-
-  bindRealtimeTap() {
-    const { id, name } = this.data
-    wx.navigateTo({
-      url: `/pages/heartRt/heartRt?id=${id}&name=${name}`
-    })
   }
-
 })

@@ -118,5 +118,11 @@
         </view>
       </view>
     </view>
+    <view class="card">
+      <view class="header" bindtap="bindRealtimeTap">
+        <t-icon prefix="mdi" name="chart-line" size="64rpx" color="#eb665f" />
+        <view class="title">实时心率</view>
+      </view>
+    </view>
   </view>
 </view>

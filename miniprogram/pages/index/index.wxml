@@ -1,25 +1,45 @@
-<!--index.wxml-->
 <view class="container">
-  <view class="devices">
-    <view 
-      wx:for="{{devices}}" 
-      wx:for-index="index" 
-      wx:for-item="device"
-      wx:key="index"
-      class="device"
-      data-id="{{device.id}}"
-      data-name="{{device.name}}"
-      bindtap="bindDeviceTap"
-    >
-      <t-icon prefix="mdi" name="circle-multiple-outline" size="96rpx" style="margin-left: 150rpx;" color="rgba(0,0,0,0.3)" />
-      <view class="content">
-        <view class="name">{{device.name}}</view>
-        <view class="status">{{device.status}}</view>
-      </view>
-    </view>
-    <view class="device" style="justify-content: center;flex-direction: column;">
-      <t-icon prefix="mdi" name="plus-circle" size="96rpx" color="rgba(0,0,0,0.3)" />
-      <view class="description" style="color: rgba(0,0,0,0.3);">添加新设备</view>
+  <view class="header">
+    <view class="name" bindtap="bindDrawerShow">我的睡眠</view>
+    <view class="add" bindtap="bindAddDeviceTap">
+      <t-icon prefix="mdi" name="plus-circle-outline" size="48rpx" />
     </view>
   </view>
+  <view class="main">
+    <view class="banner">hello</view>
+    <view class="box">
+      <view class="row">
+        <view class="block" style="margin-right: 20rpx;" bindtap="bindHeartTap">
+          <t-icon prefix="mdi" name="heart" size="64rpx" color="#eb665f" />
+          <view class="title">心率</view>
+          <view class="date">5 月 22 日</view>
+        </view>
+        <view class="block" bindtap="bindBreathTap">
+          <t-icon prefix="mdi" name="lungs" size="64rpx" color="#6ad0bb" />
+          <view class="title">呼吸</view>
+          <view class="date">5 月 22 日</view>
+        </view>
+      </view>
+      <view class="row">
+        <view class="block" style="margin-right: 20rpx;" bindtap="bindPositionTap">
+          <t-icon prefix="mdi" name="human" size="64rpx" color="#f0c044" />
+          <view class="title">活动</view>
+          <view class="date">5 月 22 日</view>
+        </view>
+        <view class="block" bindtap="bindSleepTap">
+          <t-icon prefix="mdi" name="power-sleep" size="64rpx" color="#8c74ee" />
+          <view class="title">睡眠</view>
+          <view class="date">5 月 22 日</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <t-drawer
+    visible="{{visible}}"
+    placement="left"
+    title="已绑定设备"
+    items="{{ devices }}"
+
+    bind:item-click="bindDeviceTap"
+  />
 </view>
