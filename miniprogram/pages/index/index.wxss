@@ -3,13 +3,13 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: 20rpx;
+  margin-bottom: 40rpx;
   align-items: center;
 }
 
 .name {
   font-weight: 500;
-  font-size: 48rpx;
+  font-size: 40rpx;
   margin: 0 20rpx;
 }
 
@@ -19,16 +19,6 @@
 
 .main {
   width: 100%;
-}
-
-.banner {
-  background-color: #fff;
-  border-radius: 20rpx;
-  height: 300rpx;
-  display: flex;
-  align-items: center;
-  margin: 0 20rpx;
-  padding: 40rpx;
 }
 
 .box {
@@ -44,7 +34,7 @@
 .block {
   background-color: #fff;
   border-radius: 20rpx;
-  height: 300rpx;
+  min-height: 340rpx;
   flex: 1;
   display: flex;
   flex-direction: column;

@@ -5,6 +5,11 @@
     "t-tag": "../../miniprogram_npm/tdesign-miniprogram/tag/tag",
     "t-button": "../../miniprogram_npm/tdesign-miniprogram/button/button",
     "t-icon": "../../miniprogram_npm/tdesign-miniprogram/icon/icon",
-    "t-drawer": "../../miniprogram_npm/tdesign-miniprogram/drawer/drawer"
+    "t-drawer": "../../miniprogram_npm/tdesign-miniprogram/drawer/drawer",
+    "thumbnail-heart": "../../components/thumbnail-heart/thumbnail-heart",
+    "thumbnail-breath": "../../components/thumbnail-breath/thumbnail-breath",
+    "thumbnail-body": "../../components/thumbnail-body/thumbnail-body",
+    "thumbnail-env": "../../components/thumbnail-env/thumbnail-env",
+    "thumbnail-sleep": "../../components/thumbnail-sleep/thumbnail-sleep"
   }
 }

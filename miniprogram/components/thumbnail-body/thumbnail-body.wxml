@@ -1,0 +1,7 @@
+<!--components/hearttn/hearttn.wxml-->
+<view class="wrapper" bindtap="_BindNavigateTap">
+  <t-icon prefix="mdi" name="human" size="64rpx" color="#f0c044" />
+  <view class="title">活动</view>
+  <view class="date">5 月 22 日</view>
+  <ec-canvas id="chart-dom" canvas-id="chart" ec="{{ ec }}" class="chart"></ec-canvas>
+</view>

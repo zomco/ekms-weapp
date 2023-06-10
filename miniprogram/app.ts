@@ -4,13 +4,10 @@ App<IAppOption>({
   data: {
     system: 'ios'
   },
-  globalData: {},
+  globalData: {
+    mockData: true,
+    platform: wx.getSystemInfoSync().platform,
+  },
   onLaunch: function () {
-    const that = this;
-    wx.getSystemInfo({
-      success(res) {
-        that.data.system = res.platform
-      }
-    })
   }
 })

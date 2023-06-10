@@ -1,0 +1,18 @@
+/* components/hearttn/hearttn.wxss */
+.wrapper {
+  width: 100%;
+}
+
+.title {
+  margin: 10rpx 0;
+}
+
+.date {
+  font-size: 24rpx;
+  margin: 5rpx 0 15rpx;
+}
+
+.chart {
+  /* margin: 10rpx;
+  display: block; */
+}

@@ -1,7 +1,9 @@
 <!--pages/device/device.wxml-->
 <view class="container">
   <view class="main">
-    <view wx:if="{{ isLoading }}" class="title">正在绑定</view>
+    <view wx:if="{{ isLoading }}" class="block">
+      <t-icon style="animation: rotate 0.8s linear infinite;" prefix="mdi" name="radar" size="100rpx" />
+    </view>
     <view wx:elif="{{ !!loadingError }}" class="block">
       <view class="title">绑定失败</view>
       <view class="subtitle">雷达未处于绑定状态</view>
