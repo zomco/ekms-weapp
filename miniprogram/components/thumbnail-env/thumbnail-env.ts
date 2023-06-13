@@ -1,21 +1,12 @@
 // components/hearttn/hearttn.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-
-// const is_debug = app.data.system === 'devtools'
-const is_debug = true
-const now_mills = Date.now()
-const begin_mills = new Date().setHours(0, 0, 0, 0)
+import { get } from '../../utils/util'
 
 let chart
-const chartData = Array.from({ length: 12}, (v, i) => {
-  // const x1 = new Date(begin_mills + i * 1800000).toTimeString().slice(0,5)
-  // const x2 = new Date(begin_mills + (i + 1) * 1800000).toTimeString().slice(0,5)
-  // const x = `${x1} - ${x2}`
-  const x = begin_mills + i * 7200000
-  const y1 =  is_debug && now_mills > begin_mills ? Math.trunc(Math.random() * 100 + 20) : 0
-  return { x, y1 }
-})
+const start_mills = new Date().setHours(0, 0, 0, 0)
+const stop_mills = start_mills + 86400000
+const chartData1 = Array.from({ length: 12}, (v, i) => [start_mills + (i + 1) * 7200000, 0])
 const chartOptions = {
   grid: {
     containLabel: true,
@@ -31,6 +22,8 @@ const chartOptions = {
   yAxis: {
     show: false,
     type: 'value',
+    max: 45,
+    min: 0,
   },
   series: [
     {
@@ -38,7 +31,7 @@ const chartOptions = {
       type: 'line',
       smooth: true,
       symbol: 'none',
-      data: chartData.map(n => [n.x, n.y1]),
+      data: chartData1,
       itemStyle: {
         borderColor: '#68B3F6',
         color: '#68B3F6'
@@ -69,22 +62,6 @@ Component({
   lifetimes: {
     attached: function() {
       // 在组件实例进入页面节点树时执行
-      // 开始连接         
-      const that = this
-      const { sensorId } = that.data
-      console.log('attached', sensorId)
-      // if (!sensorId) return
-      // const series =  [barLowSerie(chartData),barHighSerie(chartData,'#eb665f')]
-      // const setSeries = (s) => {
-      //   if (chart) {
-      //     console.log(s)
-      //     chart.setOption({ series: s })
-      //   } else {
-      //     console.log('waiting chart instance available')
-      //     setTimeout(setSeries, 100, s)
-      //   }
-      // }
-      // setSeries(series)
     },
     detached: function() {
       // 在组件实例被从页面节点树移除时执行
@@ -110,7 +87,28 @@ Component({
   methods: {
     _BindNavigateTap: function() {
       const { sensorId } = this.data
-      wx.navigateTo({ url: `/pages/body/body?id=${sensorId}&name=test` })
+      wx.navigateTo({ url: `/pages/body/body?sensorId=${sensorId}&name=test` })
+    }
+  },
+
+  observers: {
+    'sensorId': async function(sensorId) {
+      if (!sensorId || !chart) return
+      const result = await get(`sensor/${sensorId}/statFloat`, {
+        measure: 'care_env',
+        field: 'temperature',
+        start: start_mills / 1000,
+        stop: stop_mills / 1000,
+      })
+      if (!result.length) return      
+      const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
+      chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.mean]))
+
+      chart.setOption({
+        series: [{
+          data: chartData1
+        }]
+      })
     }
   }
 })

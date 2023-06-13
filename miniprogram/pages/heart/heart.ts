@@ -1,22 +1,13 @@
 // pages/heart.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-
-// const is_debug = app.data.system === 'devtools'
-const is_debug = true
-const now_mills = Date.now()
-const begin_mills = new Date().setHours(0, 0, 0, 0)
+import { get } from '../../utils/util'
 
 let chart
-const chartData = Array.from({ length: 48}, (v, i) => {
-  // const x1 = new Date(begin_mills + i * 1800000).toTimeString().slice(0,5)
-  // const x2 = new Date(begin_mills + (i + 1) * 1800000).toTimeString().slice(0,5)
-  // const x = `${x1} - ${x2}`
-  const x = begin_mills + i * 1800000
-  const y1 =  is_debug && now_mills > begin_mills ? Math.trunc(Math.random() * 100 + 20) : 0
-  const y2 = is_debug && now_mills > begin_mills ? Math.trunc(Math.random() * 40 + 1) : 0
-  return { x, y1, y2 }
-})
+const start_mills = new Date().setHours(0, 0, 0, 0)
+const stop_mills = start_mills + 86400000
+const chartData1 = Array.from({ length: 12}, (v, i) => [start_mills + (i + 1) * 1800000, 0])
+const chartData2 = Array.from({ length: 12}, (v, i) => [start_mills + (i + 1) * 1800000, 0])
 const chartOptions = {
   grid: {
     containLabel: true,
@@ -35,7 +26,7 @@ const chartOptions = {
       ] = params
       const s1 = new Date(x1).toTimeString().slice(0,5)
       const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
-      return `${y1}-${y1+y2} 次/分\n${s1}-${s2}`
+      return `${parseInt(y1)}-${parseInt(y1)+parseInt(y2)} 次/分\n${s1}-${s2}`
     }
   },
   xAxis: {
@@ -46,12 +37,15 @@ const chartOptions = {
     type: 'value',
     splitLine: { show: true },
     position: 'right',
+    max: 150,
+    min: 0,
   },
   series: [
     {
       name: 'min',
       type: 'bar',
       stack: '1',
+      data: chartData1,
       itemStyle: {
         borderColor: 'transparent',
         color: 'transparent'
@@ -62,13 +56,12 @@ const chartOptions = {
           color: 'transparent'
         }
       },
-      data: chartData.map(n => [n.x, n.y1])
     },
     {
       name: 'max',
       type: 'bar',
       stack: '1',
-      data: chartData.map(n => [n.x, n.y2]),
+      data: chartData2,
       itemStyle: {
         borderColor: '#eb665f',
         color: '#eb665f'
@@ -100,7 +93,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    id: '',
+    sensorId: '',
     name: '',
     ec: { onInit: initChart },
   },
@@ -108,65 +101,37 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {
-    const { id, name } = options
+  onLoad: async function (options) {
+    const { sensorId, name } = options
     const that = this
-    that.setData({ id, name })
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
+    that.setData({ sensorId, name })
+    console.log('test test', sensorId, chart)
+    if (!sensorId) return
+    const result = await get(`sensor/${sensorId}/statInteger`, {
+      measure: 'care_heart',
+      field: 'rate',
+      start: start_mills / 1000,
+      stop: stop_mills / 1000,
+      every: '30m',
+    })
+    if (!result.length) return      
+    const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
+    chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.min]))
+    chartData2.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.max - v.min]))
+    
+    chart.setOption({
+      series: [{
+        data: chartData1
+      }, {
+        data: chartData2
+      }]
+    })
   },
 
   bindRealtimeTap() {
-    const { id, name } = this.data
+    const { sensorId, name } = this.data
     wx.navigateTo({
-      url: `/pages/heartRt/heartRt?id=${id}&name=${name}`
+      url: `/pages/heartRt/heartRt?id=${sensorId}&name=${name}`
     })
   }
 

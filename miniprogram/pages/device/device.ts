@@ -20,7 +20,7 @@ Page({
     const that = this
     this.setData({ code, isLoading: true })
     try {
-      const sensorId = await post('owner/sensor', { code })
+      const sensorId = await post('sensor', { code })
       that.setData({ isLoading: false, loadingError: null })
     } catch (e) {
       console.error(e)

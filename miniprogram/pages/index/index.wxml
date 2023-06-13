@@ -8,15 +8,15 @@
   <view class="main">
     <view class="box">
       <view class="row">
-        <thumbnail-sleep sensor-id="{{ sensor.id }}" class="block" />
+        <thumbnail-sleep sensor-id="{{ sensor.id || '' }}" class="block" />
       </view>
       <view class="row">
-        <thumbnail-heart sensor-id="{{ sensor.id }}" class="block" style="margin-right: 20rpx;" />
-        <thumbnail-breath sensor-id="{{ sensor.id }}" class="block" />
+        <thumbnail-heart sensor-id="{{ sensor.id || '' }}" class="block" style="margin-right: 20rpx;" />
+        <thumbnail-breath sensor-id="{{ sensor.id || '' }}" class="block" />
       </view>
       <view class="row">
-        <thumbnail-body sensor-id="{{ sensor.id }}" class="block" style="margin-right: 20rpx;" />
-        <thumbnail-env sensor-id="{{ sensor.id }}" class="block" />
+        <thumbnail-body sensor-id="{{ sensor.id || '' }}" class="block" style="margin-right: 20rpx;" />
+        <thumbnail-env sensor-id="{{ sensor.id || '' }}" class="block" />
       </view>
     </view>
   </view>

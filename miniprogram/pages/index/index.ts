@@ -16,7 +16,7 @@ Page({
     const that = this
     try {
       await login()
-      const { content } = await get('owner/sensor')
+      const { content } = await get('sensor')
       that.setData({ sensors: content, sensor: content[0] })
     } catch (e) {
       console.error(e)

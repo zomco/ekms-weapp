@@ -25,7 +25,8 @@ const get = (path, data) => new Promise((resolve, reject) => {
     data,
     method: 'GET',
     header: {
-      authorization: `Bearer ${wx.getStorageSync('token')}`
+      'authorization': `Bearer ${wx.getStorageSync('token')}`,
+      'content-type': 'application/json'
     },
     success: (res) => {
       const { success, result, message } = res.data
@@ -45,7 +46,8 @@ const post = (path, data) => new Promise((resolve, reject) => {
     data,
     method: 'POST',
     header: {
-      authorization: `Bearer ${wx.getStorageSync('token')}`
+      'authorization': `Bearer ${wx.getStorageSync('token')}`,
+      'content-type': 'application/json'
     },
     success: (res) => {
       const { success, result, message } = res.data

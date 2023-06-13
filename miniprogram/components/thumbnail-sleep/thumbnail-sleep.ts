@@ -184,7 +184,7 @@ Component({
   methods: {
     _BindNavigateTap: function() {
       const { sensorId } = this.data
-      wx.navigateTo({ url: `/pages/sleep/sleep?id=${sensorId}&name=test` })
+      wx.navigateTo({ url: `/pages/sleep/sleep?sensorId=${sensorId}&name=test` })
     }
   }
 })
