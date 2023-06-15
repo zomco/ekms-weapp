@@ -5,6 +5,7 @@
     "pages/breath/breath",
     "pages/sleep/sleep",
     "pages/body/body",
+    "pages/env/env",
     "pages/heartRt/heartRt",
     "pages/device/device"
   ],

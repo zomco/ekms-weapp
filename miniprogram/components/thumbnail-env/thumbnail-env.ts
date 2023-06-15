@@ -87,16 +87,15 @@ Component({
   methods: {
     _BindNavigateTap: function() {
       const { sensorId } = this.data
-      wx.navigateTo({ url: `/pages/body/body?sensorId=${sensorId}&name=test` })
+      if (!sensorId) return
+      wx.navigateTo({ url: `/pages/env/env?sensorId=${sensorId}&name=test` })
     }
   },
 
   observers: {
     'sensorId': async function(sensorId) {
       if (!sensorId || !chart) return
-      const result = await get(`sensor/${sensorId}/statFloat`, {
-        measure: 'care_env',
-        field: 'temperature',
+      const result = await get(`sensor/${sensorId}/stat/env/temperature`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
       })

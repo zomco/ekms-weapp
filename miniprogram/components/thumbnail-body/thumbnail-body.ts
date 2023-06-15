@@ -88,6 +88,7 @@ Component({
   methods: {
     _BindNavigateTap: function() {
       const { sensorId } = this.data
+      if (!sensorId) return
       wx.navigateTo({ url: `/pages/body/body?sensorId=${sensorId}&name=test` })
     }
   },
@@ -95,9 +96,7 @@ Component({
   observers: {
     'sensorId': async function(sensorId) {
       if (!sensorId || !chart) return
-      const result = await get(`sensor/${sensorId}/statInteger`, {
-        measure: 'care_body',
-        field: 'energy',
+      const result = await get(`sensor/${sensorId}/stat/body/energy`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
       })

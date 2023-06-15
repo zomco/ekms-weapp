@@ -1,71 +1,50 @@
 // pages/sleep/sleep.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-
-// const is_debug = app.data.system === 'devtools'
-const is_debug = true
-const now_mills = Date.now()
-const begin_mills = new Date().setHours(0, 0, 0, 0)
+import { get } from '../../utils/util'
 
 let chart
-const chartData = []
-let chartDataIndex = 0
-let chartDataCategory = 1
-while (chartDataIndex < 48) {
-  const s = Math.trunc(Math.random() * 6 + 1) // duration
-  const x1 = begin_mills + chartDataIndex * 1800000 // basetime
-  const x2 = begin_mills + (chartDataIndex + s) * 1800000 // basetime + duration
-  if (chartDataCategory === 1) {
-    const c = '#917aef' 
-    chartData.push({ 
-      value: [is_debug ? chartDataCategory - 1 : 0, x1, x2 , s], 
-      itemStyle: {
-        borderColor: c,
-        color: c
-      },
-      emphasis: {
-        itemStyle: {
-          borderColor: c,
-          color: c
-        }
-      },
-    })
-    chartDataCategory += 1
-  } else if (chartDataCategory === 3) {
-    const c = '#cdc3f7' 
-    chartData.push({ 
-      value: [is_debug ? chartDataCategory - 1 : 0, x1, x2 , s], 
-      itemStyle: {
-        borderColor: c,
-        color: c
-      },
-      emphasis: {
-        itemStyle: {
-          borderColor: c,
-          color: c
-        }
-      },
-    })
-    chartDataCategory -= 1
-  } else {
-    const c = '#ac9cf4'
-    chartData.push({ 
-      value: [is_debug ? chartDataCategory - 1 : 0, x1, x2 , s],
-      itemStyle: {
-        borderColor: c,
-        color: c
-      },
-      emphasis: {
-        itemStyle: {
-          borderColor: c,
-          color: c
-        }
-      },
-    })
-    const direction = Math.random() < 0.5
-    chartDataCategory += (direction ? 1 : -1)
+const start_mills = new Date().setHours(0, 0, 0, 0)
+const stop_mills = start_mills + 86400000
+const chartData = [{ 
+  value: [0, start_mills, stop_mills , 12],
+  itemStyle: {
+    borderColor: 'rgba(246,246,246)',
+    color: 'rgba(246,246,246)'
+  },
+  emphasis: {
+    itemStyle: {
+      borderColor: 'rgba(246,246,246)',
+      color: 'rgba(246,246,246)'
+    }
+  },
+}]
+const chartDataItem = (item) => {
+  let color = 'rgba(246,246,246)'
+  switch (item.state) {
+    case 0:
+      color = '#cdc3f7'
+      break;
+    case 1:
+      color = '#cdc3f7'
+      break;
+    case 2:
+      color = '#ac9cf4'
+      break;
   }
-  chartDataIndex += s
+  return { 
+    value: [item.state, item.start, item.stop , item.duration],
+    itemStyle: {
+      borderColor: color,
+      color: color
+    },
+    emphasis: {
+      itemStyle: {
+        borderColor: color,
+        color: color
+      }
+    },
+  }
 }
 const chartRenderItem = (params, api) => {
   var categoryIndex = api.value(0);
@@ -127,7 +106,6 @@ const chartOptions = {
   ],
   backgroundColor: 'rgba(246,246,246)',
 };
-
 const initChart = function (canvas, width, height, dpr) {
   chart = echarts.init(canvas, null, {
     width: width,
@@ -143,22 +121,6 @@ Component({
   lifetimes: {
     attached: function() {
       // 在组件实例进入页面节点树时执行
-      // 开始连接         
-      const that = this
-      const { sensorId } = that.data
-      console.log('attached', chartData)
-      // if (!sensorId) return
-      // const series =  [barLowSerie(chartData),barHighSerie(chartData,'#eb665f')]
-      // const setSeries = (s) => {
-      //   if (chart) {
-      //     console.log(s)
-      //     chart.setOption({ series: s })
-      //   } else {
-      //     console.log('waiting chart instance available')
-      //     setTimeout(setSeries, 100, s)
-      //   }
-      // }
-      // setSeries(series)
     },
     detached: function() {
       // 在组件实例被从页面节点树移除时执行
@@ -184,7 +146,27 @@ Component({
   methods: {
     _BindNavigateTap: function() {
       const { sensorId } = this.data
+      if (!sensorId) return
       wx.navigateTo({ url: `/pages/sleep/sleep?sensorId=${sensorId}&name=test` })
+    }
+  },
+
+  observers: {
+    'sensorId': async function(sensorId) {
+      if (!sensorId || !chart) return
+      const result = await get(`sensor/${sensorId}/duration/sleep/status`, {
+        start: start_mills / 1000,
+        stop: stop_mills / 1000,
+        unit: '10m'
+      })
+      if (!result.length) return
+      console.log(result)
+      chartData = result.map((v, i) => chartDataItem(v))
+      chart.setOption({
+        series: [{
+          data: chartData
+        }]
+      })
     }
   }
 })
