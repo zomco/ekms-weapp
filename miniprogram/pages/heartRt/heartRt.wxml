@@ -9,6 +9,6 @@
       <view class="date">5 月 23 日 09:27:16</view>
     </view> -->
     <ec-canvas id="chart-dom" canvas-id="chart" ec="{{ ec }}" class="chart"></ec-canvas>
-    <wsc device-id="123456" />
+    <wsc sensor-id="{{ sensorId }}" />
   </view>
 </view>
