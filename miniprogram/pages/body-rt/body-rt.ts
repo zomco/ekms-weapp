@@ -36,7 +36,7 @@ const chartOptions = {
     type: 'value',
     splitLine: { show: true },
     position: 'top',
-    max: 150,
+    max: 60,
     min: 0,
     axisLabel: { rotate: 90 },
   },
@@ -48,13 +48,13 @@ const chartOptions = {
       symbol: 'none',
       data: chartData,
       itemStyle: {
-        borderColor: '#eb665f',
-        color: '#eb665f'
+        borderColor: '#f0c044',
+        color: '#f0c044'
       },
       emphasis: {
         itemStyle: {
-          borderColor: '#eb665f',
-          color: '#eb665f'
+          borderColor: '#f0c044',
+          color: '#f0c044'
         }
       },
     }
@@ -96,14 +96,14 @@ Page({
     try {
       if (!chart) return
       const data = JSON.parse(detail)
-      const [{ heart, timestamp }] = data
-      if (!heart) return
-      const { rate, waves } = heart
-      if (rate) {
+      const [{ body, timestamp }] = data
+      if (!body) return
+      const { presence, movement, energy, distance, location } = body
+      if (energy) {
         if (chartData.length >= chartDataMax) {
           chartData.shift()
         }
-        chartData.push([rate, timestamp * 1000]);
+        chartData.push([energy, timestamp * 1000]);
         chart.setOption({
           series: {
             data: chartData

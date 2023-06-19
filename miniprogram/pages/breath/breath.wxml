@@ -118,5 +118,11 @@
         </view>
       </view>
     </view>
+    <view class="card">
+      <view class="header" bindtap="bindRealtimeTap">
+        <t-icon prefix="mdi" name="chart-line" size="64rpx" color="#6ad0bb" />
+        <view class="title">实时呼吸</view>
+      </view>
+    </view>
   </view>
 </view>

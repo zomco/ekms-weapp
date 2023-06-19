@@ -7,6 +7,9 @@
     "pages/body/body",
     "pages/env/env",
     "pages/heart-rt/heart-rt",
+    "pages/breath-rt/breath-rt",
+    "pages/body-rt/body-rt",
+    "pages/env-rt/env-rt",
     "pages/device/device"
   ],
   "window": {

@@ -105,4 +105,10 @@ Page({
     })
   },
 
+  bindRealtimeTap() {
+    const { sensorId, name } = this.data
+    wx.navigateTo({
+      url: `/pages/body-rt/body-rt?sensorId=${sensorId}&name=${name}`
+    })
+  }
 })

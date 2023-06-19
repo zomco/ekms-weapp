@@ -118,5 +118,11 @@
         </view>
       </view>
     </view>
+    <view class="card">
+      <view class="header" bindtap="bindRealtimeTap">
+        <t-icon prefix="mdi" name="chart-line" size="64rpx" color="#f0c044" />
+        <view class="title">实时体动</view>
+      </view>
+    </view>
   </view>
 </view>
