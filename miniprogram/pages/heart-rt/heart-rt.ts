@@ -2,21 +2,10 @@
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 
-// const is_debug = app.data.system === 'devtools'
-const is_debug = true
-const now_mills = Date.now()
-const begin_mills = new Date().setHours(0, 0, 0, 0)
-
 let chart
-const chartData = Array.from({ length: 48}, (v, i) => {
-  // const x1 = new Date(begin_mills + i * 1800000).toTimeString().slice(0,5)
-  // const x2 = new Date(begin_mills + (i + 1) * 1800000).toTimeString().slice(0,5)
-  // const x = `${x1} - ${x2}`
-  const x = begin_mills + i * 1800000
-  const y1 =  is_debug && now_mills > begin_mills ? Math.trunc(Math.random() * 100 + 20) : 0
-  const y2 = is_debug && now_mills > begin_mills ? Math.trunc(Math.random() * 40 + 1) : 0
-  return { x, y1, y2 }
-})
+const start_mills = new Date().getTime()
+const stop_mills = start_mills + 30000
+const chartData = Array.from({ length: 1}, (v, i) => [start_mills + (i + 1) * 1000, 0])
 const chartOptions = {
   grid: {
     containLabel: true,
@@ -31,11 +20,9 @@ const chartOptions = {
     formatter: (params) => {
       const [
         { data: [x1, y1] },
-        { data: [x2, y2] },
       ] = params
       const s1 = new Date(x1).toTimeString().slice(0,5)
-      const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
-      return `${y1}-${y1+y2} 次/分\n${s1}-${s2}`
+      return `${y1} 次/分\n${s1}`
     }
   },
   xAxis: {
@@ -46,29 +33,16 @@ const chartOptions = {
     type: 'value',
     splitLine: { show: true },
     position: 'right',
+    max: 150,
+    min: 0,
   },
   series: [
     {
-      name: 'min',
-      type: 'bar',
-      stack: '1',
-      itemStyle: {
-        borderColor: 'transparent',
-        color: 'transparent'
-      },
-      emphasis: {
-        itemStyle: {
-          borderColor: 'transparent',
-          color: 'transparent'
-        }
-      },
-      data: chartData.map(n => [n.x, n.y1])
-    },
-    {
       name: 'max',
-      type: 'bar',
-      stack: '1',
-      data: chartData.map(n => [n.x, n.y2]),
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      data: chartData,
       itemStyle: {
         borderColor: '#eb665f',
         color: '#eb665f'
@@ -111,7 +85,29 @@ Page({
   onLoad(options) {
     const { sensorId, name } = options
     const that = this
-    console.log("realtime sensor id", sensorId)
     that.setData({ sensorId, name })
   },
+
+  bindmessage: function({ detail }) {
+    try {
+      if (!chart) return
+      const data = JSON.parse(detail)
+      const [{ heart, timestamp }] = data
+      if (!heart) return
+      const { rate, waves } = heart
+      if (rate) {
+        if (chartData.length >= 30) {
+          chartData.shift()
+        }
+        chartData.push([timestamp * 1000, rate]);
+        chart.setOption({
+          series: {
+            data: chartData
+          }
+        })
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
 })

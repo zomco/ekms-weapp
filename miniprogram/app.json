@@ -6,7 +6,7 @@
     "pages/sleep/sleep",
     "pages/body/body",
     "pages/env/env",
-    "pages/heartRt/heartRt",
+    "pages/heart-rt/heart-rt",
     "pages/device/device"
   ],
   "window": {

@@ -2,47 +2,13 @@
 Component({
   lifetimes: {
     attached: function() {
-      // 在组件实例进入页面节点树时执行
-      // 开始连接
-      // const that = this
-      // const { sensorId } = that.data
-      // console.log("websocket sensor id", sensorId)
-      // if (!sensorId) return
-
-      // const client = wx.connectSocket({
-      //   url: `wss://zomco.arnmi.com/ws/sensor/${sensorId}`,
-      //   header: {
-      //     authorization: `Bearer ${wx.getStorageSync('token')}`
-      //   },
-      //   success: res => console.log(res),
-      //   fail: err => console.error(err)
-      // })
-      // that.setData({ isConnecting: true })
-      // client.onOpen(({ header, profile }) => {
-      //   that.setData({ isConnecting: false, isConnected: true })
-      // })
-      // //服务器重连连接关闭的回调
-      // client.onClose(({ code, reason }) => {
-      //   that.setData({ isConnected: false })
-      // })
-      // //服务器连接错误的回调
-      // client.onError(({ errMsg } ) => {
-      //   that.setData({ isConnecting: false, isConnected: false })
-      //   console.error(" 服务器 error 的回调" + errMsg)
-      // })
-      // //服务器下发消息的回调
-      // client.onMessage(({ data }) => {
-      //   that.triggerEvent('message', data)
-      // })
-      // that.client = client
     },
     detached: function() {
       // 在组件实例被从页面节点树移除时执行
       // 断开连接
       const that = this
-      const { sensorId } = that.data
       const { client } = that
-      if (!client || !sensorId) return
+      if (!client) return
       client.close()
     },
   },
@@ -69,7 +35,6 @@ Component({
   methods: {
     publish: function(data) {
       const that = this
-      const { sensorId } = that.data
       const { client } = that
       client.send(data)
     }
