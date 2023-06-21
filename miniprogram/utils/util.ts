@@ -1,3 +1,11 @@
+const app = getApp<IAppOption>()
+let HOST = 'care1.arnmi.com'
+if (app.globalData.env === 'release') {
+  HOST = 'care.arnmi.com'
+} else {
+  console.log('develop environment:', app.globalData.env)
+}
+
 export const formatTime = (date: Date) => {
   const year = date.getFullYear()
   const month = date.getMonth() + 1
@@ -19,7 +27,7 @@ const formatNumber = (n: number) => {
 }
 
 const get = (path, data) => new Promise((resolve, reject) => {
-  const url = `https://zomco.arnmi.com/api/${path}`
+  const url = `https://${HOST}/api/${path}`
   wx.request({
     url,
     data,
@@ -40,7 +48,7 @@ const get = (path, data) => new Promise((resolve, reject) => {
 })
 
 const post = (path, data) => new Promise((resolve, reject) => {
-  const url = `https://zomco.arnmi.com/api/${path}`
+  const url = `https://${HOST}/api/${path}`
   wx.request({
     url,
     data,
@@ -64,7 +72,7 @@ const login = () => new Promise((resolve, reject) => {
   wx.login({
     success: ({ code }) => {
       wx.request({
-        url: 'https://zomco.arnmi.com/api/auth/wxlogin',
+        url: `https://${HOST}/api/auth/wxlogin`,
         data: { code },
         method: 'POST',
         success: (res) => {

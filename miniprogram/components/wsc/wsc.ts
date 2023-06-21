@@ -1,4 +1,10 @@
 // components/wsc/wsc.ts
+const app = getApp<IAppOption>()
+let HOST = 'care1.arnmi.com'
+if (app.globalData.env === 'release') {
+  HOST = 'care.arnmi.com'
+} 
+
 Component({
   lifetimes: {
     attached: function() {
@@ -45,7 +51,7 @@ Component({
       if (!sensorId) return
       const that = this
       const client = wx.connectSocket({
-        url: `wss://zomco.arnmi.com/ws/sensor/${sensorId}`,
+        url: `wss://${HOST}/ws/sensor/${sensorId}`,
         header: {
           authorization: `Bearer ${wx.getStorageSync('token')}`
         },

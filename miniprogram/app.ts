@@ -1,13 +1,10 @@
 // app.ts
 
 App<IAppOption>({
-  data: {
-    system: 'ios'
-  },
   globalData: {
-    mockData: true,
-    platform: wx.getSystemInfoSync().platform,
+    env: wx.getAccountInfoSync().miniProgram.envVersion,
   },
   onLaunch: function () {
+   
   }
 })

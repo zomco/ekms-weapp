@@ -38,7 +38,7 @@ Page({
       success: function(res) {
         console.log(res, res.result)
         if (/^\d{15}$/.test(res.result)) {
-          wx.navigateTo({ url: `/pages/sensor/sensor?code=${res.result}` });
+          wx.navigateTo({ url: `/pages/device/device?code=${res.result}` });
         }
       },
     })

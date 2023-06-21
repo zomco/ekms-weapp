@@ -22,7 +22,7 @@ const chartOptions = {
       const [
         { data: [y1, x1] },
       ] = params
-      const s1 = new Date(x1).toTimeString().slice(0,5)
+      const s1 = new Date(x1).toTimeString().slice(0,8)
       return `${y1} 次/分\n${s1}`
     }
   },
@@ -36,7 +36,7 @@ const chartOptions = {
     type: 'value',
     splitLine: { show: true },
     position: 'top',
-    max: 60,
+    max: 30,
     min: 0,
     axisLabel: { rotate: 90 },
   },
