@@ -1,13 +1,11 @@
-import * as echarts from '../../ec-canvas/echarts';
 import { get, login } from '../../utils/util'
-
 
 Page({
   /**
    * 页面的初始数据
    */
   data: {
-    sensor: null,
+    indexes: [],
     sensors: [],
     visible: false,
   },
@@ -17,14 +15,29 @@ Page({
     try {
       await login()
       const { content } = await get('sensor')
-      that.setData({ sensors: content, sensor: content[0] })
+      that.setData({ 
+        sensors: content.map((v, i) => ({ label: v.name, value: i, id: v.id })), 
+        indexes: [0],
+      })
     } catch (e) {
       console.error(e)
     }
   },
 
-  bindDrawerShow: function() {
+  bindPickerShow: function() {
     this.setData({ visible: true })
+  },
+
+  bindPickerChange: function(e) {
+    const that = this
+    const { value, label, columns } = e.detail;
+    // that.setData({ indexes: value })
+  },
+
+  bindPickerConfirm: function(e) {
+    const that = this
+    const { value, label, columns } = e.detail;
+    that.setData({ indexes: value })
   },
 
   bindSleepTap(event) {

@@ -1,31 +1,52 @@
 <view class="container">
-  <view class="header">
-    <view class="name" bindtap="bindDrawerShow">睡好每一天</view>
-    <view class="add" bindtap="bindAddDeviceTap">
-      <t-icon prefix="mdi" name="plus-circle-outline" size="48rpx" />
-    </view>
-  </view>
   <view class="main">
     <view class="box">
-      <view class="row">
-        <thumbnail-sleep sensor-id="{{ sensor.id || '' }}" class="block" />
+      <view class="row" wx:if="{{ !sensors.length }}">
+        <view class="cell" bindtap="bindAddDeviceTap">
+          <view class="label">添加雷达</view>
+          <view class="action">
+            <t-icon prefix="mdi" name="plus-circle-outline" size="48rpx" />
+          </view>
+        </view>
+      </view>
+      <view class="row" wx:if="{{ !!sensors.length }}">
+        <view class="cell" bindtap="bindPickerShow">
+          <view class="label">{{ '睡眠雷达 ' + sensors[indexes[0]].label }}</view>
+          <view class="action">
+            <t-icon prefix="mdi" name="chevron-right" size="48rpx" />
+          </view>
+        </view>
       </view>
       <view class="row">
-        <thumbnail-heart sensor-id="{{ sensor.id || '' }}" class="block" style="margin-right: 20rpx;" />
-        <thumbnail-breath sensor-id="{{ sensor.id || '' }}" class="block" />
+        <thumbnail-sleep sensor-id="{{ sensors[indexes[0]].id || '' }}" class="block" />
       </view>
       <view class="row">
-        <thumbnail-body sensor-id="{{ sensor.id || '' }}" class="block" style="margin-right: 20rpx;" />
-        <thumbnail-env sensor-id="{{ sensor.id || '' }}" class="block" />
+        <thumbnail-heart sensor-id="{{ sensors[indexes[0]].id || '' }}" class="block" style="margin-right: 20rpx;" />
+        <thumbnail-breath sensor-id="{{ sensors[indexes[0]].id || '' }}" class="block" />
+      </view>
+      <view class="row">
+        <thumbnail-body sensor-id="{{ sensors[indexes[0]].id || '' }}" class="block" style="margin-right: 20rpx;" />
+        <thumbnail-env sensor-id="{{ sensors[indexes[0]].id || '' }}" class="block" />
+      </view>
+      <view class="row" wx:if="{{ !!sensors.length }}">
+        <view class="cell" bindtap="bindAddDeviceTap">
+          <view class="label">添加雷达</view>
+          <view class="action">
+            <t-icon prefix="mdi" name="plus-circle-outline" size="48rpx" />
+          </view>
+        </view>
       </view>
     </view>
   </view>
-  <t-drawer
-    visible="{{visible}}"
-    placement="left"
-    title="已绑定设备"
-    items="{{ devices }}"
-
-    bind:item-click="bindDeviceTap"
-  />
+  <t-picker
+    visible="{{ visible }}"
+    value="{{ indexes }}"
+    title="选择雷达"
+    cancelBtn="取消"
+    confirmBtn="确认"
+    bindchange="bindPickerChange"
+    bindconfirm="bindPickerConfirm"
+  >
+    <t-picker-item options="{{ sensors }}" />
+  </t-picker>
 </view>

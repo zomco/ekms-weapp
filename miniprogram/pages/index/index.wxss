@@ -7,16 +7,6 @@
   align-items: center;
 }
 
-.name {
-  font-weight: 500;
-  font-size: 40rpx;
-  margin: 0 20rpx;
-}
-
-.add {
-  margin: 0 20rpx;
-}
-
 .main {
   width: 100%;
 }
@@ -42,10 +32,21 @@
   padding: 40rpx;
 }
 
-.title {
-  margin: 10rpx 0;
+.cell {
+  background-color: #fff;
+  border-radius: 20rpx;
+  min-height: 40rpx;
+  flex: 1;
+  display: flex;
+  padding: 40rpx;
+  justify-content: space-between;
 }
 
-.date {
-  font-size: 24rpx;
+.label {
+  /* font-weight: 500;
+  font-size: 48rpx; */
+}
+
+.action {
+
 }

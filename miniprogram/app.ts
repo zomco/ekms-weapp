@@ -4,7 +4,7 @@ App<IAppOption>({
   globalData: {
     env: wx.getAccountInfoSync().miniProgram.envVersion,
   },
-  onLaunch: function () {
-   
+  onLaunch: async function () {
+
   }
 })

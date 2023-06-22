@@ -2,7 +2,10 @@
   "usingComponents": {
     "ec-canvas": "../../ec-canvas/ec-canvas",
     "t-icon": "../../miniprogram_npm/tdesign-miniprogram/icon/icon",
-    "t-drawer": "../../miniprogram_npm/tdesign-miniprogram/drawer/drawer",
+    "t-picker": "../../miniprogram_npm/tdesign-miniprogram/picker/picker",
+    "t-picker-item": "../../miniprogram_npm/tdesign-miniprogram/picker-item/picker-item",
+    "t-radio": "../../miniprogram_npm/tdesign-miniprogram/radio/radio",
+    "t-radio-group": "../../miniprogram_npm/tdesign-miniprogram/radio-group/radio-group",
     "thumbnail-heart": "../../components/thumbnail-heart/thumbnail-heart",
     "thumbnail-breath": "../../components/thumbnail-breath/thumbnail-breath",
     "thumbnail-body": "../../components/thumbnail-body/thumbnail-body",
