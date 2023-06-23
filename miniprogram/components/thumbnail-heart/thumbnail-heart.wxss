@@ -16,3 +16,10 @@
   /* margin: 10rpx;
   display: block; */
 }
+
+.loader {
+  min-height: 168rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

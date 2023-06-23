@@ -1,5 +1,11 @@
 <view class="container">
-  <view class="main">
+  <view wx:if="{{ isLoading }}" class="loader">
+    <t-loading theme="circular" size="40rpx" />
+  </view>
+  <view wx:elif="{{ loadingError }}" class="loader">
+    <view>{{ loadingError }}</view>
+  </view>
+  <view wx:else class="main">
     <view class="box">
       <view class="row" wx:if="{{ !sensors.length }}">
         <view class="cell" bindtap="bindAddDeviceTap">
@@ -16,6 +22,17 @@
             <t-icon prefix="mdi" name="chevron-right" size="48rpx" />
           </view>
         </view>
+        <t-picker
+          visible="{{ visible }}"
+          value="{{ indexes }}"
+          title="选择雷达"
+          cancelBtn="取消"
+          confirmBtn="确认"
+          bindchange="bindPickerChange"
+          bindconfirm="bindPickerConfirm"
+        >
+          <t-picker-item options="{{ sensors }}" />
+        </t-picker>
       </view>
       <view class="row">
         <thumbnail-sleep sensor-id="{{ sensors[indexes[0]].id || '' }}" class="block" />
@@ -38,15 +55,4 @@
       </view>
     </view>
   </view>
-  <t-picker
-    visible="{{ visible }}"
-    value="{{ indexes }}"
-    title="选择雷达"
-    cancelBtn="取消"
-    confirmBtn="确认"
-    bindchange="bindPickerChange"
-    bindconfirm="bindPickerConfirm"
-  >
-    <t-picker-item options="{{ sensors }}" />
-  </t-picker>
 </view>

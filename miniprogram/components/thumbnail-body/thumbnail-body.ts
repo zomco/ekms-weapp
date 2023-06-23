@@ -80,6 +80,7 @@ Component({
    */
   data: {
     ec: { onInit: initChart },
+    isLoading: false,
   },
 
   /**
@@ -95,11 +96,14 @@ Component({
 
   observers: {
     'sensorId': async function(sensorId) {
+      const that = this
       if (!sensorId || !chart) return
+      that.setData({ isLoading: true })
       const result = await get(`sensor/${sensorId}/stat/body/energy`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
       })
+      that.setData({ isLoading: false })
       if (!result.length) return      
       const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
       chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.mean]))

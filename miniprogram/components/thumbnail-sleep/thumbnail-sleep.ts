@@ -138,6 +138,7 @@ Component({
    */
   data: {
     ec: { onInit: initChart },
+    isLoading: false,
   },
 
   /**
@@ -153,12 +154,15 @@ Component({
 
   observers: {
     'sensorId': async function(sensorId) {
+      const that = this
       if (!sensorId || !chart) return
+      that.setData({ isLoading: true })
       const result = await get(`sensor/${sensorId}/duration/sleep/status`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
         unit: '10m'
       })
+      that.setData({ isLoading: false })
       if (!result.length) return
       console.log(result)
       chartData = result.map((v, i) => chartDataItem(v))

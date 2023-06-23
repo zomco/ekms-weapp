@@ -8,19 +8,23 @@ Page({
     indexes: [],
     sensors: [],
     visible: false,
+    isLoading: true,
+    loadingError: null,
   },
 
   onLoad: async function (options) {
     const that = this
+    that.setData({ isLoading: true })
     try {
       await login()
       const { content } = await get('sensor')
       that.setData({ 
+        isLoading: false,
         sensors: content.map((v, i) => ({ label: v.name, value: i, id: v.id })), 
         indexes: [0],
       })
     } catch (e) {
-      console.error(e)
+      that.setData({ isLoading: false, loadingError: e.message })
     }
   },
 

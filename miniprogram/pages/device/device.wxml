@@ -2,7 +2,7 @@
 <view class="container">
   <view class="main">
     <view wx:if="{{ isLoading }}" class="block">
-      <t-icon style="animation: rotate 0.8s linear infinite;" prefix="mdi" name="radar" size="100rpx" />
+      <t-loading theme="circular" size="40rpx" />
     </view>
     <view wx:elif="{{ !!loadingError }}" class="block">
       <view class="title">绑定失败</view>

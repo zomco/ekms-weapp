@@ -3,5 +3,8 @@
   <t-icon prefix="mdi" name="lungs" size="64rpx" color="#6ad0bb" />
   <view class="title">呼吸</view>
   <view class="date">5 月 22 日</view>
-  <ec-canvas id="chart-dom" canvas-id="chart" ec="{{ ec }}" class="chart"></ec-canvas>
+  <view wx:if="{{ isLoading }}" class="loader">
+    <t-loading theme="circular" size="40rpx" />
+  </view>
+  <ec-canvas wx:else id="chart-dom" canvas-id="chart" ec="{{ ec }}" class="chart"></ec-canvas>
 </view>

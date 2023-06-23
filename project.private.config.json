@@ -4,7 +4,7 @@
   "setting": {
     "compileHotReLoad": true,
     "bigPackageSizeSupport": true,
-    "urlCheck": true
+    "urlCheck": false
   },
   "libVersion": "2.32.3"
 }
