@@ -6,5 +6,5 @@
   <view wx:if="{{ isLoading }}" class="loader">
     <t-loading theme="circular" size="40rpx" />
   </view>
-  <ec-canvas wx:else id="chart-dom" canvas-id="chart" ec="{{ ec }}" class="chart"></ec-canvas>
+  <ec-canvas wx:else id="tn-breath-chart" canvas-id="tn-breath-chart" ec="{{ ec }}" class="chart"></ec-canvas>
 </view>
