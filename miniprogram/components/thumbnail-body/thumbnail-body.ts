@@ -67,7 +67,7 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        const chartData1 = Array.from({ length: 24}, (v, i) => [start_mills + (i + 1) * 3600000, 0])
+        const chartData1 = Array.from({ length: 24}, (v, i) => [start_mills + (i + 1) * 3600000, null])
         if (result && result.length) {
           const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
           chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.mean]))
@@ -88,8 +88,6 @@ Component({
           yAxis: {
             show: false,
             type: 'value',
-            max: 100,
-            min: 0,
           },
           series: [
             {
