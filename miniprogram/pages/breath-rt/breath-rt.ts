@@ -2,75 +2,7 @@
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 
-let chart
 const chartDataMax = 30
-const stop_mills = new Date().getTime()
-const start_mills = stop_mills - chartDataMax * 1000
-const chartData = Array.from({ length: chartDataMax}, (v, i) => [0, start_mills + (i + 1) * 1000])
-const chartOptions = {
-  grid: {
-    containLabel: true,
-    left: '20rpx',
-    top: 0,
-    right: '20rpx',
-    bottom: 0
-  },
-  tooltip: {
-    show: true,
-    trigger: 'axis',
-    formatter: (params) => {
-      const [
-        { data: [y1, x1] },
-      ] = params
-      const s1 = new Date(x1).toTimeString().slice(0,8)
-      return `${y1} 次/分\n${s1}`
-    }
-  },
-  yAxis: {
-    type: 'time',
-    splitLine: { show: true, interval: 4 },
-    axisLabel: { rotate: 270 },
-    inverse: true
-  },
-  xAxis: {
-    type: 'value',
-    splitLine: { show: true },
-    position: 'top',
-    max: 30,
-    min: 0,
-    axisLabel: { rotate: 90 },
-  },
-  series: [
-    {
-      name: 'max',
-      type: 'line',
-      smooth: true,
-      symbol: 'none',
-      data: chartData,
-      itemStyle: {
-        borderColor: '#6ad0bb',
-        color: '#6ad0bb'
-      },
-      emphasis: {
-        itemStyle: {
-          borderColor: '#6ad0bb',
-          color: '#6ad0bb'
-        }
-      },
-    }
-  ]
-};
-
-const initChart = function (canvas, width, height, dpr) {
-  chart = echarts.init(canvas, null, {
-    width: width,
-    height: height,
-    devicePixelRatio: dpr // new
-  });
-  canvas.setChart(chart);
-  chart.setOption(chartOptions);
-  return chart;
-}
 
 Page({
 
@@ -79,37 +11,94 @@ Page({
    */
   data: {
     sensorId: '',
-    name: '',
-    ec: { onInit: initChart }
+    ec: { lazyLoad: true },
   },
-
+  chart: null,
+  chartData: [],
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    const { sensorId, name } = options
+    const { sensorId } = options
     const that = this
-    that.setData({ sensorId, name })
+    that.setData({ sensorId })
+  },
+
+  bindopen: function() {
+    const that = this
+    const component = this.selectComponent('#rt-breath-chart')
+    if (!component) {
+      console.log('realtime breath component is missing', component)
+      return
+    }
+    component.init((canvas, width, height, dpr) => {
+      const chart = echarts.init(canvas, null, {
+        width: width,
+        height: height,
+        devicePixelRatio: dpr // new
+      });
+
+      chart.setOption({
+        grid: {
+          containLabel: true,
+          left: '20rpx',
+          top: 0,
+          right: '20rpx',
+          bottom: 0
+        },
+        yAxis: {
+          type: 'time',
+          splitLine: { show: true, interval: 4 },
+          axisLabel: { rotate: 270 },
+          inverse: true
+        },
+        xAxis: {
+          type: 'value',
+          splitLine: { show: true },
+          position: 'top',
+          max: 30,
+          min: 0,
+          axisLabel: { rotate: 90 },
+        },
+        series: [
+          {
+            name: 'max',
+            type: 'line',
+            smooth: true,
+            symbol: 'none',
+            data: that.chartData,
+            itemStyle: {
+              borderColor: '#6ad0bb',
+              color: '#6ad0bb'
+            },
+            emphasis: {
+              itemStyle: {
+                borderColor: '#6ad0bb',
+                color: '#6ad0bb'
+              }
+            },
+          }
+        ]
+      })
+      console.log(chart)
+      that.chart = chart
+      return chart
+    })
   },
 
   bindmessage: function({ detail }) {
+    const that = this
     try {
-      if (!chart) return
       const data = JSON.parse(detail)
       const [{ breath, timestamp }] = data
       if (!breath) return
       const { rate, waves, info } = breath
-      if (rate) {
-        if (chartData.length >= chartDataMax) {
-          chartData.shift()
-        }
-        chartData.push([rate, timestamp * 1000]);
-        chart.setOption({
-          series: {
-            data: chartData
-          }
-        })
+      if (!rate) return
+      if (that.chartData.length >= chartDataMax) {
+        that.chartData.shift()
       }
+      that.chartData.push([rate, timestamp * 1000]);
+      that.chart.setOption({ series: { data: that.chartData } })
     } catch (e) {
       console.log(e)
     }

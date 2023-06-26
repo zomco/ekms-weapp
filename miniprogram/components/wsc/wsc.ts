@@ -32,7 +32,7 @@ Component({
     isConnecting: false,
     isConnected: false,
     isSubscribed: false,
-    connectError: null,
+    connectError: '',
   },
 
   /**
@@ -58,18 +58,23 @@ Component({
         success: res => console.log(res),
         fail: err => console.error(err)
       })
-      that.setData({ isConnecting: true })
+      that.setData({ isConnecting: true, connectError: '', isConnected: false })
       client.onOpen(({ header, profile }) => {
-        that.setData({ isConnecting: false, isConnected: true })
+        that.setData({ isConnecting: false, connectError: '', isConnected: true })
+        that.triggerEvent('open', profile)
+        console.log('ws open', header, profile)
       })
       //服务器重连连接关闭的回调
       client.onClose(({ code, reason }) => {
-        that.setData({ isConnected: false })
+        that.setData({ isConnecting: false, connectError: '', isConnected: false })
+        that.triggerEvent('close', code)
+        console.log('ws open', code, reason)
       })
       //服务器连接错误的回调
       client.onError(({ errMsg } ) => {
-        that.setData({ isConnecting: false, isConnected: false })
-        console.error(" 服务器 error 的回调" + errMsg)
+        that.setData({ isConnecting: false, connectError: errMsg, isConnected: false })
+        that.triggerEvent('error', errMsg)
+        console.log('ws error', errMsg)
       })
       //服务器下发消息的回调
       client.onMessage(({ data }) => {

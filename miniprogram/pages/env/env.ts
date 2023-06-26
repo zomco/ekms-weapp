@@ -43,7 +43,6 @@ const chartOptions = {
       type: 'line',
       smooth: true,
       symbol: 'none',
-      areaStyle: {},
       data: chartData1,
       itemStyle: {
         borderColor: '#68B3F6',
