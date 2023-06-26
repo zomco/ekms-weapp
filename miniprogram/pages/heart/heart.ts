@@ -11,7 +11,8 @@ Page({
   data: {
     sensorId: '',
     ec: { lazyLoad: true },
-    isLoading: false,
+    isLoading: true,
+    loadingError: '',
     aggData1: {},
     aggData2: {},
     aggData3: {},
@@ -33,12 +34,19 @@ Page({
     that.setData({ isLoading: true })
     const start_mills = new Date().setHours(0, 0, 0, 0)
     const stop_mills = start_mills + 86400000
-    const result = await get(`sensor/${sensorId}/stat/heart/rate`, {
-      start: start_mills / 1000,
-      stop: stop_mills / 1000,
-      unit: '30m',
-    })
-    that.setData({ isLoading: false })
+    let result = []
+    try {
+      await that.loadAggData(sensorId, start_mills, stop_mills)
+      result = await get(`sensor/${sensorId}/stat/heart/rate`, {
+        start: start_mills / 1000,
+        stop: stop_mills / 1000,
+        unit: '30m',
+      })
+      await that.loadStatData(result)
+      that.setData({ isLoading: false, loadingError: '' })
+    } catch (e) {
+      that.setData({ isLoading: false, loadingError: e.message })
+    }
 
     const component = this.selectComponent('#heart-chart')
     if (!component) {
@@ -54,7 +62,7 @@ Page({
 
       const chartData1 = Array.from({ length: 48}, (v, i) => [start_mills + (i + 1) * 1800000, null])
       const chartData2 = Array.from({ length: 48}, (v, i) => [start_mills + (i + 1) * 1800000, null])
-      if (result && result.length) {
+      if (result.length) {
         const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
         chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.min]))
         chartData2.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.max - v.min]))
@@ -129,9 +137,6 @@ Page({
       });
       return chart;
     })
-
-    await that.loadAggData(sensorId, start_mills, stop_mills)
-    await that.loadStatData(result)
   },
 
   loadAggData: async function(sensorId, start_mills, stop_mills) {

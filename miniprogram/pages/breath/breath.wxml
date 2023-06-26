@@ -1,13 +1,19 @@
 <!--pages/breath/breath.wxml-->
+<wxs src="../../utils/common.wxs" module="common" />
 <view class="container">
-  <view class="name">呼吸频率</view>
-  <view class="main">
+  <view wx:if="{{ isLoading }}" class="loader">
+    <t-loading theme="circular" size="40rpx" />
+  </view>
+  <view wx:elif="{{ loadingError }}" class="loader">
+    <view>{{ loadingError }}</view>
+  </view>
+  <view wx:else class="main">
     <view class="realtime">
       <view class="rate">
         <view class="value">{{ aggData0.mean }}</view>
         <view class="unit">次/分</view>
       </view>
-      <view class="date">5 月 23 日 09:27:16</view>
+      <view class="date">{{ common.datetime() }}</view>
     </view>
     <ec-canvas id="breath-chart" canvas-id="breath-chart" ec="{{ ec }}" class="chart"></ec-canvas>
     <view class="card">

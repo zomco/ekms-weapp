@@ -11,7 +11,8 @@ Page({
   data: {
     sensorId: '',
     ec: { lazyLoad: true },
-    isLoading: false,
+    isLoading: true,
+    loadingError: '',
     aggData0: {},
   },
 
@@ -29,12 +30,19 @@ Page({
     that.setData({ isLoading: true })
     const start_mills = new Date().setHours(0, 0, 0, 0)
     const stop_mills = start_mills + 86400000
-    const result = await get(`sensor/${sensorId}/stat/body/energy`, {
-      start: start_mills / 1000,
-      stop: stop_mills / 1000,
-      unit: '30m',
-    })
-    that.setData({ isLoading: false })
+    let result = []
+
+    try {
+      result = await get(`sensor/${sensorId}/stat/body/energy`, {
+        start: start_mills / 1000,
+        stop: stop_mills / 1000,
+        unit: '30m',
+      })
+      await that.loadStatData(result)
+      that.setData({ isLoading: false, loadingError: '' })
+    } catch (e) {
+      that.setData({ isLoading: false, loadingError: e.message })
+    }
 
     const component = this.selectComponent('#body-chart')
     if (!component) {
@@ -107,8 +115,6 @@ Page({
 
       return chart;
     })
-
-    await that.loadStatData(result)
   },
 
   loadStatData: async function(data) {

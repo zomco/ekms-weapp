@@ -11,7 +11,8 @@ Page({
   data: {
     sensorId: '',
     ec: { lazyLoad: true },
-    isLoading: false,
+    isLoading: true,
+    loadingError: '',
     aggData0: {},
   },
 
@@ -23,15 +24,23 @@ Page({
     const that = this
     that.setData({ sensorId, name })
     if (!sensorId) return
+
     that.setData({ isLoading: true })
     const start_mills = new Date().setHours(0, 0, 0, 0)
     const stop_mills = start_mills + 86400000
-    const result = await get(`sensor/${sensorId}/stat/env/illuminance`, {
-      start: start_mills / 1000,
-      stop: stop_mills / 1000,
-      unit: '30m',
-    })
-    that.setData({ isLoading: false })
+    let result = []
+
+    try {
+      result = await get(`sensor/${sensorId}/stat/env/illuminance`, {
+        start: start_mills / 1000,
+        stop: stop_mills / 1000,
+        unit: '30m',
+      })
+      await that.loadStatData(result)
+      that.setData({ isLoading: false, loadingError: '' })
+    } catch (e) {
+      that.setData({ isLoading: false, loadingError: e.message })
+    }
 
     const component = this.selectComponent('#env-chart')
     if (!component) {

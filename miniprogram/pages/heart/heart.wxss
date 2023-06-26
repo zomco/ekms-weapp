@@ -112,3 +112,10 @@
   height:40rpx;
   margin: 0 1rpx;
 }
+
+.loader {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
