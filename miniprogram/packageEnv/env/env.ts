@@ -1,4 +1,4 @@
-// pages/breath/breath.ts
+// pages/position/position.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 import { get } from '../../utils/util'
@@ -13,31 +13,25 @@ Page({
     ec: { lazyLoad: true },
     isLoading: true,
     loadingError: '',
-    aggData1: {},
-    aggData2: {},
-    aggData3: {},
     aggData0: {},
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: async function (options) {
+  onLoad: async function(options) {
     const { sensorId } = options
     const that = this
     that.setData({ sensorId })
-    if (!sensorId) {
-      console.log('heart sensor id is missing', sensorId)
-      return
-    }
+    if (!sensorId) return
+
     that.setData({ isLoading: true })
     const start_mills = new Date().setHours(0, 0, 0, 0)
     const stop_mills = start_mills + 86400000
-
     let result = []
+
     try {
-      await that.loadAggData(sensorId, start_mills, stop_mills)
-      result = await get(`sensor/${sensorId}/stat/breath/rate`, {
+      result = await get(`sensor/${sensorId}/stat/env/illuminance`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
         unit: '30m',
@@ -48,9 +42,9 @@ Page({
       that.setData({ isLoading: false, loadingError: e.message })
     }
 
-    const component = this.selectComponent('#breath-chart')
+    const component = this.selectComponent('#env-chart')
     if (!component) {
-      console.log('breath component is missing', component)
+      console.log('env component is missing', component)
       return
     }
     component.init((canvas, width, height, dpr) => {
@@ -61,11 +55,9 @@ Page({
       });
 
       let chartData1 = []
-      let chartData2 = []
       if (result && result.length) {
-        chartData1 = result.map((v, i) => [Date.parse(v.time), v.min])
-        chartData2 = result.map((v, i) => [Date.parse(v.time), v.max - v.min])
-      }     
+        chartData1 = result.map((v, i) => [Date.parse(v.time), v.mean])
+      }   
 
       chart.setOption({
         grid: {
@@ -101,34 +93,19 @@ Page({
         },
         series: [
           {
-            name: 'min',
-            type: 'bar',
-            stack: '1',
-            itemStyle: {
-              borderColor: 'transparent',
-              color: 'transparent'
-            },
-            emphasis: {
-              itemStyle: {
-                borderColor: 'transparent',
-                color: 'transparent'
-              }
-            },
-            data: chartData1
-          },
-          {
             name: 'max',
-            type: 'bar',
-            stack: '1',
-            data: chartData2,
+            type: 'line',
+            smooth: true,
+            symbol: 'none',
+            data: chartData1,
             itemStyle: {
-              borderColor: '#6ad0bb',
-              color: '#6ad0bb'
+              borderColor: '#68B3F6',
+              color: '#68B3F6'
             },
             emphasis: {
               itemStyle: {
-                borderColor: '#6ad0bb',
-                color: '#6ad0bb'
+                borderColor: '#68B3F6',
+                color: '#68B3F6'
               }
             },
           }
@@ -136,32 +113,10 @@ Page({
       });
       return chart;
     })
+
+    await that.loadStatData(result)
   },
-  loadAggData: async function(sensorId, start_mills, stop_mills) {
-    const that = this
-    const result = await get(`sensor/${sensorId}/aggregate/breath/rate`, {
-      start: start_mills / 1000,
-      stop: stop_mills / 1000,
-      unit: '1m',
-    })
-    result.forEach((v, i) => {
-      switch (v.state) {
-        case "1": {
-          that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
-          break;
-        }
-        case "2": {
-          that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
-          break;
-        }
-        case "3": {
-          that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
-          break;
-        }
-      }
-    })
-  },
-  
+
   loadStatData: async function(data) {
     const that = this
     let sum = 0;
@@ -179,7 +134,7 @@ Page({
   bindRealtimeTap() {
     const { sensorId } = this.data
     wx.navigateTo({
-      url: `/pages/breath-rt/breath-rt?sensorId=${sensorId}`
+      url: `/packageEnv/env-rt/env-rt?sensorId=${sensorId}`
     })
   }
 })

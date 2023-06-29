@@ -1,6 +1,6 @@
 const app = getApp<IAppOption>()
 let HOST = 'care1.arnmi.com'
-if (app.globalData.env === 'release') {
+if (app.globalData.env === 'trial' || app.globalData.env === 'release') {
   HOST = 'care.arnmi.com'
 } else {
   console.log('develop environment:', app.globalData.env)

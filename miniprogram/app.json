@@ -1,16 +1,39 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/heart/heart",
-    "pages/breath/breath",
     "pages/sleep/sleep",
-    "pages/body/body",
-    "pages/env/env",
-    "pages/heart-rt/heart-rt",
-    "pages/breath-rt/breath-rt",
-    "pages/body-rt/body-rt",
-    "pages/env-rt/env-rt",
     "pages/device/device"
+  ],
+  "subpackages": [
+    {
+      "root": "packageHeart",
+      "name": "heart",
+      "pages": [
+        "heart/heart",
+        "heart-rt/heart-rt"
+      ]
+    }, {
+      "root": "packageBreath",
+      "name": "breath",
+      "pages": [
+        "breath/breath",
+        "breath-rt/breath-rt"
+      ]
+    }, {
+      "root": "packageBody",
+      "name": "body",
+      "pages": [
+        "body/body",
+        "body-rt/body-rt"
+      ]
+    }, {
+      "root": "packageEnv",
+      "name": "env",
+      "pages": [
+        "env/env",
+        "env-rt/env-rt"
+      ]
+    }
   ],
   "window": {
     "backgroundTextStyle": "light",

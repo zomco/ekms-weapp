@@ -34,7 +34,7 @@ Component({
     _BindNavigateTap: function() {
       const { sensorId } = this.data
       if (!sensorId) return
-      wx.navigateTo({ url: `/pages/body/body?sensorId=${sensorId}` })
+      wx.navigateTo({ url: `/packageBody/body/body?sensorId=${sensorId}` })
     }
   },
 
