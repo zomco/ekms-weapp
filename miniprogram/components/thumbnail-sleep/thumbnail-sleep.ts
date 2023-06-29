@@ -6,18 +6,21 @@ import { get } from '../../utils/util'
 const chartDataItem = (item) => {
   let color = 'rgba(246,246,246)'
   switch (item.state) {
-    case 0:
+    case '0':
+      color = '#917aef'
+      break;
+    case '1':
       color = '#cdc3f7'
       break;
-    case 1:
-      color = '#cdc3f7'
-      break;
-    case 2:
+    case '2':
       color = '#ac9cf4'
+      break;
+    case '3':
+      color = '#e6e1f7'
       break;
   }
   return { 
-    value: [item.state, item.start, item.stop , item.duration],
+    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
     itemStyle: {
       borderColor: color,
       color: color
@@ -107,7 +110,7 @@ Component({
       const result = await get(`sensor/${sensorId}/duration/sleep/status`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
-        unit: '10m'
+        unit: '1m'
       })
       that.setData({ isLoading: false })
 
@@ -123,22 +126,10 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        let chartData = [{ 
-          value: [0, start_mills, stop_mills , 12],
-          itemStyle: {
-            borderColor: 'rgba(246,246,246)',
-            color: 'rgba(246,246,246)'
-          },
-          emphasis: {
-            itemStyle: {
-              borderColor: 'rgba(246,246,246)',
-              color: 'rgba(246,246,246)'
-            }
-          },
-        }]
-        if (result && result.length) {
-          chartData = result.map((v, i) => chartDataItem(v))
-        }     
+        let chartData = []
+        if (result.length) {
+          chartData = result.filter(v => v.state !== '3').map((v, i) => chartDataItem(v))
+        } 
 
         chart.setOption({
           grid: {
@@ -151,6 +142,8 @@ Component({
           xAxis: {
             type: 'time',
             show: false,
+            min: start_mills,
+            max: stop_mills,
           },
           yAxis: {
             show: false,

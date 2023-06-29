@@ -6,18 +6,21 @@ import { get } from '../../utils/util'
 const chartDataItem = (item) => {
   let color = 'rgba(246,246,246)'
   switch (item.state) {
-    case 0:
+    case '0':
+      color = '#917aef'
+      break;
+    case '1':
       color = '#cdc3f7'
       break;
-    case 1:
-      color = '#cdc3f7'
-      break;
-    case 2:
+    case '2':
       color = '#ac9cf4'
+      break;
+    case '3':
+      color = '#e6e1f7'
       break;
   }
   return { 
-    value: [item.state, item.start, item.stop , item.duration],
+    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
     itemStyle: {
       borderColor: color,
       color: color
@@ -35,6 +38,7 @@ const chartRenderItem = (params, api) => {
   var start = api.coord([api.value(1), categoryIndex]);
   var end = api.coord([api.value(2), categoryIndex]);
   var height = api.size([0, 1])[1];
+
   var rectShape = echarts.graphic.clipRectByRect(
     {
       x: start[0],
@@ -69,6 +73,10 @@ Page({
     ec: { lazyLoad: true },
     isLoading: true,
     loadingError: '',
+    aggData1: {},
+    aggData2: {},
+    aggData3: {},
+    aggData4: {},
   },
 
   /**
@@ -87,10 +95,11 @@ Page({
     const stop_mills = start_mills + 86400000
     let result = []
     try {
+      await that.loadAggData(sensorId, start_mills, stop_mills)
       result = await get(`sensor/${sensorId}/duration/sleep/status`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
-        unit: '30m',
+        unit: '1m',
       })
       that.setData({ isLoading: false, loadingError: '' })
     } catch (e) {
@@ -109,21 +118,9 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      let chartData = [{ 
-        value: [0, start_mills, stop_mills , 12],
-        itemStyle: {
-          borderColor: 'rgba(246,246,246)',
-          color: 'rgba(246,246,246)'
-        },
-        emphasis: {
-          itemStyle: {
-            borderColor: 'rgba(246,246,246)',
-            color: 'rgba(246,246,246)'
-          }
-        },
-      }]
+      let chartData = []
       if (result.length) {
-        chartData = result.map((v, i) => chartDataItem(v))
+        chartData = result.filter(v => v.state !== '3').map((v, i) => chartDataItem(v))
       }     
 
       chart.setOption({
@@ -137,15 +134,18 @@ Page({
         tooltip: {
           formatter: function (params) {
             const { data: { value: [y, x1, x2, s] }} = params
+            const name = y == '0' ? '深睡' : y == '1' ? '浅睡' : y == '2' ? '清醒' : y == '3' ? '离床' : '未知'
             const s1 = new Date(x1).toTimeString().slice(0,5)
             const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
-            const t = s * 30
-            return `${t} 分钟\n${s1}-${s2}`
+            const t = s
+            return `${name} ${t} 分钟\n${s1}-${s2}`
           }
         },
         xAxis: {
           type: 'time',
           splitLine: { show: false, interval: 4 },
+          min: start_mills,
+          max: stop_mills,
         },
         yAxis: {
           splitLine: { show: false },
@@ -170,6 +170,35 @@ Page({
       return chart;
     })
 
+  },
+
+  loadAggData: async function(sensorId, start_mills, stop_mills) {
+    const that = this
+    const result = await get(`sensor/${sensorId}/aggregate/sleep/status`, {
+      start: start_mills / 1000,
+      stop: stop_mills / 1000,
+      unit: '1m',
+    })
+    result.forEach((v, i) => {
+      switch (v.state) {
+        case "0": {
+          that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+        case "1": {
+          that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+        case "2": {
+          that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+        case "3": {
+          that.setData({ aggData4: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+      }
+    })
   },
 
 })

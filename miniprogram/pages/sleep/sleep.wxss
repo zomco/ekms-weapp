@@ -30,7 +30,7 @@
 }
 
 .chart {
-  height: 300px;
+  height: 600rpx;
   margin: 0 20rpx;
   display: block;
 }

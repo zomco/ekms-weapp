@@ -20,9 +20,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function(options) {
-    const { sensorId, name } = options
+    const { sensorId } = options
     const that = this
-    that.setData({ sensorId, name })
+    that.setData({ sensorId })
     if (!sensorId) return
 
     that.setData({ isLoading: true })
@@ -54,10 +54,9 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      const chartData1 = Array.from({ length: 48}, (v, i) => [start_mills + (i + 1) * 1800000, null])
+      let chartData1 = []
       if (result && result.length) {
-        const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
-        chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.mean]))
+        chartData1 = result.map((v, i) => [Date.parse(v.time), v.mean])
       }   
 
       chart.setOption({
@@ -84,6 +83,8 @@ Page({
         xAxis: {
           type: 'time',
           splitLine: { show: true, interval: 4 },
+          min: start_mills,
+          max: stop_mills,
         },
         yAxis: {
           type: 'value',
