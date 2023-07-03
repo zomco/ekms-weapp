@@ -11,7 +11,7 @@
     <view class="realtime">
       <view class="prefix">睡眠总时长</view>
       <view class="rate">
-        <view class="value">{{ common.min2duration((aggData1.sum || 0) + (aggData2.sum || 0)) }}</view>
+        <view class="value">{{ common.duration((aggData1.sum || 0) + (aggData2.sum || 0)) }}</view>
       </view>
       <!-- <view class="prefix">睡眠质量较好</view> -->
       <view class="date">{{ common.datetime() }}</view>
@@ -27,25 +27,18 @@
         <view class="ratio-part" style="{{ 'background-color:#917aef;width:' + aggData1.ratio + '%;' }}"></view>
         <view class="ratio-part" style="{{ 'background-color:#ac9cf4;width:' + aggData2.ratio + '%;' }}"></view>
         <view class="ratio-part" style="{{ 'background-color:#cdc3f7;width:' + aggData3.ratio + '%;' }}"></view>
-        <!-- <view class="ratio-part" style="{{ 'background-color:#e6e1f7;width:' + aggData4.ratio + '%;' }}"></view> -->
       </view>
       <view class="box">
         <view class="row">
           <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData1.sum || 0 }}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
+            <duration value="{{ aggData1.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#917aef" />
               <view class="secondary-text" style="margin-left:10rpx;">深睡</view>
             </view>
           </view>
           <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData2.sum || 0 }}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
+            <duration value="{{ aggData2.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#ac9cf4" />
               <view class="secondary-text" style="margin-left:10rpx;">浅睡</view>
@@ -54,25 +47,12 @@
         </view>
         <view class="row">
           <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData3.sum || 0 }}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
+            <duration value="{{ aggData3.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#cdc3f7" />
               <view class="secondary-text" style="margin-left:10rpx;">清醒</view>
             </view>
           </view>
-          <!-- <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData4.sum || 0 }}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
-            <view class="secondary">
-              <t-icon prefix="mdi" name="square" size="20rpx" color="#e6e1f7" />
-              <view class="secondary-text" style="margin-left:10rpx;">离床</view>
-            </view>
-          </view> -->
         </view>
       </view>
     </view>

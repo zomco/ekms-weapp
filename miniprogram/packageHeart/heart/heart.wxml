@@ -72,20 +72,14 @@
       <view class="box">
         <view class="row">
           <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData1.sum || 0 }}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
+            <duration value="{{ aggData1.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#64B3F6" />
               <view class="secondary-text" style="margin-left:10rpx;">较慢</view>
             </view>
           </view>
           <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData2.sum || 0}}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
+            <duration value="{{ aggData2.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#6BCE7A" />
               <view class="secondary-text" style="margin-left:10rpx;">平静</view>
@@ -94,20 +88,14 @@
         </view>
         <view class="row">
           <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData3.sum || 0}}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
+            <duration value="{{ aggData3.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#F5BD43" />
               <view class="secondary-text" style="margin-left:10rpx;">活跃</view>
             </view>
           </view>
           <view class="block">
-            <view class="primary">
-              <view class="primary-value">{{ aggData4.sum || 0 }}</view>
-              <viwe class="primary-uint">分钟</viwe>
-            </view>
+            <duration value="{{ aggData4.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#EB665F" />
               <view class="secondary-text" style="margin-left:10rpx;">过快</view>

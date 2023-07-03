@@ -18,6 +18,7 @@
   font-size: 48rpx;
   font-weight: 700;
   margin-right: 10rpx;
+  margin-left: 10rpx;
 }
 
 .uint {

@@ -67,12 +67,13 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        let chartData1 = []
-        let chartData2 = []
+        const chartData1 = new Array(24).fill(0).map((v, i) => [start_mills + i * 3600000, null])
+        const chartData2 = new Array(24).fill(0).map((v, i) => [start_mills + i * 3600000, null])
         if (result && result.length) {
-          chartData1 = result.map((v, i) => [Date.parse(v.time), v.min])
-          chartData2 = result.map((v, i) => [Date.parse(v.time), v.max - v.min])
-        }     
+          const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
+          chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.min]))
+          chartData2.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.max - v.min]))
+        } 
 
         chart.setOption({
           grid: {

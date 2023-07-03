@@ -37,6 +37,10 @@ const get = (path, data) => new Promise((resolve, reject) => {
       'content-type': 'application/json'
     },
     success: (res) => {
+      if (res.statusCode === 401) {
+        wx.clearStorageSync()
+        wx.redirectTo({ url: '/pages/index/index' })
+      }
       const { success, result, message } = res.data
       if (!success) {
         return reject(new Error(message))
@@ -58,6 +62,10 @@ const post = (path, data) => new Promise((resolve, reject) => {
       'content-type': 'application/json'
     },
     success: (res) => {
+      if (res.statusCode === 401) {
+        wx.clearStorageSync()
+        wx.redirectTo({ url: '/pages/index/index' })
+      }
       const { success, result, message } = res.data
       if (!success) {
         return reject(new Error(message))
@@ -69,6 +77,14 @@ const post = (path, data) => new Promise((resolve, reject) => {
 })
 
 const login = () => new Promise((resolve, reject) => {
+  const token = wx.getStorageSync('token')
+  const username = wx.getStorageSync('username')
+  const sensors = wx.getStorageSync('sensors')
+  const sensorIndex = wx.getStorageSync('sensorIndex')
+  if (token && username) {
+    resolve({ token, username, sensors, sensorIndex })
+    return
+  }
   wx.login({
     success: ({ code }) => {
       wx.request({
@@ -82,7 +98,14 @@ const login = () => new Promise((resolve, reject) => {
           }
           wx.setStorageSync('token', result.token)
           wx.setStorageSync('username', result.username)
-          resolve(result)
+          wx.setStorageSync('sensors', result.sensors)
+          wx.setStorageSync('sensorIndex', 0)
+          resolve({ 
+            token: result.token, 
+            username: result.username, 
+            sensors: result.sensors, 
+            sensorIndex: 0,
+          })
         }
       })
     },

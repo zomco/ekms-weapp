@@ -17,15 +17,21 @@ var date = function() {
   return month + ' 月 ' + date + ' 日 '
 }
 
-var min2duration = function(min) {
-  var hour = min / 60
-  var minute = min % 60
+var duration = function(min) {
+  var p = min || 0
+  var hour = p / 60
+  var minute = p % 60
+  return !!Math.floor(hour) ? Math.floor(hour) + ' 小时 ' + Math.floor(minute) + ' 分 ' : Math.floor(minute) + ' 分钟 '
+}
 
-  return !!hour ? Math.floor(hour) + ' 小时 ' + Math.floor(minute) + ' 分 ' : Math.floor(minute) + ' 分钟 '
+var hours = function(value) {
+  console.log(value)
+  return Math.floor(value / 60)
 }
 
 module.exports = {
   datetime: datetime,
   date: date,
-  min2duration: min2duration
+  duration: duration,
+  hours: hours
 }

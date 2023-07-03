@@ -34,7 +34,7 @@ Page({
     that.setData({ isLoading: true })
     const start_mills = new Date().setHours(0, 0, 0, 0)
     const stop_mills = start_mills + 86400000
-    let result = []
+    let result:[] = []
     try {
       await that.loadAggData(sensorId, start_mills, stop_mills)
       result = await get(`sensor/${sensorId}/stat/heart/rate`, {
@@ -60,12 +60,13 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      let chartData1 = []
-      let chartData2 = []
-      if (result.length) {
-        chartData1 = result.map((v, i) => [Date.parse(v.time), v.min])
-        chartData2 = result.map((v, i) => [Date.parse(v.time), v.max - v.min])
-      }     
+      const chartData1 = new Array(48).fill(0).map((v, i) => [start_mills + i * 1800000, null])
+      const chartData2 = new Array(48).fill(0).map((v, i) => [start_mills + i * 1800000, null])
+      if (result && result.length) {
+        const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
+        chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.min]))
+        chartData2.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.max - v.min]))
+      }        
 
       chart.setOption({
         grid: {
@@ -83,6 +84,7 @@ Page({
               { data: [x1, y1] },
               { data: [x2, y2] },
             ] = params
+            if (!y1) return
             const s1 = new Date(x1).toTimeString().slice(0,5)
             const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
             return `${parseInt(y1)}-${parseInt(y1)+parseInt(y2)} 次/分\n${s1}-${s2}`
@@ -93,6 +95,7 @@ Page({
           splitLine: { show: true, interval: 4 },
           min: start_mills,
           max: stop_mills,
+          interval: 60000,
         },
         yAxis: {
           type: 'value',
@@ -179,6 +182,7 @@ Page({
       if (v.min < min) min = v.min
       sum = sum + v.mean
     })
+    min = min === 200 ? 0 : min
     const mean = data.length ? Math.floor(sum / data.length) : 0
     that.setData({ aggData0: { min, max, mean } })
   },

@@ -16,12 +16,11 @@ Page({
     const that = this
     that.setData({ isLoading: true })
     try {
-      await login()
-      const { content } = await get('sensor')
+      const { sensors, sensorIndex } = await login()
       that.setData({ 
         isLoading: false,
-        sensors: content.map((v, i) => ({ label: v.name, value: i, id: v.id })), 
-        indexes: [0],
+        sensors: sensors.map((v, i) => ({ label: v.name, value: i, id: v.id })), 
+        indexes: [sensorIndex],
       })
     } catch (e) {
       that.setData({ isLoading: false, loadingError: e.message })
@@ -41,6 +40,7 @@ Page({
   bindPickerConfirm: function(e) {
     const that = this
     const { value, label, columns } = e.detail;
+    wx.setStorageSync('sensorIndex', value[0])
     that.setData({ indexes: value })
   },
 
