@@ -6,7 +6,7 @@ var datetime = function() {
   var minute = now.getMinutes()
   var second = now.getSeconds()
 
-  return month + ' 月 ' + date + ' 日 ' + hour + ':' + minute + ':' + second
+  return month + ' 月 ' + date + ' 日 ' + hour + ':' + (minute < 10 ? '0' + minute : minute)  + ':' + (second < 10 ? '0' + second : second)
 }
 
 var date = function() {

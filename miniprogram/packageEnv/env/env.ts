@@ -73,11 +73,9 @@ Page({
           formatter: (params) => {
             const [
               { data: [x1, y1] },
-              { data: [x2, y2] },
             ] = params
             const s1 = new Date(x1).toTimeString().slice(0,5)
-            const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
-            return `${y1}-${y1+y2} 次/分\n${s1}-${s2}`
+            return `${y1.toFixed(2)} Lux\n${s1}`
           }
         },
         xAxis: {
