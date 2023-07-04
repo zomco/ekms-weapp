@@ -63,9 +63,12 @@ Page({
       const chartData1 = new Array(48).fill(0).map((v, i) => [start_mills + i * 1800000, null])
       const chartData2 = new Array(48).fill(0).map((v, i) => [start_mills + i * 1800000, null])
       if (result && result.length) {
-        const index = chartData1.findIndex(v => v[0] === Date.parse(result[0].time))
-        chartData1.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.min]))
-        chartData2.splice(index, result.length, ...result.map((v, i) => [Date.parse(v.time), v.max - v.min]))
+        result.forEach(v => {
+          const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
+          if (index === -1) return
+          chartData1[index] = [Date.parse(v.time), v.min]
+          chartData2[index] = [Date.parse(v.time), v.max - v.min]
+        })
       }        
 
       chart.setOption({

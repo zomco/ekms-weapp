@@ -3,7 +3,7 @@
 <view class="wrapper" bindtap="_BindNavigateTap">
   <t-icon prefix="mdi" name="heart" size="64rpx" color="#eb665f" />
   <view class="title">心率</view>
-  <view class="date">{{ common.date() }}</view>
+  <!-- <view class="date">{{ common.date() }}</view> -->
   <view wx:if="{{ isLoading }}" class="loader">
     <t-loading theme="circular" size="40rpx" />
   </view>

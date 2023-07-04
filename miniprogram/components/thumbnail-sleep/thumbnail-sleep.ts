@@ -13,7 +13,7 @@ const chartDataItem = (item) => {
       color = '#cdc3f7'
       break;
     case '2':
-      color = '#ac9cf4'
+      color = '#e6e1f7'
       break;
     case '3':
       color = '#e6e1f7'

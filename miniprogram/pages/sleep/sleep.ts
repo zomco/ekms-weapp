@@ -13,7 +13,7 @@ const chartDataItem = (item) => {
       color = '#cdc3f7'
       break;
     case '2':
-      color = '#ac9cf4'
+      color = '#e6e1f7'
       break;
     case '3':
       color = '#e6e1f7'
@@ -136,7 +136,7 @@ Page({
             const { data: { value: [y, x1, x2, s] }} = params
             const name = y == '0' ? '深睡' : y == '1' ? '浅睡' : y == '2' ? '清醒' : y == '3' ? '离床' : '未知'
             const s1 = new Date(x1).toTimeString().slice(0,5)
-            const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
+            const s2 = new Date(x2).toTimeString().slice(0,5)
             const t = s
             return `${name} ${t} 分钟\n${s1}-${s2}`
           }

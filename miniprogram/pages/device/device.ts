@@ -20,7 +20,17 @@ Page({
     const that = this
     this.setData({ code, isLoading: true })
     try {
-      const sensorId = await post('sensor', { code })
+      const sensor = await post('sensor', { code })
+      const sensors = wx.getStorageSync('sensors')
+      const index = sensors.findIndex(v => v.id === sensor.id)
+      if (index === -1) {
+        sensors.push(sensor)
+        wx.setStorageSync('sensors', sensors)
+        wx.setStorageSync('sensorIndex', sensors.length - 1)
+      } else {
+        wx.setStorageSync('sensorIndex', index)
+      }
+      wx.redirectTo({ url: '/pages/index/index' })
       that.setData({ isLoading: false, loadingError: null })
     } catch (e) {
       console.error(e)
