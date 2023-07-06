@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "ec-canvas": "../../ec-canvas/ec-canvas",
+    "t-icon": "../../miniprogram_npm/tdesign-miniprogram/icon/icon",
+    "wsc": "../../components/wsc/wsc"
+  }
+}

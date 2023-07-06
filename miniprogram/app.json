@@ -2,7 +2,9 @@
   "pages": [
     "pages/index/index",
     "pages/sleep/sleep",
-    "pages/device/device"
+    "pages/device/device",
+    "packageConfig/info/info",
+    "packageConfig/locate/locate"
   ],
   "subpackages": [
     {
@@ -12,21 +14,24 @@
         "heart/heart",
         "heart-rt/heart-rt"
       ]
-    }, {
+    },
+    {
       "root": "packageBreath",
       "name": "breath",
       "pages": [
         "breath/breath",
         "breath-rt/breath-rt"
       ]
-    }, {
+    },
+    {
       "root": "packageBody",
       "name": "body",
       "pages": [
         "body/body",
         "body-rt/body-rt"
       ]
-    }, {
+    },
+    {
       "root": "packageEnv",
       "name": "env",
       "pages": [

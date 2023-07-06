@@ -44,9 +44,16 @@ Page({
     that.setData({ indexes: value })
   },
 
-  bindSleepTap(event) {
-    const { id, name } = event.currentTarget.dataset;
-    wx.navigateTo({ url: `/pages/sleep/sleep?id=${id}&name=${name}` })
+  bindAdjustTap: function() {
+    const that = this
+    const sensor = that.data.sensors[that.data.indexes[0]]
+    wx.navigateTo({ url: `/packageConfig/locate/locate?sensorId=${sensor.id}` })
+  },
+
+  bindInfoTap: function() {
+    const that = this
+    const sensor = that.data.sensors[that.data.indexes[0]]
+    wx.navigateTo({ url: `/packageConfig/info/info?sensorId=${sensor.id}` })
   },
 
   bindAddDeviceTap: function () {

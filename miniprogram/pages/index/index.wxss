@@ -24,7 +24,7 @@
 .block {
   background-color: #fff;
   border-radius: 20rpx;
-  min-height: 240rpx;
+  height: 250rpx;
   flex: 1;
   display: flex;
   flex-direction: column;

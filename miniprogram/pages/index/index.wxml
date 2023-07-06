@@ -46,6 +46,22 @@
         <thumbnail-env sensor-id="{{ sensors[indexes[0]].id || '' }}" class="block" />
       </view>
       <view class="row" wx:if="{{ !!sensors.length }}">
+        <view class="cell" bindtap="bindAdjustTap">
+          <view class="label">调整雷达</view>
+          <view class="action">
+            <t-icon prefix="mdi" name="adjust" size="48rpx" />
+          </view>
+        </view>
+      </view>
+      <view class="row" wx:if="{{ !!sensors.length }}">
+        <view class="cell" bindtap="bindInfoTap">
+          <view class="label">雷达信息</view>
+          <view class="action">
+            <t-icon prefix="mdi" name="information-outline" size="48rpx" />
+          </view>
+        </view>
+      </view>
+      <view class="row" wx:if="{{ !!sensors.length }}">
         <view class="cell" bindtap="bindAddDeviceTap">
           <view class="label">添加雷达</view>
           <view class="action">

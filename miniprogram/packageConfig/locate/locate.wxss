@@ -1,0 +1,7 @@
+/* packageConfig/locate/locate.wxss */
+.chart {
+  height: 60vh;
+  width: 100vw;
+  margin: 0 20rpx;
+  display: block;
+}

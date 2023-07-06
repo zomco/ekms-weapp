@@ -80,7 +80,6 @@ Page({
           }
         ]
       })
-      console.log(chart)
       that.chart = chart
       return chart
     })

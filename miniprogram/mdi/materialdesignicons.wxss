@@ -415,4 +415,12 @@
 .mdi-heart::before {
   content: "\F02D1";
 }
+
+.mdi-information-outline::before {
+  content: "\F02FD";
+}
+
+.mdi-adjust::before {
+  content: "\F001A";
+}
 /*# sourceMappingURL=materialdesignicons.css.map */
