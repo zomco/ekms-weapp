@@ -9,13 +9,52 @@
   </view>
   <view wx:else class="main">
     <view class="realtime">
+      <view class="prefix">活动时长</view>
       <view class="rate">
-        <view class="value">{{ aggData0.mean }}</view>
-        <view class="unit">%</view>
+        <view class="value">{{ common.duration((aggData1.sum || 0) + (aggData2.sum || 0)) }}</view>
       </view>
       <view class="date">{{ common.datetime() }}</view>
     </view>
     <ec-canvas id="body-chart" canvas-id="body-chart" ec="{{ ec }}" class="chart"></ec-canvas>
+    <view class="card">
+      <view class="header">
+        <t-icon prefix="mdi" name="chart-pie" size="64rpx" color="#f0c044" />
+        <view class="title">活动区间</view>
+      </view>
+      <view class="divider" />
+      <view class="ratio">
+        <view class="ratio-part" style="{{ 'background-color:#f0c044;width:' + aggData1.ratio + '%;' }}"></view>
+        <view class="ratio-part" style="{{ 'background-color:#f2dd8f;width:' + aggData2.ratio + '%;' }}"></view>
+        <view class="ratio-part" style="{{ 'background-color:#f5e8c6;width:' + aggData3.ratio + '%;' }}"></view>
+      </view>
+      <view class="box">
+        <view class="row">
+          <view class="block">
+            <duration value="{{ aggData1.sum }}" />
+            <view class="secondary">
+              <t-icon prefix="mdi" name="square" size="20rpx" color="#f0c044" />
+              <view class="secondary-text" style="margin-left:10rpx;">活跃</view>
+            </view>
+          </view>
+          <view class="block">
+            <duration value="{{ aggData2.sum }}" />
+            <view class="secondary">
+              <t-icon prefix="mdi" name="square" size="20rpx" color="#f2dd8f" />
+              <view class="secondary-text" style="margin-left:10rpx;">移动</view>
+            </view>
+          </view>
+        </view>
+        <view class="row">
+          <view class="block">
+            <duration value="{{ aggData3.sum }}" />
+            <view class="secondary">
+              <t-icon prefix="mdi" name="square" size="20rpx" color="#f5e8c6" />
+              <view class="secondary-text" style="margin-left:10rpx;">静止</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
     <view class="card">
       <view class="header" bindtap="bindRealtimeTap">
         <t-icon prefix="mdi" name="chart-line" size="64rpx" color="#f0c044" />

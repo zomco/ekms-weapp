@@ -92,6 +92,7 @@ Page({
       const [{ env, timestamp }] = data
       if (!env) return
       const { illuminance, temperature, humidity } = env
+      console.log(illuminance, temperature, humidity)
       if (!illuminance) return
       if (that.chartData.length >= chartDataMax) {
         that.chartData.shift()

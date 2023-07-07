@@ -155,19 +155,19 @@ Page({
     })
     result.forEach((v, i) => {
       switch (v.state) {
-        case "1": {
+        case "0": {
           that.setData({ aggData4: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
           break;
         }
-        case "2": {
+        case "1": {
           that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
           break;
         }
-        case "3": {
+        case "2": {
           that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
           break;
         }
-        case "4": {
+        case "3": {
           that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
           break;
         }

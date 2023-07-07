@@ -1,7 +1,7 @@
 // pages/position/position.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-import { get } from '../../utils/util'
+import { get, renderDuration, bodyEnergyItem } from '../../utils/util'
 
 Page({
 
@@ -13,7 +13,10 @@ Page({
     ec: { lazyLoad: true },
     isLoading: true,
     loadingError: '',
-    aggData0: {},
+    aggData1: {},
+    aggData2: {},
+    aggData3: {},
+    aggData4: {},
   },
 
   /**
@@ -33,12 +36,12 @@ Page({
     let result = []
 
     try {
-      result = await get(`sensor/${sensorId}/stat/body/energy`, {
+      await that.loadAggData(sensorId, start_mills, stop_mills)
+      result = await get(`sensor/${sensorId}/duration/body/energy`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
-        unit: '30m',
+        unit: '1m',
       })
-      await that.loadStatData(result)
       that.setData({ isLoading: false, loadingError: '' })
     } catch (e) {
       that.setData({ isLoading: false, loadingError: e.message })
@@ -56,9 +59,9 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      let chartData1 = []
-      if (result && result.length) {
-        chartData1 = result.map((v, i) => [Date.parse(v.time), v.mean])
+      let chartData = []
+      if (result.length) {
+        chartData = result.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
       }     
 
       chart.setOption({
@@ -70,64 +73,72 @@ Page({
           bottom: 0
         },
         tooltip: {
-          show: true,
-          trigger: 'axis',
-          formatter: (params) => {
-            const [
-              { data: [x1, y1] },
-            ] = params
+          formatter: function (params) {
+            const { data: { value: [y, x1, x2, s] }} = params
+            const name = y == '0' ? '活跃' : y == '1' ? '移动' : y == '2' ? '静止' : y == '3' ? '离床' : '未知'
             const s1 = new Date(x1).toTimeString().slice(0,5)
-            return `${y1} %\n${s1}`
+            const s2 = new Date(x2).toTimeString().slice(0,5)
+            const t = s
+            return `${name} ${t} 分钟\n${s1}-${s2}`
           }
         },
         xAxis: {
           type: 'time',
-          splitLine: { show: true, interval: 4 },
+          splitLine: { show: false, interval: 4 },
           min: start_mills,
           max: stop_mills,
         },
         yAxis: {
-          type: 'value',
-          splitLine: { show: true },
-          position: 'right',
+          splitLine: { show: false },
+          show: false,
+          data: [1, 2, 3]
         },
         series: [
           {
-            name: 'max',
-            type: 'line',
-            smooth: true,
-            symbol: 'none',
-            data: chartData1,
+            type: 'custom',
+            renderItem: renderDuration,
             itemStyle: {
-              borderColor: '#f0c044',
-              color: '#f0c044'
+              opacity: 0.8
             },
-            emphasis: {
-              itemStyle: {
-                borderColor: '#f0c044',
-                color: '#f0c044'
-              }
+            encode: {
+              x: [1, 2],
+              y: 0
             },
+            data: chartData
           }
         ]
       });
-
       return chart;
     })
   },
 
-  loadStatData: async function(data) {
+  loadAggData: async function(sensorId, start_mills, stop_mills) {
     const that = this
-    let sum = 0;
-    let min = 200;
-    let max = 0;
-    data.forEach((v, i) => {
-      if (v.max > max) max = v.max
-      if (v.min < min) min = v.min
-      sum = sum + v.mean
+    const result = await get(`sensor/${sensorId}/aggregate/body/energy`, {
+      start: start_mills / 1000,
+      stop: stop_mills / 1000,
+      unit: '1m',
     })
-    const mean = data.length ? Math.floor(sum / data.length) : 0
-    that.setData({ aggData0: { min, max, mean } })
+    result.forEach((v, i) => {
+      switch (v.state) {
+        case "0": {
+          that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+        case "1": {
+          that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+        case "2": {
+          that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+        case "3": {
+          that.setData({ aggData4: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          break;
+        }
+      }
+    })
   },
 
   bindRealtimeTap() {

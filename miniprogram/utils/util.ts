@@ -1,4 +1,6 @@
 const app = getApp<IAppOption>()
+import * as echarts from '../ec-canvas/echarts';
+
 let HOST = 'care1.arnmi.com'
 if (app.globalData.env === 'trial' || app.globalData.env === 'release') {
   HOST = 'care.arnmi.com'
@@ -130,10 +132,105 @@ const login = () => new Promise((resolve, reject) => {
   })
 })
 
+const renderDuration = (params, api) => {
+  var categoryIndex = api.value(0);
+  var start = api.coord([api.value(1), categoryIndex]);
+  var end = api.coord([api.value(2), categoryIndex]);
+  var height = api.size([0, 1])[1];
+
+  var rectShape = echarts.graphic.clipRectByRect(
+    {
+      x: start[0],
+      y: start[1] - height / 2,
+      width: end[0] - start[0],
+      height: height
+    },
+    {
+      x: params.coordSys.x,
+      y: params.coordSys.y,
+      width: params.coordSys.width,
+      height: params.coordSys.height
+    }
+  );
+  return (
+    rectShape && {
+      type: 'rect',
+      transition: ['shape'],
+      shape: rectShape,
+      style: api.style()
+    }
+  );
+}
+
+const bodyEnergyItem = (item) => {
+  let color = 'rgba(246,246,246)'
+  switch (item.state) {
+    case '0':
+      color = '#f0c044'
+      break;
+    case '1':
+      color = '#f2dd8f'
+      break;
+    case '2':
+      color = '#f5e8c6'
+      break;
+    case '3':
+      color = '#f5e8c6'
+      break;
+  }
+  return { 
+    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
+    itemStyle: {
+      borderColor: color,
+      color: color
+    },
+    emphasis: {
+      itemStyle: {
+        borderColor: color,
+        color: color
+      }
+    },
+  }
+}
+
+const sleepStatusItem = (item) => {
+  let color = 'rgba(246,246,246)'
+  switch (item.state) {
+    case '0':
+      color = '#917aef'
+      break;
+    case '1':
+      color = '#cdc3f7'
+      break;
+    case '2':
+      color = '#e6e1f7'
+      break;
+    case '3':
+      color = '#e6e1f7'
+      break;
+  }
+  return { 
+    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
+    itemStyle: {
+      borderColor: color,
+      color: color
+    },
+    emphasis: {
+      itemStyle: {
+        borderColor: color,
+        color: color
+      }
+    },
+  }
+}
+
 module.exports = {
   formatTime: formatTime,
   reset,
   get,
   post,
   login,
+  renderDuration,
+  bodyEnergyItem,
+  sleepStatusItem,
 }

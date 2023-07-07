@@ -1,7 +1,38 @@
 // components/hearttn/hearttn.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-import { get } from '../../utils/util'
+import { get, renderDuration, bodyEnergyItem } from '../../utils/util'
+
+const chartDataItem = (item) => {
+  let color = 'rgba(246,246,246)'
+  switch (item.state) {
+    case '0':
+      color = '#f5d86e'
+      break;
+    case '1':
+      color = '#f2dd8f'
+      break;
+    case '2':
+      color = '#eddea6'
+      break;
+    case '3':
+      color = '#eddea6'
+      break;
+  }
+  return { 
+    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
+    itemStyle: {
+      borderColor: color,
+      color: color
+    },
+    emphasis: {
+      itemStyle: {
+        borderColor: color,
+        color: color
+      }
+    },
+  }
+}
 
 Component({
   lifetimes: {
@@ -48,7 +79,7 @@ Component({
       that.setData({ isLoading: true })
       const start_mills = new Date().setHours(0, 0, 0, 0)
       const stop_mills = start_mills + 86400000
-      const result = await get(`sensor/${sensorId}/stat/body/energy`, {
+      const result = await get(`sensor/${sensorId}/duration/body/energy`, {
         start: start_mills / 1000,
         stop: stop_mills / 1000,
         unit: '1h'
@@ -67,9 +98,9 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        let chartData1 = []
+        let chartData = []
         if (result && result.length) {
-          chartData1 = result.map((v, i) => [Date.parse(v.time), v.mean])
+          chartData = result.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
         }     
 
         chart.setOption({
@@ -81,32 +112,27 @@ Component({
             bottom: '-30rpx'
           },
           xAxis: {
-            show: false,
             type: 'time',
+            show: false,
             min: start_mills,
             max: stop_mills,
           },
           yAxis: {
             show: false,
-            type: 'value',
+            data: [1, 2, 3]
           },
           series: [
             {
-              name: 'max',
-              type: 'line',
-              smooth: true,
-              symbol: 'none',
-              data: chartData1,
+              type: 'custom',
+              renderItem: renderDuration,
               itemStyle: {
-                borderColor: '#f0c044',
-                color: '#f0c044'
+                opacity: 0.8
               },
-              emphasis: {
-                itemStyle: {
-                  borderColor: '#f0c044',
-                  color: '#f0c044'
-                }
+              encode: {
+                x: [1, 2],
+                y: 0
               },
+              data: chartData
             }
           ],
           backgroundColor: 'rgba(246,246,246)',

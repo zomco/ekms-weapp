@@ -1,66 +1,8 @@
 // pages/sleep/sleep.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-import { get } from '../../utils/util'
+import { get, renderDuration, sleepStatusItem } from '../../utils/util'
 
-const chartDataItem = (item) => {
-  let color = 'rgba(246,246,246)'
-  switch (item.state) {
-    case '0':
-      color = '#917aef'
-      break;
-    case '1':
-      color = '#cdc3f7'
-      break;
-    case '2':
-      color = '#e6e1f7'
-      break;
-    case '3':
-      color = '#e6e1f7'
-      break;
-  }
-  return { 
-    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
-    itemStyle: {
-      borderColor: color,
-      color: color
-    },
-    emphasis: {
-      itemStyle: {
-        borderColor: color,
-        color: color
-      }
-    },
-  }
-}
-const chartRenderItem = (params, api) => {
-  var categoryIndex = api.value(0);
-  var start = api.coord([api.value(1), categoryIndex]);
-  var end = api.coord([api.value(2), categoryIndex]);
-  var height = api.size([0, 1])[1];
-  var rectShape = echarts.graphic.clipRectByRect(
-    {
-      x: start[0],
-      y: start[1] - height / 2,
-      width: end[0] - start[0],
-      height: height
-    },
-    {
-      x: params.coordSys.x,
-      y: params.coordSys.y,
-      width: params.coordSys.width,
-      height: params.coordSys.height
-    }
-  );
-  return (
-    rectShape && {
-      type: 'rect',
-      transition: ['shape'],
-      shape: rectShape,
-      style: api.style()
-    }
-  );
-}
 
 Component({
   lifetimes: {
@@ -128,7 +70,7 @@ Component({
 
         let chartData = []
         if (result.length) {
-          chartData = result.filter(v => v.state !== '3').map((v, i) => chartDataItem(v))
+          chartData = result.filter(v => v.state !== '3').map((v, i) => sleepStatusItem(v))
         } 
 
         chart.setOption({
@@ -152,7 +94,7 @@ Component({
           series: [
             {
               type: 'custom',
-              renderItem: chartRenderItem,
+              renderItem: renderDuration,
               itemStyle: {
                 opacity: 0.8
               },
