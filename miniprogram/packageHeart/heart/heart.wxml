@@ -9,12 +9,13 @@
     <view>{{ loadingError }}</view>
   </view>
   <view wx:else class="main">
+    <date-picker title="心率" bindpick="bindCalendarPick" />
     <view class="realtime">
       <view class="rate">
         <view class="value">{{ aggData0.mean }}</view>
         <view class="unit">次/分</view>
       </view>
-      <view class="date">{{ common.datetime() }}</view>
+      <view class="date">{{ aggData0.overview }}</view>
     </view>
     <ec-canvas id="heart-chart" canvas-id="heart-chart" ec="{{ ec }}" class="chart"></ec-canvas>
     <view class="card">
@@ -91,7 +92,7 @@
             <duration value="{{ aggData3.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#F5BD43" />
-              <view class="secondary-text" style="margin-left:10rpx;">活跃</view>
+              <view class="secondary-text" style="margin-left:10rpx;">较快</view>
             </view>
           </view>
           <view class="block">

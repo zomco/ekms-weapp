@@ -3,36 +3,6 @@ const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 import { get, renderDuration, bodyEnergyItem } from '../../utils/util'
 
-const chartDataItem = (item) => {
-  let color = 'rgba(246,246,246)'
-  switch (item.state) {
-    case '0':
-      color = '#f5d86e'
-      break;
-    case '1':
-      color = '#f2dd8f'
-      break;
-    case '2':
-      color = '#eddea6'
-      break;
-    case '3':
-      color = '#eddea6'
-      break;
-  }
-  return { 
-    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
-    itemStyle: {
-      borderColor: color,
-      color: color
-    },
-    emphasis: {
-      itemStyle: {
-        borderColor: color,
-        color: color
-      }
-    },
-  }
-}
 
 Component({
   lifetimes: {
@@ -77,11 +47,11 @@ Component({
         return
       }
       that.setData({ isLoading: true })
-      const start_mills = new Date().setHours(0, 0, 0, 0)
-      const stop_mills = start_mills + 86400000
+      const startMills = new Date().setHours(0, 0, 0, 0)
+      const stopMills = startMills + 86400000
       const result = await get(`sensor/${sensorId}/duration/body/energy`, {
-        start: start_mills / 1000,
-        stop: stop_mills / 1000,
+        start: startMills / 1000,
+        stop: stopMills / 1000,
         unit: '1h'
       })
       that.setData({ isLoading: false })
@@ -114,8 +84,8 @@ Component({
           xAxis: {
             type: 'time',
             show: false,
-            min: start_mills,
-            max: stop_mills,
+            min: startMills,
+            max: stopMills,
           },
           yAxis: {
             show: false,

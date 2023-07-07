@@ -162,6 +162,37 @@ const renderDuration = (params, api) => {
   );
 }
 
+const envilluminanceItem = (item) => {
+  let color = 'rgba(246,246,246)'
+  switch (item.state) {
+    case '0':
+      color = '#68B3F6'
+      break;
+    case '1':
+      color = '#9dcbf5'
+      break;
+    case '2':
+      color = '#cde4f7'
+      break;
+    case '3':
+      color = '#cde4f7'
+      break;
+  }
+  return { 
+    value: [parseInt(item.state), Date.parse(item.start), Date.parse(item.stop) , item.duration],
+    itemStyle: {
+      borderColor: color,
+      color: color
+    },
+    emphasis: {
+      itemStyle: {
+        borderColor: color,
+        color: color
+      }
+    },
+  }
+}
+
 const bodyEnergyItem = (item) => {
   let color = 'rgba(246,246,246)'
   switch (item.state) {
@@ -233,4 +264,5 @@ module.exports = {
   renderDuration,
   bodyEnergyItem,
   sleepStatusItem,
+  envilluminanceItem,
 }

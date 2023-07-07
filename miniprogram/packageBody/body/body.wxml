@@ -8,12 +8,13 @@
     <view>{{ loadingError }}</view>
   </view>
   <view wx:else class="main">
+    <date-picker title="活动" bindpick="bindCalendarPick" />
     <view class="realtime">
       <view class="prefix">活动时长</view>
       <view class="rate">
         <view class="value">{{ common.duration((aggData1.sum || 0) + (aggData2.sum || 0)) }}</view>
       </view>
-      <view class="date">{{ common.datetime() }}</view>
+      <view class="date">静止</view>
     </view>
     <ec-canvas id="body-chart" canvas-id="body-chart" ec="{{ ec }}" class="chart"></ec-canvas>
     <view class="card">

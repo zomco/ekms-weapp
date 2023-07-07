@@ -1,7 +1,7 @@
 // components/hearttn/hearttn.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-import { get } from '../../utils/util'
+import { get, renderDuration, envilluminanceItem } from '../../utils/util'
 
 Component({
   lifetimes: {
@@ -46,11 +46,11 @@ Component({
         return
       }
       that.setData({ isLoading: true })
-      const start_mills = new Date().setHours(0, 0, 0, 0)
-      const stop_mills = start_mills + 86400000
-      const result = await get(`sensor/${sensorId}/stat/env/illuminance`, {
-        start: start_mills / 1000,
-        stop: stop_mills / 1000,
+      const startMills = new Date().setHours(0, 0, 0, 0)
+      const stopMills = startMills + 86400000
+      const result = await get(`sensor/${sensorId}/duration/env/illuminance`, {
+        start: startMills / 1000,
+        stop: stopMills / 1000,
         unit: '1h',
       })
       that.setData({ isLoading: false })
@@ -67,9 +67,9 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        let chartData1 = []
+        let chartData = []
         if (result && result.length) {
-          chartData1 = result.map((v, i) => [Date.parse(v.time), v.min])
+          chartData = result.filter(v => v.state !== '3').map((v, i) => envilluminanceItem(v))
         }     
 
         chart.setOption({
@@ -81,32 +81,27 @@ Component({
             bottom: '-30rpx'
           },
           xAxis: {
-            show: false,
             type: 'time',
-            min: start_mills,
-            max: stop_mills,
+            show: false,
+            min: startMills,
+            max: stopMills,
           },
           yAxis: {
             show: false,
-            type: 'value',
+            data: [1, 2, 3]
           },
           series: [
             {
-              name: 'max',
-              type: 'line',
-              smooth: true,
-              symbol: 'none',
-              data: chartData1,
+              type: 'custom',
+              renderItem: renderDuration,
               itemStyle: {
-                borderColor: '#68B3F6',
-                color: '#68B3F6'
+                opacity: 0.8
               },
-              emphasis: {
-                itemStyle: {
-                  borderColor: '#68B3F6',
-                  color: '#68B3F6'
-                }
+              encode: {
+                x: [1, 2],
+                y: 0
               },
+              data: chartData
             }
           ],
           backgroundColor: 'rgba(246,246,246)',

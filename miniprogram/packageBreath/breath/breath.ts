@@ -31,18 +31,14 @@ Page({
       return
     }
     that.setData({ isLoading: true })
-    const start_mills = new Date().setHours(0, 0, 0, 0)
-    const stop_mills = start_mills + 86400000
+    const startMills = new Date().setHours(0, 0, 0, 0)
+    const stopMills = startMills + 86400000
+    let aggData:[] = []
+    let statData:[] = []
 
-    let result:[] = []
     try {
-      await that.loadAggData(sensorId, start_mills, stop_mills)
-      result = await get(`sensor/${sensorId}/stat/breath/rate`, {
-        start: start_mills / 1000,
-        stop: stop_mills / 1000,
-        unit: '30m',
-      })
-      await that.loadStatData(result)
+      aggData = await that.loadAggData(sensorId, startMills, stopMills)
+      statData = await that.loadStatData(sensorId, startMills, stopMills)
       that.setData({ isLoading: false, loadingError: '' })
     } catch (e) {
       that.setData({ isLoading: false, loadingError: e.message })
@@ -60,10 +56,10 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      const chartData1 = new Array(48).fill(0).map((v, i) => [start_mills + i * 1800000, null])
-      const chartData2 = new Array(48).fill(0).map((v, i) => [start_mills + i * 1800000, null])
-      if (result && result.length) {
-        result.forEach(v => {
+      const chartData1 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      const chartData2 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      if (statData && statData.length) {
+        statData.forEach(v => {
           const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
           if (index === -1) return
           chartData1[index] = [Date.parse(v.time), v.min]
@@ -96,8 +92,8 @@ Page({
         xAxis: {
           type: 'time',
           splitLine: { show: true, interval: 4 },
-          min: start_mills,
-          max: stop_mills,
+          min: startMills,
+          max: stopMills,
           interval: 1800000,
         },
         yAxis: {
@@ -142,14 +138,16 @@ Page({
           }
         ]
       });
+      that.chart = chart
       return chart;
     })
   },
-  loadAggData: async function(sensorId, start_mills, stop_mills) {
+
+  loadAggData: async function(sensorId, startMills, stopMills) {
     const that = this
     const result = await get(`sensor/${sensorId}/aggregate/breath/rate`, {
-      start: start_mills / 1000,
-      stop: stop_mills / 1000,
+      start: startMills / 1000,
+      stop: stopMills / 1000,
       unit: '1m',
     })
     result.forEach((v, i) => {
@@ -168,21 +166,40 @@ Page({
         }
       }
     })
+
+    return result
   },
   
-  loadStatData: async function(data) {
+  loadStatData: async function(sensorId, startMills, stopMills) {
     const that = this
+    const result = await get(`sensor/${sensorId}/stat/breath/rate`, {
+      start: startMills / 1000,
+      stop: stopMills / 1000,
+      unit: '30m',
+    })
+
     let sum = 0;
     let min = 200;
     let max = 0;
-    data.forEach((v, i) => {
+    result.forEach((v, i) => {
       if (v.max > max) max = v.max
       if (v.min < min) min = v.min
       sum = sum + v.mean
     })
     min = min == 200 ? 0 : min
-    const mean = data.length ? Math.floor(sum / data.length) : 0
-    that.setData({ aggData0: { min, max, mean } })
+    const mean = result.length ? Math.floor(sum / result.length) : 0
+    let overview = ''
+    if (mean < 15) {
+      overview = '呼吸较慢'
+    } else if (mean < 20) {
+      overview = '呼吸正常'
+    } else {
+      overview = '呼吸过快'
+    }
+
+    that.setData({ aggData0: { min, max, mean, overview } })
+
+    return result
   },
 
   bindRealtimeTap() {
@@ -190,5 +207,33 @@ Page({
     wx.navigateTo({
       url: `/packageBreath/breath-rt/breath-rt?sensorId=${sensorId}`
     })
-  }
+  },
+
+  bindCalendarPick: async function({ detail }) {
+    const that = this
+    const startMills = detail
+    const stopMills = startMills + 86400000
+    const sensorId = that.data.sensorId
+    try {
+      const aggData = await that.loadAggData(sensorId, startMills, stopMills)
+      const statData = await that.loadStatData(sensorId, startMills, stopMills)
+      const chartData1 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      const chartData2 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      if (statData && statData.length) {
+        statData.forEach(v => {
+          const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
+          if (index === -1) return
+          chartData1[index] = [Date.parse(v.time), v.min]
+          chartData2[index] = [Date.parse(v.time), v.max - v.min]
+        })
+      }
+      that.chart.setOption({
+        xAxis: { min: startMills, max: stopMills },
+        series: [{ data: chartData1 }, { data: chartData2 } ],
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  },
+  
 })

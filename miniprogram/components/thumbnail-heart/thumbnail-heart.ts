@@ -46,11 +46,11 @@ Component({
         return
       }
       that.setData({ isLoading: true })
-      const start_mills = new Date().setHours(0, 0, 0, 0)
-      const stop_mills = start_mills + 86400000
+      const startMills = new Date().setHours(0, 0, 0, 0)
+      const stopMills = startMills + 86400000
       const result = await get(`sensor/${sensorId}/stat/heart/rate`, {
-        start: start_mills / 1000,
-        stop: stop_mills / 1000,
+        start: startMills / 1000,
+        stop: stopMills / 1000,
         unit: '1h'
       })
       that.setData({ isLoading: false })
@@ -67,8 +67,8 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        const chartData1 = new Array(24).fill(0).map((v, i) => [start_mills + i * 3600000, null])
-        const chartData2 = new Array(24).fill(0).map((v, i) => [start_mills + i * 3600000, null])
+        const chartData1 = new Array(24).fill(0).map((v, i) => [startMills + i * 3600000, null])
+        const chartData2 = new Array(24).fill(0).map((v, i) => [startMills + i * 3600000, null])
         if (result && result.length) {
           result.forEach(v => {
             const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
@@ -89,8 +89,8 @@ Component({
           xAxis: {
             show: false,
             type: 'time',
-            min: start_mills,
-            max: stop_mills,
+            min: startMills,
+            max: stopMills,
           },
           yAxis: {
             show: false,

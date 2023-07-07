@@ -4,7 +4,7 @@
 }
 
 .realtime {
-  padding: 40rpx;
+  padding-left: 40rpx;
   margin: 20rpx;
 }
 

@@ -17,6 +17,7 @@ Page({
     aggData2: {},
     aggData3: {},
     aggData4: {},
+    aggData0: {},
   },
 
   /**
@@ -27,21 +28,18 @@ Page({
     const that = this
     that.setData({ sensorId })
     if (!sensorId) {
-      console.log('heart sensor id is missing', sensorId)
+      console.log('body sensor id is missing', sensorId)
       return
     }
     that.setData({ isLoading: true })
-    const start_mills = new Date().setHours(0, 0, 0, 0)
-    const stop_mills = start_mills + 86400000
-    let result = []
+    const startMills = new Date().setHours(0, 0, 0, 0)
+    const stopMills = startMills + 86400000
+    let aggData = []
+    let durData = []
 
     try {
-      await that.loadAggData(sensorId, start_mills, stop_mills)
-      result = await get(`sensor/${sensorId}/duration/body/energy`, {
-        start: start_mills / 1000,
-        stop: stop_mills / 1000,
-        unit: '1m',
-      })
+      aggData = await that.loadAggData(sensorId, startMills, stopMills)
+      durData = await that.loadDurData(sensorId, startMills, stopMills)
       that.setData({ isLoading: false, loadingError: '' })
     } catch (e) {
       that.setData({ isLoading: false, loadingError: e.message })
@@ -60,8 +58,8 @@ Page({
       });
 
       let chartData = []
-      if (result.length) {
-        chartData = result.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
+      if (durData && durData.length) {
+        chartData = durData.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
       }     
 
       chart.setOption({
@@ -85,8 +83,8 @@ Page({
         xAxis: {
           type: 'time',
           splitLine: { show: false, interval: 4 },
-          min: start_mills,
-          max: stop_mills,
+          min: startMills,
+          max: stopMills,
         },
         yAxis: {
           splitLine: { show: false },
@@ -108,15 +106,28 @@ Page({
           }
         ]
       });
+
+      that.chart = chart
       return chart;
     })
   },
 
-  loadAggData: async function(sensorId, start_mills, stop_mills) {
+  loadDurData: async function(sensorId, startMills, stopMills) {
+    const that = this
+    const result = await get(`sensor/${sensorId}/duration/body/energy`, {
+      start: startMills / 1000,
+      stop: stopMills / 1000,
+      unit: '1m',
+    })
+
+    return result
+  },
+
+  loadAggData: async function(sensorId, startMills, stopMills) {
     const that = this
     const result = await get(`sensor/${sensorId}/aggregate/body/energy`, {
-      start: start_mills / 1000,
-      stop: stop_mills / 1000,
+      start: startMills / 1000,
+      stop: stopMills / 1000,
       unit: '1m',
     })
     result.forEach((v, i) => {
@@ -139,6 +150,8 @@ Page({
         }
       }
     })
+
+    return result
   },
 
   bindRealtimeTap() {
@@ -146,5 +159,28 @@ Page({
     wx.navigateTo({
       url: `/packageBody/body-rt/body-rt?sensorId=${sensorId}`
     })
-  }
+  },
+
+  bindCalendarPick: async function({ detail }) {
+    const that = this
+    const startMills = detail
+    const stopMills = startMills + 86400000
+    const sensorId = that.data.sensorId
+    try {
+      const aggData = await that.loadAggData(sensorId, startMills, stopMills)
+      const durData = await that.loadDurData(sensorId, startMills, stopMills)
+      let chartData = []
+      if (durData && durData.length) {
+        chartData = durData.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
+      }     
+
+      that.chart.setOption({
+        xAxis: { min: startMills, max: stopMills },
+        series: [{ data: chartData } ],
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  },
+
 })
