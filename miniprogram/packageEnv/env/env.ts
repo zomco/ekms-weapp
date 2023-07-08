@@ -120,6 +120,33 @@ Page({
       unit: '1m',
     })
 
+    let sum = 0
+    let duration = 0
+    result.forEach((v, i) => {
+      sum = sum + ((parseInt(v.state) + 1) * parseInt(v.duration))
+      duration = duration + parseInt(v.duration)
+    })
+
+    const mean = result.length ? Math.floor(sum / duration) : 0
+    switch (mean) {
+      case 1: {
+        that.setData({ aggData0: { overview: '较亮' }})
+        break;
+      }
+      case 2: {
+        that.setData({ aggData0: { overview: '适中' }})
+        break;
+      }
+      case 3: {
+        that.setData({ aggData0: { overview: '较暗' }})
+        break;
+      }
+      case 4: {
+        that.setData({ aggData0: { overview: '较暗' }})
+        break;
+      }
+    }
+
     return result
   },
 

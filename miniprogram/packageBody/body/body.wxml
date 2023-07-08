@@ -14,7 +14,7 @@
       <view class="rate">
         <view class="value">{{ common.duration((aggData1.sum || 0) + (aggData2.sum || 0)) }}</view>
       </view>
-      <view class="date">静止</view>
+      <view class="date">{{ aggData0.overview }}</view>
     </view>
     <ec-canvas id="body-chart" canvas-id="body-chart" ec="{{ ec }}" class="chart"></ec-canvas>
     <view class="card">
