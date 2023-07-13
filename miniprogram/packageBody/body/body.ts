@@ -35,11 +35,11 @@ Page({
     const startMills = new Date().setHours(0, 0, 0, 0)
     const stopMills = startMills + 86400000
     let aggData = []
-    let durData = []
+    let statData = []
 
     try {
       aggData = await that.loadAggData(sensorId, startMills, stopMills)
-      durData = await that.loadDurData(sensorId, startMills, stopMills)
+      statData = await that.loadStatData(sensorId, startMills, stopMills)
       that.setData({ isLoading: false, loadingError: '' })
     } catch (e) {
       that.setData({ isLoading: false, loadingError: e.message })
@@ -57,9 +57,13 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      let chartData = []
-      if (durData && durData.length) {
-        chartData = durData.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
+      const chartData = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      if (statData && statData.length) {
+        statData.forEach(v => {
+          const index = chartData.findIndex(vv => vv[0] === Date.parse(v.time))
+          if (index === -1) return
+          chartData[index] = [Date.parse(v.time), v.mean]
+        })
       }     
 
       chart.setOption({
@@ -72,12 +76,9 @@ Page({
         },
         tooltip: {
           formatter: function (params) {
-            const { data: { value: [y, x1, x2, s] }} = params
-            const name = y == '0' ? '活跃' : y == '1' ? '移动' : y == '2' ? '静止' : y == '3' ? '离床' : '未知'
-            const s1 = new Date(x1).toTimeString().slice(0,5)
-            const s2 = new Date(x2).toTimeString().slice(0,5)
-            const t = s
-            return `${name} ${t} 分钟\n${s1}-${s2}`
+            const { data: { value: [x, y] }} = params
+            const s = new Date(x).toTimeString().slice(0,5)
+            return `${y} %\n${s}`
           }
         },
         xAxis: {
@@ -89,20 +90,26 @@ Page({
         yAxis: {
           splitLine: { show: false },
           show: false,
-          data: [1, 2, 3]
+          min: 0,
+          max: 100,
         },
         series: [
           {
-            type: 'custom',
-            renderItem: renderDuration,
+            type: 'line',
+            smooth: true,
+            symbol: 'none',
+            areaStyle: {},
+            data: chartData,
             itemStyle: {
-              opacity: 0.8
+              borderColor: '#f0c044',
+              color: '#f0c044'
             },
-            encode: {
-              x: [1, 2],
-              y: 0
+            emphasis: {
+              itemStyle: {
+                borderColor: '#f0c044',
+                color: '#f0c044'
+              }
             },
-            data: chartData
           }
         ]
       });
@@ -112,47 +119,41 @@ Page({
     })
   },
 
-  loadDurData: async function(sensorId, startMills, stopMills) {
+  loadStatData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/duration/body/energy`, {
+    const result = await get(`sensor/${sensorId}/stat/sleep_overview/seratio`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '1m',
+      unit: '30m',
     })
 
-    let sum = 0
-    let duration = 0
+    let sum = 0;
+    let min = 200;
+    let max = 0;
     result.forEach((v, i) => {
-      sum = sum + ((parseInt(v.state) + 1) * parseInt(v.duration))
-      duration = duration + parseInt(v.duration)
+      if (v.max > max) max = v.max
+      if (v.min < min) min = v.min
+      sum = sum + v.mean
     })
-
-    const mean = result.length ? Math.floor(sum / duration) : 0
-    switch (mean) {
-      case 1: {
-        that.setData({ aggData0: { overview: '活跃' }})
-        break;
-      }
-      case 2: {
-        that.setData({ aggData0: { overview: '移动' }})
-        break;
-      }
-      case 3: {
-        that.setData({ aggData0: { overview: '静止' }})
-        break;
-      }
-      case 4: {
-        that.setData({ aggData0: { overview: '静止' }})
-        break;
-      }
+    min = min == 200 ? 0 : min
+    const mean = result.length ? Math.floor(sum / result.length) : 0
+    let overview = ''
+    if (mean < 30) {
+      overview = '活跃'
+    } else if (mean < 60) {
+      overview = '正常'
+    } else {
+      overview = '安静'
     }
+
+    that.setData({ aggData0: { min, max, mean, overview } })
 
     return result
   },
 
   loadAggData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/aggregate/body/energy`, {
+    const result = await get(`sensor/${sensorId}/aggregate/sleep_overview/seratio`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
       unit: '1m',
@@ -196,10 +197,14 @@ Page({
     const sensorId = that.data.sensorId
     try {
       const aggData = await that.loadAggData(sensorId, startMills, stopMills)
-      const durData = await that.loadDurData(sensorId, startMills, stopMills)
-      let chartData = []
-      if (durData && durData.length) {
-        chartData = durData.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
+      const statData = await that.loadStatData(sensorId, startMills, stopMills)
+      const chartData = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      if (statData && statData.length) {
+        statData.forEach(v => {
+          const index = chartData.findIndex(vv => vv[0] === Date.parse(v.time))
+          if (index === -1) return
+          chartData[index] = [Date.parse(v.time), v.mean]
+        })
       }     
 
       that.chart.setOption({

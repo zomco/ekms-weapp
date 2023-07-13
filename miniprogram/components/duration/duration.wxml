@@ -1,6 +1,6 @@
 <!--components/duration/duration.wxml-->
 <wxs src="../../utils/common.wxs" module="common" />
-<view class="block" wx:if="{{ value > 60 }}">
+<view class="block" wx:if="{{ value >= 60 }}">
   <view class="value">{{ common.hours(value) }}</view>
   <viwe class="uint">小时</viwe>
   <view class="value">{{ value % 60 }}</view>

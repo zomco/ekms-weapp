@@ -35,11 +35,11 @@ Page({
     const startMills = new Date().setHours(0, 0, 0, 0)
     const stopMills = startMills + 86400000
     let aggData = []
-    let durData = []
+    let statData = []
 
     try {
       aggData = await that.loadAggData(sensorId, startMills, stopMills)
-      durData = await that.loadDurData(sensorId, startMills, stopMills)
+      statData = await that.loadStatData(sensorId, startMills, stopMills)
       that.setData({ isLoading: false, loadingError: '' })
     } catch (e) {
       that.setData({ isLoading: false, loadingError: e.message })
@@ -57,10 +57,14 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      let chartData = []
-      if (durData && durData.length) {
-        chartData = durData.filter(v => v.state !== '3').map((v, i) => envilluminanceItem(v))
-      }     
+      const chartData = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      if (statData && statData.length) {
+        statData.forEach(v => {
+          const index = chartData.findIndex(vv => vv[0] === Date.parse(v.time))
+          if (index === -1) return
+          chartData[index] = [Date.parse(v.time), v.mean]
+        })
+      }    
 
       chart.setOption({
         grid: {
@@ -89,20 +93,25 @@ Page({
         yAxis: {
           splitLine: { show: false },
           show: false,
-          data: [1, 2, 3]
+          min: 0,
+          max: 50,
         },
         series: [
           {
-            type: 'custom',
-            renderItem: renderDuration,
+            type: 'line',
+            smooth: true,
+            symbol: 'none',
+            data: chartData,
             itemStyle: {
-              opacity: 0.8
+              borderColor: '#68B3F6',
+              color: '#68B3F6'
             },
-            encode: {
-              x: [1, 2],
-              y: 0
+            emphasis: {
+              itemStyle: {
+                borderColor: '#68B3F6',
+                color: '#68B3F6'
+              }
             },
-            data: chartData
           }
         ]
       });
@@ -112,47 +121,41 @@ Page({
     })
   },
 
-  loadDurData: async function(sensorId, startMills, stopMills) {
+  loadStatData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/duration/env/illuminance`, {
+    const result = await get(`sensor/${sensorId}/stat/sleep_overview/thi`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '1m',
+      unit: '30m',
     })
 
-    let sum = 0
-    let duration = 0
+    let sum = 0;
+    let min = 200;
+    let max = 0;
     result.forEach((v, i) => {
-      sum = sum + ((parseInt(v.state) + 1) * parseInt(v.duration))
-      duration = duration + parseInt(v.duration)
+      if (v.max > max) max = v.max
+      if (v.min < min) min = v.min
+      sum = sum + v.mean
     })
-
-    const mean = result.length ? Math.floor(sum / duration) : 0
-    switch (mean) {
-      case 1: {
-        that.setData({ aggData0: { overview: '较亮' }})
-        break;
-      }
-      case 2: {
-        that.setData({ aggData0: { overview: '适中' }})
-        break;
-      }
-      case 3: {
-        that.setData({ aggData0: { overview: '较暗' }})
-        break;
-      }
-      case 4: {
-        that.setData({ aggData0: { overview: '较暗' }})
-        break;
-      }
+    min = min == 200 ? 0 : min
+    const mean = result.length ? Math.floor(sum / result.length) : 0
+    let overview = ''
+    if (mean < 20) {
+      overview = '较冷'
+    } else if (mean < 26) {
+      overview = '适中'
+    } else {
+      overview = '较热'
     }
+
+    that.setData({ aggData0: { min, max, mean, overview } })
 
     return result
   },
 
   loadAggData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/aggregate/env/illuminance`, {
+    const result = await get(`sensor/${sensorId}/aggregate/sleep_overview/thi`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
       unit: '1m',

@@ -10,9 +10,10 @@
   <view wx:else class="main">
     <date-picker title="活动" bindpick="bindCalendarPick" />
     <view class="realtime">
-      <view class="prefix">活动时长</view>
+      <view class="prefix">小幅度体动</view>
       <view class="rate">
-        <view class="value">{{ common.duration((aggData1.sum || 0) + (aggData2.sum || 0)) }}</view>
+        <view class="value">{{aggData0.mean }}</view>
+        <view class="unit">%</view>
       </view>
       <view class="date">{{ aggData0.overview }}</view>
     </view>
@@ -41,7 +42,7 @@
             <duration value="{{ aggData2.sum }}" />
             <view class="secondary">
               <t-icon prefix="mdi" name="square" size="20rpx" color="#f2dd8f" />
-              <view class="secondary-text" style="margin-left:10rpx;">移动</view>
+              <view class="secondary-text" style="margin-left:10rpx;">正常</view>
             </view>
           </view>
         </view>

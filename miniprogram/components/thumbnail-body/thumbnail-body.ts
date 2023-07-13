@@ -1,7 +1,7 @@
 // components/hearttn/hearttn.ts
 const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
-import { get, renderDuration, bodyEnergyItem } from '../../utils/util'
+import { get } from '../../utils/util'
 
 
 Component({
@@ -49,7 +49,7 @@ Component({
       that.setData({ isLoading: true })
       const startMills = new Date().setHours(0, 0, 0, 0)
       const stopMills = startMills + 86400000
-      const result = await get(`sensor/${sensorId}/duration/body/energy`, {
+      const result = await get(`sensor/${sensorId}/stat/sleep_overview/seratio`, {
         start: startMills / 1000,
         stop: stopMills / 1000,
         unit: '1h'
@@ -68,9 +68,13 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        let chartData = []
+        const chartData = new Array(24).fill(0).map((v, i) => [startMills + i * 3600000, null])
         if (result && result.length) {
-          chartData = result.filter(v => v.state !== '3').map((v, i) => bodyEnergyItem(v))
+          result.forEach(v => {
+            const index = chartData.findIndex(vv => vv[0] === Date.parse(v.time))
+            if (index === -1) return
+            chartData[index] = [Date.parse(v.time), v.mean]
+          })
         }     
 
         chart.setOption({
@@ -89,20 +93,26 @@ Component({
           },
           yAxis: {
             show: false,
-            data: [1, 2, 3]
+            min: 0,
+            max: 100,
           },
           series: [
             {
-              type: 'custom',
-              renderItem: renderDuration,
+              type: 'line',
+              smooth: true,
+              symbol: 'none',
+              areaStyle: {},
+              data: chartData,
               itemStyle: {
-                opacity: 0.8
+                borderColor: '#f0c044',
+                color: '#f0c044'
               },
-              encode: {
-                x: [1, 2],
-                y: 0
+              emphasis: {
+                itemStyle: {
+                  borderColor: '#f0c044',
+                  color: '#f0c044'
+                }
               },
-              data: chartData
             }
           ],
           backgroundColor: 'rgba(246,246,246)',

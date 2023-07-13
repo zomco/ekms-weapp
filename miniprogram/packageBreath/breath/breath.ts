@@ -145,7 +145,7 @@ Page({
 
   loadAggData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/aggregate/breath/rate`, {
+    const result = await get(`sensor/${sensorId}/aggregate/sleep_overview/breath`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
       unit: '1m',
@@ -172,7 +172,7 @@ Page({
   
   loadStatData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/stat/breath/rate`, {
+    const result = await get(`sensor/${sensorId}/stat/sleep_overview/breath`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
       unit: '30m',

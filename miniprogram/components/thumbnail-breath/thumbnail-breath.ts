@@ -48,7 +48,7 @@ Component({
       that.setData({ isLoading: true })
       const startMills = new Date().setHours(0, 0, 0, 0)
       const stopMills = startMills + 86400000
-      const result = await get(`sensor/${sensorId}/stat/breath/rate`, {
+      const result = await get(`sensor/${sensorId}/stat/sleep_overview/breath`, {
         start: startMills / 1000,
         stop: stopMills / 1000,
         unit: '1h',
