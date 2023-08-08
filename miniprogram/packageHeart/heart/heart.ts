@@ -33,8 +33,10 @@ Page({
       return
     }
     that.setData({ isLoading: true })
-    const startMills = new Date().setHours(0, 0, 0, 0)
+    const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
     const stopMills = startMills + 86400000
+    const intervalCount = 24
+    const intervalMills = 86400000 / intervalCount
     let aggData:[] = []
     let statData:[] = []
     try {
@@ -45,8 +47,8 @@ Page({
       that.setData({ isLoading: false, loadingError: e.message })
     }
 
-    const chartData1 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
-    const chartData2 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+    const chartData1 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
+    const chartData2 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
     if (statData && statData.length) {
       statData.forEach(v => {
         const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
@@ -150,24 +152,24 @@ Page({
     const result = await get(`sensor/${sensorId}/aggregate/sleep_overview/heart`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '1m',
+      unit: '10m',
     })
     result.forEach((v, i) => {
       switch (v.state) {
         case "0": {
-          that.setData({ aggData4: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData4: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "1": {
-          that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData3: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "2": {
-          that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData2: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "3": {
-          that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData1: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
       }
@@ -181,7 +183,7 @@ Page({
     const result = await get(`sensor/${sensorId}/stat/sleep_overview/heart`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '30m',
+      unit: '1h',
     })
 
     let sum = 0;
@@ -219,14 +221,16 @@ Page({
 
   bindCalendarPick: async function({ detail }) {
     const that = this
-    const startMills = detail
+    const startMills = detail - 14400000
     const stopMills = startMills + 86400000
+    const intervalCount = 24
+    const intervalMills = 86400000 / intervalCount
     const sensorId = that.data.sensorId
     try {
       const aggData = await that.loadAggData(sensorId, startMills, stopMills)
       const statData = await that.loadStatData(sensorId, startMills, stopMills)
-      const chartData1 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
-      const chartData2 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      const chartData1 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
+      const chartData2 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
       if (statData && statData.length) {
         statData.forEach(v => {
           const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))

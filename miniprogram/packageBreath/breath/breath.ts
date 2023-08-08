@@ -3,6 +3,14 @@ const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 import { get } from '../../utils/util'
 
+/**
+ * 
+ * 呼吸过高：＞25 次/min
+ * 呼吸过低：＜10 次/min
+ * 正常：10≤x≤25 次/min
+ * 无：无人时的默认状态
+ * 
+ */
 Page({
 
   /**
@@ -31,8 +39,10 @@ Page({
       return
     }
     that.setData({ isLoading: true })
-    const startMills = new Date().setHours(0, 0, 0, 0)
+    const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
     const stopMills = startMills + 86400000
+    const intervalCount = 24
+    const intervalMills = 86400000 / intervalCount
     let aggData:[] = []
     let statData:[] = []
 
@@ -56,8 +66,8 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      const chartData1 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
-      const chartData2 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      const chartData1 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
+      const chartData2 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
       if (statData && statData.length) {
         statData.forEach(v => {
           const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
@@ -85,7 +95,7 @@ Page({
             ] = params
             if (!y1) return
             const s1 = new Date(x1).toTimeString().slice(0,5)
-            const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
+            const s2 = new Date(x2 + intervalMills).toTimeString().slice(0,5)
             return `${y1}-${y1+y2} 次/分\n${s1}-${s2}`
           }
         },
@@ -94,7 +104,7 @@ Page({
           splitLine: { show: true, interval: 4 },
           min: startMills,
           max: stopMills,
-          interval: 1800000,
+          interval: intervalMills,
         },
         yAxis: {
           type: 'value',
@@ -148,20 +158,20 @@ Page({
     const result = await get(`sensor/${sensorId}/aggregate/sleep_overview/breath`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '1m',
+      unit: '10m',
     })
     result.forEach((v, i) => {
       switch (v.state) {
         case "0": {
-          that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData3: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "1": {
-          that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData2: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "2": {
-          that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData1: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
       }
@@ -175,7 +185,7 @@ Page({
     const result = await get(`sensor/${sensorId}/stat/sleep_overview/breath`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '30m',
+      unit: '1h',
     })
 
     let sum = 0;
@@ -211,14 +221,16 @@ Page({
 
   bindCalendarPick: async function({ detail }) {
     const that = this
-    const startMills = detail
+    const startMills = detail - 14400000
     const stopMills = startMills + 86400000
+    const intervalCount = 24
+    const intervalMills = 86400000 / intervalCount
     const sensorId = that.data.sensorId
     try {
       const aggData = await that.loadAggData(sensorId, startMills, stopMills)
       const statData = await that.loadStatData(sensorId, startMills, stopMills)
-      const chartData1 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
-      const chartData2 = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      const chartData1 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
+      const chartData2 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
       if (statData && statData.length) {
         statData.forEach(v => {
           const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))

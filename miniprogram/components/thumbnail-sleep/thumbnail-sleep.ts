@@ -47,12 +47,12 @@ Component({
         return
       }
       that.setData({ isLoading: true })
-      const startMills = new Date().setHours(0, 0, 0, 0)
+      const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
       const stopMills = startMills + 86400000
       const result = await get(`sensor/${sensorId}/duration/sleep/status`, {
         start: startMills / 1000,
         stop: stopMills / 1000,
-        unit: '1m'
+        unit: '10m'
       })
       that.setData({ isLoading: false })
 

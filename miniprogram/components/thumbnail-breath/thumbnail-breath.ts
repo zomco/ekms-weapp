@@ -46,8 +46,10 @@ Component({
         return
       }
       that.setData({ isLoading: true })
-      const startMills = new Date().setHours(0, 0, 0, 0)
+      const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
       const stopMills = startMills + 86400000
+      const intervalCount = 24
+      const intervalMills = 86400000 / intervalCount
       const result = await get(`sensor/${sensorId}/stat/sleep_overview/breath`, {
         start: startMills / 1000,
         stop: stopMills / 1000,
@@ -67,8 +69,8 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        const chartData1 = new Array(24).fill(0).map((v, i) => [startMills + i * 3600000, null])
-        const chartData2 = new Array(24).fill(0).map((v, i) => [startMills + i * 3600000, null])
+        const chartData1 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
+        const chartData2 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
         if (result && result.length) {
           result.forEach(v => {
             const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))

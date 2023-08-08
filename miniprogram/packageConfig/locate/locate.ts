@@ -3,7 +3,35 @@ const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 
 const chartDataMax = 30
-
+/**
+ * 雷达要求安装在床头正上方1m 高度，向下倾斜45°对着床中间，确保雷达
+ * 与人体身体的距离为1.5m 范围内，确保雷达探测范围能正常覆盖睡眠区域
+ * 
+ * 
+ * 
+ * 雷达倾斜安装，倾斜角度为45°，安装在床头上方，雷达安装高度建议为
+ * 高于床面1m；保证雷达主波束覆盖探测区域；雷达前面无明显遮挡物及覆盖
+ * 物。受雷达安装高度及雷达波束范围影响，在该安装模式下，人体存在检测最 *
+ * 大距离L3 ≈ 2.5 米；睡眠检测最大距离L2 ≈ 2.5 米；人体呼吸频率检测最
+ * 大距离L1 ≈ 1.5 米。
+ * 
+ * 
+ * 
+ * 干扰因素：雷达属于电磁波探测传感器，活动的非生命体会导致误报。金属，液
+ * 体的运动，会导致误判。通常，电风扇，贴近雷达的宠物，金属窗帘的晃动都会
+ * 引起误判。雷达需要在安装角度做规划。
+ * 非干扰因素：雷达电磁波会穿透人体的衣物，窗帘，薄木板，玻璃。需要根据应
+ * 用，决定雷达的安装角度以及性能。
+ * 半干扰因素：雷达判断人体存在，不适合直接面对空调。空调内部电机会导致雷
+ * 达误判。需要雷达产品不直接面对空调。或者同空调同一方向。
+ * 
+ * 
+ * 
+ * R60ABD1 雷达模块波束覆盖范围如下图所示。雷达覆盖范围为水平40°、俯
+ * 仰40°的立体扇形区域。
+ * 
+ * 
+ */
 Page({
 
   /**
@@ -136,7 +164,8 @@ Page({
       const data = JSON.parse(detail)
       const [{ body, timestamp }] = data
       if (!body) return
-      const { location } = body
+      const { location, distance } = body
+      console.log(location, distance)
       if (!location) return
       const { x, y } = location
       const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))

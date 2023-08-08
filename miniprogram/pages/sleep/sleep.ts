@@ -3,6 +3,22 @@ const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 import { get, renderDuration, sleepStatusItem  } from '../../utils/util'
 
+/**
+ * 
+ * 睡眠不足：睡眠时长＜4h
+ * 睡眠过长：睡眠时长＞12h
+ * 异常无人：睡眠状态下，存在探测30min 无人
+ * 无：睡眠时长正常或者无人离床状态时
+ * 
+ * 
+ * 针对上报的睡眠评分进行分级
+ * 当评分＞0 时
+ * 1~60 是较差
+ * 61~75 是一般
+ * 76~100 是良好
+ * 
+ * 
+ */
 Page({
 
   /**
@@ -31,7 +47,7 @@ Page({
       return
     }
     that.setData({ isLoading: true })
-    const startMills = new Date().setHours(0, 0, 0, 0)
+    const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
     const stopMills = startMills + 86400000
     let aggData = []
     let durData = []
@@ -75,7 +91,7 @@ Page({
             const name = y == '0' ? '深睡' : y == '1' ? '浅睡' : y == '2' ? '清醒' : y == '3' ? '离床' : '未知'
             const s1 = new Date(x1).toTimeString().slice(0,5)
             const s2 = new Date(x2).toTimeString().slice(0,5)
-            const t = s
+            const t = s * 10
             return `${name} ${t} 分钟\n${s1}-${s2}`
           }
         },
@@ -117,7 +133,7 @@ Page({
     const result = await get(`sensor/${sensorId}/duration/sleep/status`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '1m',
+      unit: '10m',
     })
 
     return result
@@ -128,24 +144,24 @@ Page({
     const result = await get(`sensor/${sensorId}/aggregate/sleep/status`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '1m',
+      unit: '10m',
     })
     result.forEach((v, i) => {
       switch (v.state) {
         case "0": {
-          that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData1: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "1": {
-          that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData2: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "2": {
-          that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData3: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "3": {
-          that.setData({ aggData4: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData4: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
       }
@@ -156,7 +172,7 @@ Page({
 
   bindCalendarPick: async function({ detail }) {
     const that = this
-    const startMills = detail
+    const startMills = detail - 14400000
     const stopMills = startMills + 86400000
     const sensorId = that.data.sensorId
     try {

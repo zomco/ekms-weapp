@@ -47,9 +47,11 @@ Component({
         return
       }
       that.setData({ isLoading: true })
-      const startMills = new Date().setHours(0, 0, 0, 0)
+      const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
       const stopMills = startMills + 86400000
-      const result = await get(`sensor/${sensorId}/stat/sleep_overview/seratio`, {
+      const intervalCount = 24
+      const intervalMills = 86400000 / intervalCount
+      const result = await get(`sensor/${sensorId}/stat/sleep_overview/leratio`, {
         start: startMills / 1000,
         stop: stopMills / 1000,
         unit: '1h'
@@ -68,12 +70,14 @@ Component({
           devicePixelRatio: dpr // new
         });
 
-        const chartData = new Array(24).fill(0).map((v, i) => [startMills + i * 3600000, null])
+        const chartData1 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
+        const chartData2 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
         if (result && result.length) {
           result.forEach(v => {
-            const index = chartData.findIndex(vv => vv[0] === Date.parse(v.time))
+            const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
             if (index === -1) return
-            chartData[index] = [Date.parse(v.time), v.mean]
+            chartData1[index] = [Date.parse(v.time), v.mean]
+            chartData2[index] = [Date.parse(v.time), 100 - v.mean]
           })
         }     
 
@@ -98,11 +102,9 @@ Component({
           },
           series: [
             {
-              type: 'line',
-              smooth: true,
-              symbol: 'none',
-              areaStyle: {},
-              data: chartData,
+              type: 'bar',
+              stack: '1',
+              data: chartData1,
               itemStyle: {
                 borderColor: '#f0c044',
                 color: '#f0c044'
@@ -111,6 +113,21 @@ Component({
                 itemStyle: {
                   borderColor: '#f0c044',
                   color: '#f0c044'
+                }
+              },
+            },
+            {
+              type: 'bar',
+              stack: '1',
+              data: chartData2,
+              itemStyle: {
+                borderColor: '#f2dd8f',
+                color: '#f2dd8f'
+              },
+              emphasis: {
+                itemStyle: {
+                  borderColor: '#f2dd8f',
+                  color: '#f2dd8f'
                 }
               },
             }

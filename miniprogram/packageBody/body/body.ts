@@ -3,6 +3,13 @@ const app = getApp<IAppOption>()
 import * as echarts from '../../ec-canvas/echarts';
 import { get, renderDuration, bodyEnergyItem } from '../../utils/util'
 
+/**
+ * 0%， 无人，环境无人
+ * 1%，静止（睡眠），只有呼吸而没有肢体运动
+ * 2%-30%，微动作，只有轻微头部或肢体小运动
+ * 31%-60%，走动/快速肢体运动，比较慢速的身体运动
+ * 61%-100%，跑动/近距离大动作，快速身体移动
+ */
 Page({
 
   /**
@@ -32,8 +39,10 @@ Page({
       return
     }
     that.setData({ isLoading: true })
-    const startMills = new Date().setHours(0, 0, 0, 0)
+    const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
     const stopMills = startMills + 86400000
+    const intervalCount = 48
+    const intervalMills = 86400000 / intervalCount
     let aggData = []
     let statData = []
 
@@ -57,12 +66,14 @@ Page({
         devicePixelRatio: dpr // new
       });
 
-      const chartData = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      const chartData1 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
+      const chartData2 = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
       if (statData && statData.length) {
         statData.forEach(v => {
-          const index = chartData.findIndex(vv => vv[0] === Date.parse(v.time))
+          const index = chartData1.findIndex(vv => vv[0] === Date.parse(v.time))
           if (index === -1) return
-          chartData[index] = [Date.parse(v.time), v.mean]
+          chartData1[index] = [Date.parse(v.time), v.mean]
+          chartData2[index] = [Date.parse(v.time), 100 - v.mean]
         })
       }     
 
@@ -95,11 +106,9 @@ Page({
         },
         series: [
           {
-            type: 'line',
-            smooth: true,
-            symbol: 'none',
-            areaStyle: {},
-            data: chartData,
+            type: 'bar',
+            stack: '1',
+            data: chartData1,
             itemStyle: {
               borderColor: '#f0c044',
               color: '#f0c044'
@@ -108,6 +117,21 @@ Page({
               itemStyle: {
                 borderColor: '#f0c044',
                 color: '#f0c044'
+              }
+            },
+          },
+          {
+            type: 'bar',
+            stack: '1',
+            data: chartData2,
+            itemStyle: {
+              borderColor: '#f2dd8f',
+              color: '#f2dd8f'
+            },
+            emphasis: {
+              itemStyle: {
+                borderColor: '#f2dd8f',
+                color: '#f2dd8f'
               }
             },
           }
@@ -121,7 +145,7 @@ Page({
 
   loadStatData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/stat/sleep_overview/seratio`, {
+    const result = await get(`sensor/${sensorId}/stat/sleep_overview/leratio`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
       unit: '30m',
@@ -153,28 +177,28 @@ Page({
 
   loadAggData: async function(sensorId, startMills, stopMills) {
     const that = this
-    const result = await get(`sensor/${sensorId}/aggregate/sleep_overview/seratio`, {
+    const result = await get(`sensor/${sensorId}/aggregate/sleep_overview/leratio`, {
       start: startMills / 1000,
       stop: stopMills / 1000,
-      unit: '1m',
+      unit: '10m',
     })
 
     result.forEach((v, i) => {
       switch (v.state) {
         case "0": {
-          that.setData({ aggData1: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData4: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "1": {
-          that.setData({ aggData2: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData3: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "2": {
-          that.setData({ aggData3: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData2: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
         case "3": {
-          that.setData({ aggData4: { sum: v.sum, ratio: (v.sum / 14.4).toFixed(2) }})
+          that.setData({ aggData1: { sum: v.sum * 10, ratio: (v.sum / 1.44).toFixed(2) }})
           break;
         }
       }
@@ -192,13 +216,15 @@ Page({
 
   bindCalendarPick: async function({ detail }) {
     const that = this
-    const startMills = detail
+    const startMills = detail - 14400000
     const stopMills = startMills + 86400000
+    const intervalCount = 48
+    const intervalMills = 86400000 / intervalCount
     const sensorId = that.data.sensorId
     try {
       const aggData = await that.loadAggData(sensorId, startMills, stopMills)
       const statData = await that.loadStatData(sensorId, startMills, stopMills)
-      const chartData = new Array(48).fill(0).map((v, i) => [startMills + i * 1800000, null])
+      const chartData = new Array(intervalCount).fill(0).map((v, i) => [startMills + i * intervalMills, null])
       if (statData && statData.length) {
         statData.forEach(v => {
           const index = chartData.findIndex(vv => vv[0] === Date.parse(v.time))
