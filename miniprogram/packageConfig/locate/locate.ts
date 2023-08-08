@@ -67,14 +67,16 @@ Page({
       });
 
       // prettier-ignore
-      // 角度15
-      const angles = new Array(24).fill(0).map((v, i) => (15 * i) + '°')
+      // 角度分辨率 10度
+      const angles = new Array(36).fill(0).map((v, i) => (10 * i) + '°')
       // prettier-ignore
-      // 半径40
-      const radius = new Array(7).fill(0).map((v, i) => 40 * i)
+      // 半径分辨率 10cm
+      const radius = new Array(15).fill(0).map((v, i) => 10 * i)
  
       chart.setOption( {
-        polar: {},
+        polar: {
+          center: ['50%', '50%'],
+        },
         visualMap: {
           show: false,
           type: 'continuous',
@@ -87,6 +89,7 @@ Page({
           calculable: false
         },
         angleAxis: {
+          startAngle: 0,
           type: 'category',
           data: angles,
           boundaryGap: false,
@@ -164,8 +167,7 @@ Page({
       const data = JSON.parse(detail)
       const [{ body, timestamp }] = data
       if (!body) return
-      const { location, distance } = body
-      console.log(location, distance)
+      const { location } = body
       if (!location) return
       const { x, y } = location
       const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
@@ -177,9 +179,9 @@ Page({
       } else if (x > 0 && y < 0) {
         a = a + 360
       }
-      const p = Math.floor(r / 40)
-      const q = Math.floor(a / 15)
-      // console.log(x, y, r, a, p, q)
+      const p = Math.floor(r / 10)
+      const q = Math.floor(a / 10)
+      console.log("location: ", x, y, r, a, p, q)
 
       const index = that.chartData.findIndex(v => v[0] === p && v[1] === q)
       // console.log(p, q, index)

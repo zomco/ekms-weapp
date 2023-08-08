@@ -16,6 +16,9 @@
       maxcharacter="{{10}}"
       bindenter="bindChangeName"
     />
+    <view class="qrcode">
+      <canvas type="2d" style="width: 260px; height: 260px;" id="myQrcode"></canvas>
+    </view>
   </view>
 </view>
 
