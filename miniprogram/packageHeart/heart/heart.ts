@@ -88,7 +88,7 @@ Page({
             ] = params
             if (!y1) return
             const s1 = new Date(x1).toTimeString().slice(0,5)
-            const s2 = new Date(x2 + 1800000).toTimeString().slice(0,5)
+            const s2 = new Date(x2 + intervalMills).toTimeString().slice(0,5)
             return `${parseInt(y1)}-${parseInt(y1)+parseInt(y2)} 次/分\n${s1}-${s2}`
           }
         },

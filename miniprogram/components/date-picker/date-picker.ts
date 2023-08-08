@@ -24,7 +24,7 @@ Component({
     note: format(Date.now()),
     value: Date.now(),
     minDate: Date.now() - 604800000,
-    maxDate: Date.now(),
+    maxDate: new Date().getHours() >= 20 ? Date.now() + 86400000 : Date.now(),
   },
 
   /**

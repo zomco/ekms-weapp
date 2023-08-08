@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tdesign-miniprogram": "^1.1.5"
+    "tdesign-miniprogram": "^1.1.5",
+    "weapp-qrcode-canvas-2d": "^1.1.2"
   }
 }

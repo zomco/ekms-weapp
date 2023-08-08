@@ -1,6 +1,6 @@
 // packageConfig/info/info.ts
 import { get, post } from '../../utils/util'
-import drawQrcode from '../../qrcode/weapp.qrcode.esm.js'
+import drawQrcode from 'weapp-qrcode-canvas-2d'
 
 Page({
 
