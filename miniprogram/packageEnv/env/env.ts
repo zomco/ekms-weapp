@@ -34,7 +34,7 @@ Page({
     that.setData({ isLoading: true })
     const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
     const stopMills = startMills + 86400000
-    const intervalCount = 48
+    const intervalCount = 24
     const intervalMills = 86400000 / intervalCount
     let aggData = []
     let statData = []
@@ -77,13 +77,15 @@ Page({
           bottom: 0
         },
         tooltip: {
-          formatter: function (params) {
-            const { data: { value: [y, x1, x2, s] }} = params
-            const name = y == '0' ? '较亮' : y == '1' ? '适中' : y == '2' ? '较暗' : y == '3' ? '离床' : '未知'
+          show: true,
+          trigger: 'axis',
+          formatter: (params) => {
+            const [
+              { data: [x1, y1] },
+            ] = params
             const s1 = new Date(x1).toTimeString().slice(0,5)
-            const s2 = new Date(x2).toTimeString().slice(0,5)
-            const t = s
-            return `${name} ${t} 分钟\n${s1}-${s2}`
+            const s2 = new Date(x1 + intervalMills).toTimeString().slice(0,5)
+            return `${y1.toFixed(2)}\n${s1}-${s2}`
           }
         },
         xAxis: {
@@ -198,7 +200,7 @@ Page({
     const that = this
     const startMills = detail - 14400000
     const stopMills = startMills + 86400000
-    const intervalCount = 48
+    const intervalCount = 24
     const intervalMills = 86400000 / intervalCount
     const sensorId = that.data.sensorId
     try {

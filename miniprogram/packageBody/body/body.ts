@@ -41,7 +41,7 @@ Page({
     that.setData({ isLoading: true })
     const startMills = new Date().setHours(0, 0, 0, 0) - 14400000
     const stopMills = startMills + 86400000
-    const intervalCount = 48
+    const intervalCount = 24
     const intervalMills = 86400000 / intervalCount
     let aggData = []
     let statData = []
@@ -86,10 +86,18 @@ Page({
           bottom: 0
         },
         tooltip: {
-          formatter: function (params) {
-            const { data: { value: [x, y] }} = params
-            const s = new Date(x).toTimeString().slice(0,5)
-            return `${y} %\n${s}`
+          show: true,
+          trigger: 'axis',
+          formatter: (params) => {
+            const [
+              { data: [x1, y1] },
+              { data: [x2, y2] },
+            ] = params
+            if (!y1) return
+            const s1 = new Date(x1).toTimeString().slice(0,5)
+            const s2 = new Date(x2 + intervalMills).toTimeString().slice(0,5)
+            
+            return `小幅度 ${y1.toFixed(2)} %\n大幅度 ${y2.toFixed(2)} %\n${s1}-${s2}`
           }
         },
         xAxis: {
@@ -106,6 +114,7 @@ Page({
         },
         series: [
           {
+            name: 'min',
             type: 'bar',
             stack: '1',
             data: chartData1,
@@ -121,6 +130,7 @@ Page({
             },
           },
           {
+            name: 'max',
             type: 'bar',
             stack: '1',
             data: chartData2,
@@ -218,7 +228,7 @@ Page({
     const that = this
     const startMills = detail - 14400000
     const stopMills = startMills + 86400000
-    const intervalCount = 48
+    const intervalCount = 24
     const intervalMills = 86400000 / intervalCount
     const sensorId = that.data.sensorId
     try {
