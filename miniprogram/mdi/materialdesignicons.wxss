@@ -9,8 +9,10 @@
 
 @font-face {
   font-family: "Material Design Icons";
-  src: url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.eot");
-  src: url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.eot") format("embedded-opentype"), url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.woff2") format("woff2"), url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.woff") format("woff"), url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.ttf") format("truetype");
+  /* src: url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.eot");
+  src: url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.eot") format("embedded-opentype"), url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.woff2") format("woff2"), url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.woff") format("woff"), url("https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/fonts/materialdesignicons-webfont.ttf") format("truetype"); */
+  src: url("https://care.arnmi.com/fonts/materialdesignicons-webfont.eot");
+  src: url("https://care.arnmi.com/fonts/materialdesignicons-webfont.eot") format("embedded-opentype"), url("https://care.arnmi.com/fonts/materialdesignicons-webfont.woff2") format("woff2"), url("https://care.arnmi.com/fonts/materialdesignicons-webfont.woff") format("woff"), url("https://care.arnmi.com/fonts/materialdesignicons-webfont.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
