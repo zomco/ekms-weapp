@@ -40,6 +40,8 @@ Page({
   data: {
     sensorId: '',
     ec: { lazyLoad: true },
+    distanceTip: '',
+    distanceValue: 0,
   },
   chart: null,
   chartData: [],
@@ -167,7 +169,20 @@ Page({
       const data = JSON.parse(detail)
       const [{ body, timestamp }] = data
       if (!body) return
-      const { location } = body
+      const { location, distance } = body
+      if (!!distance) {
+        let tip = ''
+        if (distance < 40) {
+          tip = '距离过近'
+        } else if (distance < 150) {
+          tip = '距离合适'
+        } else if (distance < 250) {
+          tip = '距离过远'
+        } else {
+          tip = '无效距离'
+        }
+        that.setData({ distanceTip: tip, distanceValue: distance })
+      }
       if (!location) return
       const { x, y } = location
       const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))

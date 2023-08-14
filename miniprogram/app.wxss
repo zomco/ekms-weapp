@@ -13,4 +13,6 @@ page {
   justify-content: space-between;
   padding: 20rpx 0;
   box-sizing: border-box;
-} 
+}
+
+@import 'app-wxa-auto-dark.wxss' 

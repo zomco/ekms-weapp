@@ -14,6 +14,10 @@ Page({
 
   onLoad: async function (options) {
     const that = this
+    const { code } = options
+    if (code && /^\d{15}$/.test(code)) {
+      wx.navigateTo({ url: `/pages/device/device?code=${code}` });
+    }
     that.setData({ isLoading: true })
     try {
       const { sensors, sensorIndex } = await login()

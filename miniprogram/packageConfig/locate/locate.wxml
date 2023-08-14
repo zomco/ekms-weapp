@@ -3,5 +3,9 @@
 <view class="container">
   <wsc sensor-id="{{ sensorId }}" bindopen="bindopen" bindmessage="bindmessage">
     <ec-canvas id="locate-chart" canvas-id="locate-chart" ec="{{ ec }}" class="chart"></ec-canvas>
+    <view class="distance">
+      <view class="distanceTip">{{ distanceTip }}</view>
+      <view class="distanceValue">{{ distanceValue }} cm</view>
+    </view>
   </wsc>
 </view>
