@@ -1,9 +1,11 @@
 // components/wsc/wsc.ts
 const app = getApp<IAppOption>()
 let HOST = 'care1.arnmi.com'
-if (app.globalData.env === 'release') {
+if (app.globalData.env === 'trial' || app.globalData.env === 'release') {
   HOST = 'care.arnmi.com'
-} 
+} else {
+  console.log('develop environment:', app.globalData.env)
+}
 
 Component({
   lifetimes: {
@@ -51,10 +53,10 @@ Component({
       if (!sensorId) return
       const that = this
       const client = wx.connectSocket({
-        url: `wss://${HOST}/ws/sensor/${sensorId}`,
-        header: {
-          authorization: `Bearer ${wx.getStorageSync('token')}`
-        },
+        url: `wss://${HOST}/ws/sensor/${sensorId}?token=${wx.getStorageSync('token')}`,
+        // header: {
+        //   authorization: `Bearer ${wx.getStorageSync('token')}`
+        // },
         success: res => console.log(res),
         fail: err => console.error(err)
       })

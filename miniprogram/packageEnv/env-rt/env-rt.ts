@@ -67,6 +67,15 @@ Page({
             smooth: true,
             symbol: 'none',
             data: that.chartData,
+            endLabel: {
+              show: true,
+              rotate: -90,
+              offset: [-80, 20],
+              fontSize: 24,
+              formatter: function (params) {
+                return params.value[0];
+              }
+            },
             itemStyle: {
               borderColor: '#68B3F6',
               color: '#68B3F6'

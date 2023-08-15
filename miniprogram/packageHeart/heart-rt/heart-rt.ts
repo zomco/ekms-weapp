@@ -67,6 +67,15 @@ Page({
             smooth: true,
             symbol: 'none',
             data: that.chartData,
+            endLabel: {
+              show: true,
+              rotate: -90,
+              offset: [-80, 20],
+              fontSize: 24,
+              formatter: function (params) {
+                return params.value[0] + ' 次/分钟';
+              }
+            },
             itemStyle: {
               borderColor: '#eb665f',
               color: '#eb665f'

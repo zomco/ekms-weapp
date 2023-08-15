@@ -5,7 +5,7 @@
     <ec-canvas id="locate-chart" canvas-id="locate-chart" ec="{{ ec }}" class="chart"></ec-canvas>
     <view class="distance">
       <view class="distanceTip">{{ distanceTip }}</view>
-      <view class="distanceValue">{{ distanceValue }} cm</view>
+      <view class="distanceValue">{{ !!distanceValue ? distanceValue + ' cm' : '正在连接..'}}</view>
     </view>
   </wsc>
 </view>
