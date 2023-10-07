@@ -72,4 +72,9 @@ Page({
     })
   },
 
+  bindUserTap: function() {
+    const that = this
+    wx.navigateTo({ url: `/packageConfig/user/user` })
+  },
+
 })

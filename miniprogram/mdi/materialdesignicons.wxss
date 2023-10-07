@@ -425,4 +425,8 @@
 .mdi-adjust::before {
   content: "\F001A";
 }
+
+.mdi-account-outline::before {
+  content: "\F0013";
+}
 /*# sourceMappingURL=materialdesignicons.css.map */

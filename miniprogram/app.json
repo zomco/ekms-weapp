@@ -2,11 +2,18 @@
   "pages": [
     "pages/index/index",
     "pages/sleep/sleep",
-    "pages/device/device",
-    "packageConfig/info/info",
-    "packageConfig/locate/locate"
+    "pages/device/device"
   ],
   "subpackages": [
+    {
+      "root": "packageConfig",
+      "name": "config",
+      "pages": [
+        "info/info",
+        "locate/locate",
+        "user/user"
+      ]
+    },
     {
       "root": "packageHeart",
       "name": "heart",

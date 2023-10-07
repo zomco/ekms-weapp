@@ -9,14 +9,3 @@
   justify-content: center;
   align-items: center;
 }
-
-.qrcode {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20rpx 0;
-}
-
-.confirm {
-  padding: 32rpx;
-}

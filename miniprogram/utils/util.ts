@@ -33,6 +33,37 @@ const reset = () => {
   wx.redirectTo({ url: '/pages/index/index' })
 }
 
+const del = (path, data) => new Promise((resolve, reject) => {
+  const url = `https://${HOST}/api/${path}`
+  wx.request({
+    url,
+    data,
+    method: 'DELETE',
+    header: {
+      'authorization': `Bearer ${wx.getStorageSync('token')}`,
+      'content-type': 'application/json'
+    },
+    success: (res) => {
+      // 授权信息失效，需要清除缓存，重新登录
+      if (res.statusCode === 401) {
+        reset()
+        return reject(new Error('Login token expired'))
+      }
+      const { code, success, result, message } = res.data
+      // 传感器信息不同步，需要清除缓存，重新登录
+      if (code === 40001) {
+        reset()
+        return reject(new Error('Sensor not existed'))
+      }
+      if (!success) {
+        return reject(new Error(message))
+      }
+      resolve(result)
+    },
+    fail: (err) => reject(err)
+  })
+})
+
 const get = (path, data) => new Promise((resolve, reject) => {
   const url = `https://${HOST}/api/${path}`
   wx.request({
@@ -258,6 +289,7 @@ const sleepStatusItem = (item) => {
 module.exports = {
   formatTime: formatTime,
   reset,
+  del,
   get,
   post,
   login,

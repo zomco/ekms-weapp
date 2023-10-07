@@ -69,6 +69,14 @@
           </view>
         </view>
       </view>
+      <view class="row">
+        <view class="cell" bindtap="bindUserTap">
+          <view class="label">个人设置</view>
+          <view class="action">
+            <t-icon prefix="mdi" name="account-outline" size="48rpx" />
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 </view>

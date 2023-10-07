@@ -58,4 +58,3 @@
   align-items: center;
 }
 
-@import 'index-wxa-auto-dark.wxss'

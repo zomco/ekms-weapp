@@ -1,5 +1,5 @@
 // packageConfig/info/info.ts
-import { get, post } from '../../utils/util'
+import { del, get, post } from '../../utils/util'
 import drawQrcode from 'weapp-qrcode-canvas-2d'
 
 Page({
@@ -11,7 +11,39 @@ Page({
     sensorId: '',
     isLoading: true,
     loadingError: '',
-    sensor: {}
+    sensor: {},
+    confirmShow: false,
+    confirmBtn: { content: '确定', variant: 'base' },
+    isConfirming: false,
+    confirmError: '',
+  },
+
+  showDiaglog: function(e) {
+    this.setData({ confirmShow: true });
+  },
+
+  cancelDiaglog: function() {
+    this.setData({ confirmShow: false });
+  },
+
+  confirmDiaglog: async function() {
+    const that = this
+    this.setData({ isConfirming: true })
+    try {
+      const sensor = await del(`sensor/${that.data.sensor.id}`)
+      const sensors = wx.getStorageSync('sensors')
+      const index = sensors.findIndex(v => v.id === sensor.id)
+      if (index !== -1) {
+        sensors.splice(index,1)
+        wx.setStorageSync('sensors', sensors)
+        wx.setStorageSync('sensorIndex', sensors.length - 1)
+      }
+      wx.redirectTo({ url: '/pages/index/index' })
+      that.setData({ isConfirming: false, confirmError: null, confirmShow: false })
+    } catch (e) {
+      console.error(e)
+      that.setData({ isConfirming: false, confirmError: e, confirmShow: false })
+    }
   },
 
   onLoad: async function(options) {

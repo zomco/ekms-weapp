@@ -19,6 +19,26 @@
     <view class="qrcode">
       <canvas type="2d" style="width: 260px; height: 260px;" id="myQrcode"></canvas>
     </view>
+    <view class="confirm">
+      <t-button
+        theme="danger"
+        size="large"
+        variant="outline"
+        bind:tap="showDiaglog"
+        block
+      >
+        解除绑定
+      </t-button>
+      <t-dialog
+        visible="{{ confirmShow }}"
+        title="解除绑定"
+        content="解除绑定后将无法查看设备数据。"
+        cancel-btn="取消"
+        confirm-btn="{{ confirmBtn }}"
+        bind:confirm="confirmDiaglog"
+        bind:cancel="cancelDiaglog"
+      />
+    </view>
   </view>
 </view>
 
